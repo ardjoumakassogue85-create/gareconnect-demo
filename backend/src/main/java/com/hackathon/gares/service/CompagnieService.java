@@ -59,8 +59,10 @@ public class CompagnieService {
 
     @Transactional(readOnly = true)
     public List<TrajetDto> listerTrajets(Authentication authentication) {
+        // Les trajets expires restent en base mais n'apparaissent plus dans le tableau.
         return trajetRepository.findByCompagnieOrderByDateAscHeureDepartAsc(getCompagnieConnectee(authentication))
                 .stream()
+                .filter(t -> !t.estExpire())
                 .map(mapper::toTrajetDto)
                 .toList();
     }

@@ -19,7 +19,30 @@ export interface ForgotPasswordRequest {
 
 export interface ForgotPasswordResponse {
   message: string;
-  temporaryPassword?: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
+export interface AccountResponse {
+  id: number;
+  email: string;
+  nom: string;
+  role: Role;
+  emailVerified: boolean;
+}
+
+export interface UpdateAccountRequest {
+  nom: string;
+  email: string;
+  motDePasseActuel?: string;
+  nouveauMotDePasse?: string;
 }
 
 export interface RegisterResponse {

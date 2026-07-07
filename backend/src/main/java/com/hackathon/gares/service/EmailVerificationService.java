@@ -53,6 +53,35 @@ public class EmailVerificationService {
         log.info("Email de verification envoye a {}", user.getEmail());
     }
 
+    public void envoyerReinitialisation(User user, String lienReinitialisation) {
+        if (mailHost == null || mailHost.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "Envoi email non configure. Ajoute les parametres SMTP dans le fichier .env."
+            );
+        }
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(adresseExpediteur());
+        message.setTo(user.getEmail());
+        message.setSubject("Reinitialisation de ton mot de passe ResaGares");
+        message.setText("""
+                Bonjour %s,
+
+                Tu as demande a reinitialiser ton mot de passe ResaGares.
+                Clique sur le lien ci-dessous pour en choisir un nouveau :
+
+                %s
+
+                Ce lien expire dans 30 minutes.
+                Si tu n'es pas a l'origine de cette demande, ignore ce message :
+                ton mot de passe actuel reste inchange.
+                """.formatted(user.getNom(), lienReinitialisation));
+
+        mailSender.send(message);
+        log.info("Email de reinitialisation envoye a {}", user.getEmail());
+    }
+
     private String adresseExpediteur() {
         if (mailFrom != null && !mailFrom.isBlank()) {
             return mailFrom;

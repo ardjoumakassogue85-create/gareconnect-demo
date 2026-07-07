@@ -6,6 +6,8 @@ import com.hackathon.gares.dto.ForgotPasswordResponse;
 import com.hackathon.gares.dto.LoginRequest;
 import com.hackathon.gares.dto.RegisterRequest;
 import com.hackathon.gares.dto.RegisterResponse;
+import com.hackathon.gares.dto.ResetPasswordRequest;
+import com.hackathon.gares.dto.ResetPasswordResponse;
 import com.hackathon.gares.dto.VerifyEmailResponse;
 import com.hackathon.gares.exception.EmailDejaUtiliseException;
 import com.hackathon.gares.model.CompagnieProfile;
@@ -25,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,11 @@ public class AuthService {
 
     @Value("${app.jwt.remember-me-expiration-ms}")
     private long rememberMeExpirationMs;
+
+    @Value("${app.frontend-base-url}")
+    private String frontendBaseUrl;
+
+    private static final long RESET_TOKEN_VALIDITE_SECONDES = 30 * 60;
 
     public RegisterResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -134,28 +142,48 @@ public class AuthService {
     }
 
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
-        String temporaryPassword = generateTemporaryPassword();
-
+        // Flux de reinitialisation standard : on ne change jamais le mot de passe ici.
+        // On genere un jeton a duree limitee, on l'enregistre puis on envoie par email
+        // un lien vers la page de reinitialisation du site. La reponse reste generique
+        // pour ne pas reveler si l'email existe (pas d'enumeration de comptes).
         userRepository.findByEmail(request.email()).ifPresent(user -> {
-            user.setPasswordHash(passwordEncoder.encode(temporaryPassword));
+            String token = genererTokenReinitialisation();
+            user.setPasswordResetToken(token);
+            user.setPasswordResetExpiresAt(Instant.now().plusSeconds(RESET_TOKEN_VALIDITE_SECONDES));
             userRepository.save(user);
+            emailVerificationService.envoyerReinitialisation(user, lienReinitialisation(token));
         });
 
-        // En production, ne jamais retourner ce mot de passe dans la reponse :
-        // l'envoyer par email via un token de reinitialisation a duree limitee.
         return new ForgotPasswordResponse(
-                "Si ce compte existe, un mot de passe temporaire a ete prepare.",
-                temporaryPassword
+                "Si un compte existe pour cet email, un lien de reinitialisation vient d'etre envoye."
         );
     }
 
-    private String generateTemporaryPassword() {
-        String alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#";
-        StringBuilder password = new StringBuilder("Rg-");
-        for (int i = 0; i < 10; i++) {
-            password.append(alphabet.charAt(secureRandom.nextInt(alphabet.length())));
-        }
-        return password.toString();
+    public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByPasswordResetToken(request.token())
+                .filter(u -> u.getPasswordResetExpiresAt() != null
+                        && u.getPasswordResetExpiresAt().isAfter(Instant.now()))
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Lien de reinitialisation invalide ou expire. Refais une demande."));
+
+        user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setPasswordResetToken(null);
+        user.setPasswordResetExpiresAt(null);
+        userRepository.save(user);
+
+        return new ResetPasswordResponse("Mot de passe reinitialise. Tu peux maintenant te connecter.");
+    }
+
+    private String genererTokenReinitialisation() {
+        byte[] octets = new byte[32];
+        secureRandom.nextBytes(octets);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(octets);
+    }
+
+    private String lienReinitialisation(String token) {
+        String base = frontendBaseUrl == null ? "" : frontendBaseUrl.replaceAll("/+$", "");
+        return base + "/reinitialiser-mot-de-passe?token=" + token;
     }
 
     private String generateVerificationCode() {

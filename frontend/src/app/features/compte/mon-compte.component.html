@@ -1,0 +1,72 @@
+<app-layout>
+  <section class="auth">
+    <div class="auth__carte">
+      <a
+        [routerLink]="role() === 'COMPAGNIE' ? '/espace-compagnie' : '/espace-client'"
+        class="auth__retour"
+      >
+        ← Retour a mon espace
+      </a>
+      <h1 class="auth__titre">Mon compte</h1>
+      <p class="auth__texte" *ngIf="role() as r">
+        Type de compte : <strong>{{ r === 'COMPAGNIE' ? 'Compagnie' : 'Voyageur' }}</strong>
+      </p>
+
+      <div class="auth__info" *ngIf="message()">{{ message() }}</div>
+      <div class="auth__erreur" *ngIf="erreur()">{{ erreur() }}</div>
+
+      <form *ngIf="!chargement()" (ngSubmit)="soumettre()">
+        <label class="champ">
+          <span class="champ__label">{{ role() === 'COMPAGNIE' ? 'Nom de la compagnie' : 'Nom complet' }}</span>
+          <input type="text" [(ngModel)]="nom" name="nom" required autocomplete="name" />
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Email</span>
+          <input type="email" [(ngModel)]="email" name="email" required autocomplete="email" />
+        </label>
+
+        <hr class="auth__separateur" />
+        <p class="auth__texte">Laisse ces champs vides pour conserver ton mot de passe actuel.</p>
+
+        <label class="champ">
+          <span class="champ__label">Mot de passe actuel</span>
+          <input
+            type="password"
+            [(ngModel)]="motDePasseActuel"
+            name="motDePasseActuel"
+            autocomplete="current-password"
+          />
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Nouveau mot de passe</span>
+          <input
+            type="password"
+            [(ngModel)]="nouveauMotDePasse"
+            name="nouveauMotDePasse"
+            minlength="8"
+            autocomplete="new-password"
+          />
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Confirmer le nouveau mot de passe</span>
+          <input
+            type="password"
+            [(ngModel)]="confirmationMotDePasse"
+            name="confirmationMotDePasse"
+            minlength="8"
+            autocomplete="new-password"
+          />
+        </label>
+
+        <button type="submit" class="bouton bouton--plein auth__submit" [disabled]="enregistrement()">
+          {{ enregistrement() ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+        </button>
+      </form>
+
+      <p class="auth__texte" *ngIf="chargement()">Chargement de tes informations...</p>
+    </div>
+  </section>
+</app-layout>

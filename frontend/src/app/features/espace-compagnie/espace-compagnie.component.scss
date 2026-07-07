@@ -453,6 +453,12 @@
   color: t.$rouge-alerte;
 }
 
+.badge--imminent {
+  margin-left: t.$espace-2;
+  background: rgba(230, 145, 30, 0.16);
+  color: #b26a00;
+}
+
 .lien-action {
   background: none;
   border: none;

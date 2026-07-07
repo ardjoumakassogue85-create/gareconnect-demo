@@ -52,6 +52,12 @@ public class User implements UserDetails {
     @Column(name = "email_verification_expires_at")
     private Instant emailVerificationExpiresAt;
 
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_expires_at")
+    private Instant passwordResetExpiresAt;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = Instant.now();

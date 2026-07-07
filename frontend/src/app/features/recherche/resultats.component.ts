@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LayoutComponent } from '../../shared/components/layout/layout.component';
 import { ReservationService } from '../../core/services/reservation.service';
 import { CritereRecherche, CriteresRechercheIa, TrajetRecherche } from '../../core/models/metier.model';
+import { estDepartImminent, estExpire } from '../../core/utils/trajet-temps';
 
 @Component({
   selector: 'app-resultats',
@@ -137,12 +138,12 @@ export class ResultatsComponent implements OnInit {
 
   libelleStatut(trajet: TrajetRecherche): string {
     if (trajet.placesDisponibles <= 0) return 'Complet';
-    return trajet.heureDepart <= '07:30' ? 'Départ imminent' : "À l'heure";
+    return estDepartImminent(trajet.date, trajet.heureDepart) ? 'Départ imminent' : "À l'heure";
   }
 
   classeStatut(trajet: TrajetRecherche): string {
     if (trajet.placesDisponibles <= 0) return 'complet';
-    return trajet.heureDepart <= '07:30' ? 'bientot' : 'a_l_heure';
+    return estDepartImminent(trajet.date, trajet.heureDepart) ? 'bientot' : 'a_l_heure';
   }
 
   private lancerRecherche(): void {
@@ -156,7 +157,8 @@ export class ResultatsComponent implements OnInit {
         date: this.date,
       })
       .subscribe((resultats) => {
-        const tries = this.trierPourAffichage(resultats, { tri: this.tri });
+        const actifs = resultats.filter((trajet) => !estExpire(trajet.date, trajet.heureDepart));
+        const tries = this.trierPourAffichage(actifs, { tri: this.tri });
         this.resultats.set(tries);
         this.datesAffichees.set(
           [...new Set(tries.map((trajet) => trajet.date).filter((date): date is string => !!date))].sort(),
@@ -195,6 +197,7 @@ export class ResultatsComponent implements OnInit {
 
   private filtrerResultats(resultats: TrajetRecherche[], criteres: CriteresRechercheIa, suggestions: boolean): TrajetRecherche[] {
     let filtres = resultats
+      .filter((trajet) => !estExpire(trajet.date, trajet.heureDepart))
       .filter((trajet) => !criteres.villeDepart || this.normaliser(trajet.villeDepart) === this.normaliser(criteres.villeDepart))
       .filter((trajet) => !criteres.villeArrivee || this.normaliser(trajet.villeArrivee) === this.normaliser(criteres.villeArrivee))
       .filter((trajet) => suggestions || !criteres.date || trajet.date === criteres.date)
@@ -355,8 +358,8 @@ export class ResultatsComponent implements OnInit {
   private correspondAuStatut(trajet: TrajetRecherche, statut: string | null | undefined): boolean {
     if (!statut) return true;
     if (statut === 'complet') return trajet.placesDisponibles <= 0;
-    if (statut === 'depart_imminent') return trajet.placesDisponibles > 0 && trajet.heureDepart <= '07:30';
-    if (statut === 'a_l_heure') return trajet.placesDisponibles > 0 && trajet.heureDepart > '07:30';
+    if (statut === 'depart_imminent') return trajet.placesDisponibles > 0 && estDepartImminent(trajet.date, trajet.heureDepart);
+    if (statut === 'a_l_heure') return trajet.placesDisponibles > 0 && !estDepartImminent(trajet.date, trajet.heureDepart);
     return true;
   }
 
@@ -400,7 +403,7 @@ export class ResultatsComponent implements OnInit {
 
   private prioriteStatut(trajet: TrajetRecherche): number {
     if (trajet.placesDisponibles <= 0) return 2;
-    return trajet.heureDepart <= '07:30' ? 0 : 1;
+    return estDepartImminent(trajet.date, trajet.heureDepart) ? 0 : 1;
   }
 
   private normaliser(valeur: string): string {

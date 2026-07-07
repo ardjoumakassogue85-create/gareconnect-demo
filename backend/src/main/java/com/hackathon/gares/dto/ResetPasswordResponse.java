@@ -1,6 +1,6 @@
 package com.hackathon.gares.dto;
 
-public record ForgotPasswordResponse(
+public record ResetPasswordResponse(
         String message
 ) {
 }

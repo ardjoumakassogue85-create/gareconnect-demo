@@ -28,6 +28,7 @@
         >
           {{ authService.currentUser()?.nom }}
         </a>
+        <a routerLink="/mon-compte" routerLinkActive="est-actif" class="bouton bouton--fantome">Mon compte</a>
         <button class="bouton bouton--fantome" (click)="authService.logout()">Déconnexion</button>
       </ng-template>
     </div>

@@ -99,7 +99,10 @@
           <div class="trajets" *ngIf="trajetsFiltres().length; else videTrajets">
             <article class="trajet" *ngFor="let t of trajetsFiltres()">
               <div class="trajet__infos">
-                <span class="trajet__villes">{{ t.villeDepart }} -> {{ t.villeArrivee }}</span>
+                <span class="trajet__villes">
+                  {{ t.villeDepart }} -> {{ t.villeArrivee }}
+                  <span class="badge badge--imminent" *ngIf="estDepartImminent(t)">Départ imminent</span>
+                </span>
                 <span class="trajet__meta">
                   {{ t.date || 'Date flexible' }} · {{ t.heureDepart }} ·
                   {{ t.prix | number }} F · {{ t.placesDisponibles }} place(s)
@@ -440,7 +443,10 @@
         <div class="modale__liste">
           <article class="trajet" *ngFor="let t of trajetsFiltres()">
             <div class="trajet__infos">
-              <span class="trajet__villes">{{ t.villeDepart }} -> {{ t.villeArrivee }}</span>
+              <span class="trajet__villes">
+                {{ t.villeDepart }} -> {{ t.villeArrivee }}
+                <span class="badge badge--imminent" *ngIf="estDepartImminent(t)">Départ imminent</span>
+              </span>
               <span class="trajet__meta">
                 {{ t.date || 'Date flexible' }} · {{ t.heureDepart }} ·
                 {{ t.prix | number }} F · {{ t.placesDisponibles }} place(s)

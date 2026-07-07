@@ -18,7 +18,6 @@ export class LoginComponent implements OnInit {
   rememberMe = false;
   erreur = signal<string | null>(null);
   message = signal<string | null>(null);
-  motDePasseTemporaire = signal<string | null>(null);
   chargement = signal(false);
   envoiMotDePasse = signal(false);
 
@@ -36,6 +35,10 @@ export class LoginComponent implements OnInit {
     if (this.route.snapshot.queryParamMap.get('verified') === '1') {
       this.message.set('Email verifie avec succes. Tu peux maintenant te connecter.');
       this.email = this.route.snapshot.queryParamMap.get('email') ?? this.email;
+    }
+
+    if (this.route.snapshot.queryParamMap.get('reset') === '1') {
+      this.message.set('Mot de passe reinitialise. Connecte-toi avec ton nouveau mot de passe.');
     }
   }
 
@@ -63,11 +66,10 @@ export class LoginComponent implements OnInit {
   motDePasseOublie(): void {
     this.erreur.set(null);
     this.message.set(null);
-    this.motDePasseTemporaire.set(null);
 
     const email = this.email.trim();
     if (!email) {
-      this.erreur.set("Renseigne ton email pour recuperer ton mot de passe.");
+      this.erreur.set("Renseigne ton email pour recevoir le lien de reinitialisation.");
       return;
     }
 
@@ -76,7 +78,6 @@ export class LoginComponent implements OnInit {
       next: (reponse) => {
         this.envoiMotDePasse.set(false);
         this.message.set(reponse.message);
-        this.motDePasseTemporaire.set(reponse.temporaryPassword ?? null);
       },
       error: (err) => {
         this.envoiMotDePasse.set(false);

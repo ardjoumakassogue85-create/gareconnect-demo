@@ -4,13 +4,17 @@ import { Router } from '@angular/router';
 import { Observable, tap, timeout } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  AccountResponse,
   AuthResponse,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
   LoginRequest,
   RegisterResponse,
   RegisterRequest,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
   Role,
+  UpdateAccountRequest,
   VerifyEmailRequest,
   VerifyEmailResponse,
 } from '../models/auth.model';
@@ -82,6 +86,25 @@ export class AuthService {
       .pipe(timeout(8000));
   }
 
+  resetPassword(request: ResetPasswordRequest): Observable<ResetPasswordResponse> {
+    return this.http
+      .post<ResetPasswordResponse>(`${environment.apiUrl}/auth/reset-password`, request)
+      .pipe(timeout(8000));
+  }
+
+  getAccount(): Observable<AccountResponse> {
+    return this.http.get<AccountResponse>(`${environment.apiUrl}/users/me`).pipe(timeout(8000));
+  }
+
+  updateAccount(request: UpdateAccountRequest): Observable<AuthResponse> {
+    return this.http
+      .put<AuthResponse>(`${environment.apiUrl}/users/me`, request)
+      .pipe(
+        timeout(8000),
+        tap((response) => this.refreshSession(response)),
+      );
+  }
+
   logout(): void {
     localStorage.removeItem(STORAGE_KEY);
     sessionStorage.removeItem(STORAGE_KEY);
@@ -113,6 +136,11 @@ export class AuthService {
 
   getToken(): string | null {
     return this.session()?.token ?? null;
+  }
+
+  private refreshSession(response: AuthResponse): void {
+    const rememberMe = this.session()?.rememberMe ?? false;
+    this.persistSession(response, rememberMe);
   }
 
   private persistSession(response: AuthResponse, rememberMe: boolean): void {

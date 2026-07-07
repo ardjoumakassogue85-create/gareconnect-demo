@@ -5,9 +5,6 @@
       <h1 class="auth__titre">Connexion</h1>
 
       <div class="auth__info" *ngIf="message()">{{ message() }}</div>
-      <div class="auth__info" *ngIf="motDePasseTemporaire()">
-        Mot de passe temporaire : <strong>{{ motDePasseTemporaire() }}</strong>
-      </div>
       <div class="auth__erreur" *ngIf="erreur()">{{ erreur() }}</div>
 
       <form (ngSubmit)="soumettre()">

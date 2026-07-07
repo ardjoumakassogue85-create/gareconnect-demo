@@ -7,6 +7,8 @@ import com.hackathon.gares.dto.LoginRequest;
 import com.hackathon.gares.dto.RegisterRequest;
 import com.hackathon.gares.dto.RegisterResponse;
 import com.hackathon.gares.dto.ResendVerificationRequest;
+import com.hackathon.gares.dto.ResetPasswordRequest;
+import com.hackathon.gares.dto.ResetPasswordResponse;
 import com.hackathon.gares.dto.VerifyEmailRequest;
 import com.hackathon.gares.dto.VerifyEmailResponse;
 import com.hackathon.gares.service.AuthService;
@@ -46,5 +48,10 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<ForgotPasswordResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         return ResponseEntity.ok(authService.forgotPassword(request));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        return ResponseEntity.ok(authService.resetPassword(request));
     }
 }

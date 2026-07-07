@@ -6,6 +6,7 @@ import { LayoutComponent } from '../../shared/components/layout/layout.component
 import { AuthService } from '../../core/services/auth.service';
 import { ReservationCompagnie, Trajet, VitrineCompagnie } from '../../core/models/metier.model';
 import { VitrineService } from '../../core/services/vitrine.service';
+import { estDepartImminent } from '../../core/utils/trajet-temps';
 
 interface ReclamationCompagnie {
   id: string;
@@ -325,6 +326,10 @@ export class EspaceCompagnieComponent implements OnInit {
 
   fermerDetailReclamation(): void {
     this.reclamationSelectionnee.set(null);
+  }
+
+  estDepartImminent(trajet: Trajet): boolean {
+    return trajet.statut === 'ACTIF' && estDepartImminent(trajet.date, trajet.heureDepart);
   }
 
   nomCompagnie(): string {

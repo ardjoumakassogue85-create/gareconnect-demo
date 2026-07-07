@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { roleGuard } from './core/guards/auth.guard';
+import { authGuard, roleGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -51,6 +51,19 @@ export const routes: Routes = [
     path: 'inscription',
     loadComponent: () =>
       import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
+  },
+  {
+    path: 'reinitialiser-mot-de-passe',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then(
+        (m) => m.ResetPasswordComponent,
+      ),
+  },
+  {
+    path: 'mon-compte',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/compte/mon-compte.component').then((m) => m.MonCompteComponent),
   },
   {
     path: 'espace-client',

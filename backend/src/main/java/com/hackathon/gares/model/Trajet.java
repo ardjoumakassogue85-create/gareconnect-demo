@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "trajets")
@@ -45,4 +47,33 @@ public class Trajet {
     @Column(nullable = false)
     @Builder.Default
     private StatutTrajet statut = StatutTrajet.ACTIF;
+
+    /**
+     * Combine la date et l'heure de depart en un instant local.
+     * Retourne null si la date est absente (trajet a date flexible).
+     */
+    public LocalDateTime dateHeureDepart() {
+        if (date == null) {
+            return null;
+        }
+        return LocalDateTime.of(date, parseHeure(heureDepart));
+    }
+
+    /** Vrai si le depart (date + heure) est deja passe. */
+    public boolean estExpire() {
+        LocalDateTime depart = dateHeureDepart();
+        return depart != null && depart.isBefore(LocalDateTime.now());
+    }
+
+    private static LocalTime parseHeure(String heure) {
+        if (heure == null || heure.isBlank()) {
+            return LocalTime.MIDNIGHT;
+        }
+        try {
+            return LocalTime.parse(heure.trim());
+        } catch (Exception ignore) {
+            // Heure non reconnue : on considere minuit pour ne l'expirer qu'apres la journee.
+            return LocalTime.MIDNIGHT;
+        }
+    }
 }

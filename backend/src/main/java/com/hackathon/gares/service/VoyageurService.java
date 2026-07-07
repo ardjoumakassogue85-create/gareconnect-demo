@@ -61,13 +61,18 @@ public class VoyageurService {
                     .filter(t -> jour == null || jour.equals(t.getDate()))
                     .toList();
         }
-        return trajets.stream().map(mapper::toTrajetDto).toList();
+        // Les trajets deja partis restent en base mais ne sont plus proposes a la reservation.
+        return trajets.stream()
+                .filter(t -> !t.estExpire())
+                .map(mapper::toTrajetDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public TrajetDto obtenirTrajet(Long id) {
         Trajet trajet = trajetRepository.findById(id)
                 .filter(t -> t.getStatut() == StatutTrajet.ACTIF)
+                .filter(t -> !t.estExpire())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trajet introuvable"));
         return mapper.toTrajetDto(trajet);
     }
@@ -78,6 +83,10 @@ public class VoyageurService {
         Trajet trajet = trajetRepository.findById(Long.parseLong(request.trajetId()))
                 .filter(t -> t.getStatut() == StatutTrajet.ACTIF)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trajet introuvable"));
+
+        if (trajet.estExpire()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ce trajet est deja parti");
+        }
 
         int nombreTickets = request.nombreTickets() == null || request.nombreTickets() < 1 ? 1 : request.nombreTickets();
         if (trajet.getPlacesDisponibles() < nombreTickets) {
