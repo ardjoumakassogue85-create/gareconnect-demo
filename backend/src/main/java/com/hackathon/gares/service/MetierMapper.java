@@ -65,9 +65,10 @@ public class MetierMapper {
         );
     }
 
-    public ReclamationDto toReclamationDto(Reclamation reclamation) {
+   public ReclamationDto toReclamationDto(Reclamation reclamation) {
         return new ReclamationDto(
                 String.valueOf(reclamation.getId()),
+                reclamation.getClient() == null ? "Client" : reclamation.getClient().getNom(),
                 reclamation.getSujet(),
                 reclamation.getStatut(),
                 reclamation.getMessages().stream().map(this::toMessageDto).toList(),

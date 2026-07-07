@@ -22,4 +22,13 @@ export class ReclamationApiService implements ReclamationService {
       .post<Reclamation>(`${environment.apiUrl}/reclamations/${reclamationId}/messages`, { message })
       .pipe(timeout(8000));
   }
+  listerPourCompagnie(): Observable<Reclamation[]> {
+    return this.http.get<Reclamation[]>(`${environment.apiUrl}/compagnies/me/reclamations`).pipe(timeout(8000));
+  }
+
+  repondre(reclamationId: string, reponse: string, statut?: string): Observable<Reclamation> {
+    return this.http
+      .patch<Reclamation>(`${environment.apiUrl}/compagnies/me/reclamations/${reclamationId}`, { reponse, statut })
+      .pipe(timeout(8000));
+  }
 }

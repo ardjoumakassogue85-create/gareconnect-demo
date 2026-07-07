@@ -32,12 +32,24 @@ public class CompagnieService {
     private final UserRepository userRepository;
     private final MetierMapper mapper;
 
-    @Transactional(readOnly = true)
+   @Transactional(readOnly = true)
     public VitrineDto obtenirVitrine(String compagnie) {
-        CompagnieProfile profile = compagnieRepository.findBySlug(normaliser(compagnie))
+        return mapper.toVitrineDto(trouverCompagniePublique(compagnie));
+    }
+
+    @Transactional(readOnly = true)
+    public List<TrajetDto> listerTrajetsPublics(String compagnie) {
+        CompagnieProfile profile = trouverCompagniePublique(compagnie);
+        return trajetRepository.findByCompagnieAndStatutOrderByDateAscHeureDepartAsc(profile, StatutTrajet.ACTIF)
+                .stream()
+                .map(mapper::toTrajetDto)
+                .toList();
+    }
+
+    private CompagnieProfile trouverCompagniePublique(String compagnie) {
+        return compagnieRepository.findBySlug(normaliser(compagnie))
                 .or(() -> compagnieRepository.findByNomIgnoreCase(compagnie))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Compagnie introuvable"));
-        return mapper.toVitrineDto(profile);
     }
 
     @Transactional

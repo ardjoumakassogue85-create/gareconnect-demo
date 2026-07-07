@@ -6,6 +6,7 @@ import java.util.List;
 
 public record ReclamationDto(
         String id,
+        String client,
         String sujet,
         StatutReclamation statut,
         List<MessageReclamationDto> messages,

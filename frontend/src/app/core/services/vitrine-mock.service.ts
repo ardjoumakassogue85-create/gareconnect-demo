@@ -141,6 +141,15 @@ export class VitrineMockService implements VitrineService {
     return of(resultats).pipe(delay(LATENCE_SIMULEE_MS));
   }
 
+  listerTrajetsPublics(compagnie: string): Observable<Trajet[]> {
+    const slug = normaliser(compagnie);
+    const resultats = this.trajets
+      .filter((trajet) => normaliser(trajet.compagnie ?? '') === slug && trajet.statut === 'ACTIF')
+      .map((trajet) => ({ ...trajet }));
+
+    return of(resultats).pipe(delay(LATENCE_SIMULEE_MS));
+  }
+
   listerReservations(): Observable<ReservationCompagnie[]> {
     return of([]).pipe(delay(LATENCE_SIMULEE_MS));
   }

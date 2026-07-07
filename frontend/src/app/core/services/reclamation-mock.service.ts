@@ -10,6 +10,7 @@ export class ReclamationMockService implements ReclamationService {
   private readonly reclamations: Reclamation[] = [
     {
       id: 'rec-demo-1',
+      client: 'Compte demo',
       sujet: 'Annulation de reservation',
       statut: 'REPONDUE_IA',
       creeLe: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
@@ -37,6 +38,7 @@ export class ReclamationMockService implements ReclamationService {
     const maintenant = new Date();
     const reclamation: Reclamation = {
       id: crypto.randomUUID(),
+       client: 'Compte demo',
       sujet: this.creerSujet(message),
       statut: this.detecterStatut(message),
       creeLe: maintenant.toISOString(),
@@ -65,7 +67,27 @@ export class ReclamationMockService implements ReclamationService {
 
     return of(this.copierReclamation(reclamation)).pipe(delay(LATENCE_SIMULEE_MS));
   }
+listerPourCompagnie(): Observable<Reclamation[]> {
+    const escaladees = this.reclamations.filter((r) => r.statut === 'EN_ATTENTE_ADMIN' || r.statut === 'RESOLUE_ADMIN');
+    return of(escaladees.map((r) => this.copierReclamation(r))).pipe(delay(LATENCE_SIMULEE_MS));
+  }
 
+  repondre(reclamationId: string, reponse: string, statut?: string): Observable<Reclamation> {
+    const reclamation = this.reclamations.find((r) => r.id === reclamationId);
+
+    if (!reclamation) {
+      return throwError(() => ({ error: { message: 'Reclamation introuvable.' } }));
+    }
+
+    const maintenant = new Date();
+    if (reponse && reponse.trim()) {
+      reclamation.messages.push(this.creerMessage('ADMIN', reponse, maintenant));
+    }
+    reclamation.statut = (statut as Reclamation['statut']) || 'RESOLUE_ADMIN';
+    reclamation.majLe = maintenant.toISOString();
+
+    return of(this.copierReclamation(reclamation)).pipe(delay(LATENCE_SIMULEE_MS));
+  }
   private creerReponseAutomatique(message: string): MessageReclamation {
     const texte = message.toLowerCase();
     const date = new Date();
