@@ -10,4 +10,5 @@ export abstract class VitrineService {
   abstract modifierTrajet(id: string, trajet: Omit<Trajet, 'id' | 'statut'>): Observable<Trajet>;
   abstract supprimerTrajet(id: string): Observable<void>;
   abstract basculerStatutTrajet(id: string): Observable<Trajet>;
+  abstract listerTrajetsPublics(compagnie: string): Observable<Trajet[]>;
 }

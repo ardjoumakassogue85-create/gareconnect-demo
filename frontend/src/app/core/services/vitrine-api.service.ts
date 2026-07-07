@@ -24,7 +24,11 @@ export class VitrineApiService implements VitrineService {
   listerTrajets(): Observable<Trajet[]> {
     return this.http.get<Trajet[]>(`${environment.apiUrl}/compagnies/me/trajets`).pipe(timeout(8000));
   }
-
+ listerTrajetsPublics(compagnie: string): Observable<Trajet[]> {
+    return this.http
+      .get<Trajet[]>(`${environment.apiUrl}/vitrines/${encodeURIComponent(compagnie)}/trajets`)
+      .pipe(timeout(8000));
+  }
   listerReservations(): Observable<ReservationCompagnie[]> {
     return this.http
       .get<ReservationCompagnie[]>(`${environment.apiUrl}/compagnies/me/reservations`)

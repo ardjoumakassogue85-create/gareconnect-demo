@@ -16,4 +16,9 @@ public class VitrineController {
     public VitrineDto obtenirVitrine(@PathVariable String compagnie) {
         return compagnieService.obtenirVitrine(compagnie);
     }
+
+    @GetMapping("/{compagnie}/trajets")
+    public java.util.List<com.hackathon.gares.dto.TrajetDto> listerTrajets(@PathVariable String compagnie) {
+        return compagnieService.listerTrajetsPublics(compagnie);
+    }
 }

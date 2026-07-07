@@ -3,8 +3,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { LayoutComponent } from '../../shared/components/layout/layout.component';
-import { DepartureBoardComponent, LigneDepart } from '../../shared/components/departure-board/departure-board.component';
 import { AuthService, RechercheEnAttente } from '../../core/services/auth.service';
+import { ReservationService } from '../../core/services/reservation.service';
+import { GareService } from '../../core/services/gare.service';
+import { TrajetRecherche } from '../../core/models/metier.model';
 
 interface VitrineGare {
   code: string;
@@ -17,7 +19,7 @@ interface VitrineGare {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, LayoutComponent, DepartureBoardComponent],
+  imports: [CommonModule, FormsModule, RouterLink, LayoutComponent],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
 })
@@ -29,55 +31,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   date = '';
   requeteLibre = '';
 
-  lignesDemo: LigneDepart[] = [
-    { codeGare: 'ABJ', ville: 'Bouak\u00e9', heure: '06:30', compagnie: 'UTB', prix: 6000, statut: 'A_L_HEURE' },
-    { codeGare: 'ABJ', ville: 'Yamoussoukro', heure: '07:15', compagnie: 'STIF', prix: 4500, statut: 'BIENTOT' },
-    { codeGare: 'ABJ', ville: 'San-P\u00e9dro', heure: '08:00', compagnie: 'CTM', prix: 7500, statut: 'A_L_HEURE' },
-    { codeGare: 'ABJ', ville: 'Korhogo', heure: '09:45', compagnie: 'UTB', prix: 9000, statut: 'COMPLET' },
-  ];
-
-  vitrinesGares: VitrineGare[] = [
-    {
-      code: 'U',
-      compagnie: 'UTB Transport',
-      gare: "Gare d'Adjam\u00e9 \u00b7 Abidjan",
-      trajets: [
-        { ligne: 'Abidjan -> Bouak\u00e9', prix: '6 000 F' },
-        { ligne: 'Abidjan -> Korhogo', prix: '9 000 F' },
-      ],
-      places: '24 dispo.',
-    },
-    {
-      code: 'S',
-      compagnie: 'SBTA Express',
-      gare: 'Gare de Yopougon \u00b7 Abidjan',
-      trajets: [
-        { ligne: 'Abidjan -> Yamoussoukro', prix: '4 500 F' },
-        { ligne: 'Abidjan -> Man', prix: '8 500 F' },
-      ],
-      places: '18 dispo.',
-    },
-    {
-      code: 'C',
-      compagnie: 'CTM Voyages',
-      gare: 'Gare centrale \u00b7 Bouak\u00e9',
-      trajets: [
-        { ligne: 'Bouak\u00e9 -> Abidjan', prix: '6 000 F' },
-        { ligne: 'Bouak\u00e9 -> Korhogo', prix: '5 500 F' },
-      ],
-      places: '31 dispo.',
-    },
-    {
-      code: 'M',
-      compagnie: 'MTK Transport',
-      gare: 'Gare de Koko \u00b7 Korhogo',
-      trajets: [
-        { ligne: 'Korhogo -> Abidjan', prix: '9 000 F' },
-        { ligne: 'Korhogo -> Bouak\u00e9', prix: '5 500 F' },
-      ],
-      places: '12 dispo.',
-    },
-  ];
+  vitrinesGares: VitrineGare[] = [];
 
   vitrineActive = 0;
   private vitrineTimer?: ReturnType<typeof setInterval>;
@@ -85,9 +39,15 @@ export class LandingComponent implements OnInit, OnDestroy {
   constructor(
     private readonly router: Router,
     private readonly authService: AuthService,
+    private readonly reservationService: ReservationService,
+    private readonly gareService: GareService,
   ) {}
 
   ngOnInit(): void {
+    this.reservationService.rechercherTrajets({}).subscribe((trajets) => {
+      this.vitrinesGares = this.construireVitrines(trajets);
+      this.vitrineActive = 0;
+    });
     this.vitrineTimer = setInterval(() => this.vitrineSuivante(), 3500);
   }
 
@@ -189,5 +149,31 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   private vitrineSuivante(): void {
     this.vitrineActive = (this.vitrineActive + 1) % this.vitrinesGares.length;
+  }
+
+  private construireVitrines(trajets: TrajetRecherche[]): VitrineGare[] {
+    const parCompagnie = new Map<string, TrajetRecherche[]>();
+    for (const trajet of trajets) {
+      const nom = trajet.compagnie?.trim() || 'Compagnie';
+      const liste = parCompagnie.get(nom) ?? [];
+      liste.push(trajet);
+      parCompagnie.set(nom, liste);
+    }
+
+    return Array.from(parCompagnie.entries()).map(([compagnie, trajetsCompagnie]) => {
+      const trajetAleatoire = trajetsCompagnie[Math.floor(Math.random() * trajetsCompagnie.length)];
+      return {
+        code: compagnie.charAt(0).toUpperCase(),
+        compagnie,
+        gare: this.gareService.nomLisible(trajetAleatoire.codeGareDepart),
+        trajets: [
+          {
+            ligne: `${trajetAleatoire.villeDepart} -> ${trajetAleatoire.villeArrivee}`,
+            prix: `${trajetAleatoire.prix.toLocaleString('fr-FR')} F`,
+          },
+        ],
+        places: `${trajetAleatoire.placesDisponibles} dispo.`,
+      };
+    });
   }
 }

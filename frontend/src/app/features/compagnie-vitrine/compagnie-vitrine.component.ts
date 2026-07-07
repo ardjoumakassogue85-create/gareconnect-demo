@@ -22,6 +22,6 @@ export class CompagnieVitrineComponent implements OnInit {
 
   ngOnInit(): void {
     this.vitrineService.obtenirVitrine(this.compagnie).subscribe((vitrine) => this.vitrine.set(vitrine));
-    this.vitrineService.listerTrajets(this.compagnie).subscribe((trajets) => this.trajets.set(trajets));
+this.vitrineService.listerTrajetsPublics(this.compagnie).subscribe((trajets) => this.trajets.set(trajets));
   }
 }

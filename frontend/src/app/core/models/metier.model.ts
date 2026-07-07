@@ -118,6 +118,7 @@ export interface MessageReclamation {
 
 export interface Reclamation {
   id: string;
+  client: string;
   sujet: string;
   statut: StatutReclamation;
   messages: MessageReclamation[];

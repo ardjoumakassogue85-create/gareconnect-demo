@@ -4,20 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { LayoutComponent } from '../../shared/components/layout/layout.component';
 import { AuthService } from '../../core/services/auth.service';
-import { ReservationCompagnie, Trajet, VitrineCompagnie } from '../../core/models/metier.model';
+import { Reclamation, ReservationCompagnie, Trajet, VitrineCompagnie } from '../../core/models/metier.model';
 import { VitrineService } from '../../core/services/vitrine.service';
 import { estDepartImminent } from '../../core/utils/trajet-temps';
-
-interface ReclamationCompagnie {
-  id: string;
-  client: string;
-  sujet: string;
-  trajet: string;
-  priorite: 'Haute' | 'Normale';
-  statut: 'EN_ATTENTE' | 'REPONDUE' | 'RESOLUE';
-  message: string;
-  reponse: string;
-}
+import { ReclamationService } from '../../core/services/reclamation.service';
 
 @Component({
   selector: 'app-espace-compagnie',
@@ -30,6 +20,7 @@ export class EspaceCompagnieComponent implements OnInit {
   constructor(
     readonly authService: AuthService,
     private readonly vitrineService: VitrineService,
+    private readonly reclamationService: ReclamationService,
   ) {}
 
   description = 'Compagnie de transport interurbain reliant Abidjan aux principales villes du pays.';
@@ -47,33 +38,13 @@ export class EspaceCompagnieComponent implements OnInit {
 
   reservations = signal<ReservationCompagnie[]>([]);
 
-  reclamations = signal<ReclamationCompagnie[]>([
-    {
-      id: 'rec-107',
-      client: 'Awa Coulibaly',
-      sujet: 'Bagage signale perdu',
-      trajet: 'Abidjan -> Bouake',
-      priorite: 'Haute',
-      statut: 'EN_ATTENTE',
-      message: "L'assistant IA n'a pas pu confirmer le suivi du bagage. La cliente demande un retour humain.",
-      reponse: '',
-    },
-    {
-      id: 'rec-108',
-      client: 'Serge Bamba',
-      sujet: 'Retard au depart',
-      trajet: 'Abidjan -> Korhogo',
-      priorite: 'Normale',
-      statut: 'REPONDUE',
-      message: 'Le client demande une explication sur le retard du depart de 09:45.',
-      reponse: 'Bonjour, le depart a ete retarde par le controle technique. Merci pour votre patience.',
-    },
-  ]);
+  reclamations = signal<Reclamation[]>([]);
+  brouillonsReponse = signal<Record<string, string>>({});
 
   formulaireOuvert = signal(false);
   formulaireVitrineOuvert = signal(false);
   tousLesTrajetsOuverts = signal(false);
-  reclamationSelectionnee = signal<ReclamationCompagnie | null>(null);
+  reclamationSelectionnee = signal<Reclamation | null>(null);
   trajetEnEdition = signal<string | null>(null);
 
   brouillon: Omit<Trajet, 'id' | 'statut'> = {
@@ -96,7 +67,7 @@ export class EspaceCompagnieComponent implements OnInit {
       reservationsRecues: payees.length,
       placesVendues: payees.reduce((total, reservation) => total + reservation.tickets, 0),
       chiffreAffaires: payees.reduce((total, reservation) => total + reservation.total, 0),
-      reclamationsEnAttente: this.reclamations().filter((reclamation) => reclamation.statut === 'EN_ATTENTE')
+      reclamationsEnAttente: this.reclamations().filter((reclamation) => reclamation.statut === 'EN_ATTENTE_ADMIN')
         .length,
     };
   });
@@ -146,13 +117,14 @@ export class EspaceCompagnieComponent implements OnInit {
   });
 
   readonly reclamationsActives = computed(() =>
-    this.reclamations().filter((reclamation) => reclamation.statut === 'EN_ATTENTE'),
+    this.reclamations().filter((reclamation) => reclamation.statut === 'EN_ATTENTE_ADMIN'),
   );
 
   ngOnInit(): void {
     this.chargerVitrine();
     this.chargerTrajets();
     this.chargerReservations();
+    this.chargerReclamations();
   }
 
   surChangementLogo(evenement: Event): void {
@@ -299,28 +271,41 @@ export class EspaceCompagnieComponent implements OnInit {
       .subscribe((vitrine) => this.vitrine.set(vitrine));
   }
 
+  brouillonReponse(id: string): string {
+    return this.brouillonsReponse()[id] ?? '';
+  }
+
+  definirBrouillon(id: string, valeur: string): void {
+    this.brouillonsReponse.update((brouillons) => ({ ...brouillons, [id]: valeur }));
+  }
+
+  dernierMessage(reclamation: Reclamation): string {
+    const messages = reclamation.messages;
+    return messages.length ? messages[messages.length - 1].texte : '';
+  }
+
   repondreReclamation(id: string): void {
-    this.reclamations.update((liste) =>
-      liste.map((reclamation) =>
-        reclamation.id === id && reclamation.reponse.trim()
-          ? { ...reclamation, statut: 'REPONDUE' }
-          : reclamation,
-      ),
-    );
+    const reponse = this.brouillonReponse(id).trim();
+    if (!reponse) return;
+
+    this.reclamationService.repondre(id, reponse, 'EN_ATTENTE_ADMIN').subscribe((maj) => {
+      this.reclamations.update((liste) => liste.map((r) => (r.id === id ? maj : r)));
+      this.definirBrouillon(id, '');
+    });
   }
 
   resoudreReclamation(id: string): void {
-    this.reclamations.update((liste) =>
-      liste.map((reclamation) =>
-        reclamation.id === id ? { ...reclamation, statut: 'RESOLUE' } : reclamation,
-      ),
-    );
-    if (this.reclamationSelectionnee()?.id === id) {
-      this.fermerDetailReclamation();
-    }
+    const reponse = this.brouillonReponse(id).trim();
+    this.reclamationService.repondre(id, reponse, 'RESOLUE_ADMIN').subscribe((maj) => {
+      this.reclamations.update((liste) => liste.map((r) => (r.id === id ? maj : r)));
+      this.definirBrouillon(id, '');
+      if (this.reclamationSelectionnee()?.id === id) {
+        this.fermerDetailReclamation();
+      }
+    });
   }
 
-  ouvrirDetailReclamation(reclamation: ReclamationCompagnie): void {
+  ouvrirDetailReclamation(reclamation: Reclamation): void {
     this.reclamationSelectionnee.set(reclamation);
   }
 
@@ -359,6 +344,12 @@ export class EspaceCompagnieComponent implements OnInit {
     this.vitrineService
       .listerReservations()
       .subscribe((reservations) => this.reservations.set(reservations));
+  }
+
+  private chargerReclamations(): void {
+    this.reclamationService
+      .listerPourCompagnie()
+      .subscribe((reclamations) => this.reclamations.set(reclamations));
   }
 
   private lignesTexte(valeur: string): string[] {

@@ -125,7 +125,7 @@
 
           <ng-template #videTrajets>
             <p class="espace__vide">
-              {{ trajets().length ? 'Aucun trajet ne correspond a cette recherche.' : 'Aucun trajet pour l'instant. Ajoute ton premier trajet.' }}
+              {{ trajets().length ? 'Aucun trajet ne correspond a cette recherche.' : 'Aucun trajet pour le moment. Ajoute ton premier trajet.' }}
             </p>
           </ng-template>
         </div>
@@ -335,23 +335,25 @@
           <div class="reclamation__entete">
             <div>
               <span class="reclamation__sujet">{{ reclamation.sujet }}</span>
-              <span class="reclamation__meta">{{ reclamation.client }} · {{ reclamation.trajet }}</span>
+              <span class="reclamation__meta">{{ reclamation.client }}</span>
             </div>
-            <span class="badge" [class.badge--danger]="reclamation.priorite === 'Haute'">
-              {{ reclamation.priorite }}
-            </span>
           </div>
 
-          <p>{{ reclamation.message }}</p>
+          <p>{{ dernierMessage(reclamation) }}</p>
 
           <label class="champ">
             <span class="champ__label">Reponse compagnie</span>
-            <textarea rows="2" [(ngModel)]="reclamation.reponse" [name]="'reponse-' + reclamation.id"></textarea>
+            <textarea
+              rows="2"
+              [ngModel]="brouillonReponse(reclamation.id)"
+              (ngModelChange)="definirBrouillon(reclamation.id, $event)"
+              [name]="'reponse-' + reclamation.id"
+            ></textarea>
           </label>
 
           <div class="reclamation__actions">
-            <span class="badge" [class.badge--ok]="reclamation.statut === 'RESOLUE'">
-              {{ reclamation.statut === 'EN_ATTENTE' ? 'En attente' : reclamation.statut === 'REPONDUE' ? 'Repondue' : 'Resolue' }}
+            <span class="badge" [class.badge--ok]="reclamation.statut === 'RESOLUE_ADMIN'">
+              {{ reclamation.statut === 'EN_ATTENTE_ADMIN' ? 'En attente' : reclamation.statut === 'RESOLUE_ADMIN' ? 'Resolue' : 'Repondue IA' }}
             </span>
             <button class="bouton bouton--fantome" type="button" (click)="ouvrirDetailReclamation(reclamation)">Voir</button>
             <button class="bouton bouton--fantome" (click)="repondreReclamation(reclamation.id)">Marquer repondue</button>
@@ -377,7 +379,7 @@
         <div class="modale__entete">
           <div>
             <h2>{{ reclamation.sujet }}</h2>
-            <p>{{ reclamation.client }} - {{ reclamation.trajet }}</p>
+            <p>{{ reclamation.client }}</p>
           </div>
           <button class="modale__fermer" type="button" (click)="fermerDetailReclamation()" aria-label="Fermer">x</button>
         </div>
@@ -387,27 +389,18 @@
             <span>Client</span>
             <strong>{{ reclamation.client }}</strong>
           </div>
-          <div class="detail-reclamation__ligne">
-            <span>Trajet</span>
-            <strong>{{ reclamation.trajet }}</strong>
-          </div>
           <div class="detail-reclamation__badges">
-            <span class="badge" [class.badge--danger]="reclamation.priorite === 'Haute'">
-              Priorite : {{ reclamation.priorite }}
-            </span>
-            <span class="badge" [class.badge--ok]="reclamation.statut === 'RESOLUE'">
-              Statut : {{ reclamation.statut === 'EN_ATTENTE' ? 'En attente' : reclamation.statut === 'REPONDUE' ? 'Repondue' : 'Resolue' }}
+            <span class="badge" [class.badge--ok]="reclamation.statut === 'RESOLUE_ADMIN'">
+              Statut : {{ reclamation.statut === 'EN_ATTENTE_ADMIN' ? 'En attente' : reclamation.statut === 'RESOLUE_ADMIN' ? 'Resolue' : 'Repondue IA' }}
             </span>
           </div>
 
           <section class="detail-reclamation__bloc">
-            <h3>Message du client</h3>
-            <p>{{ reclamation.message }}</p>
-          </section>
-
-          <section class="detail-reclamation__bloc">
-            <h3>Reponse compagnie</h3>
-            <p>{{ reclamation.reponse || 'Aucune reponse renseignee pour le moment.' }}</p>
+            <h3>Conversation</h3>
+            <div class="detail-reclamation__ligne" *ngFor="let message of reclamation.messages">
+              <span>{{ message.auteur === 'CLIENT' ? 'Client' : message.auteur === 'ASSISTANT' ? 'Assistant IA' : 'Compagnie' }}</span>
+              <strong>{{ message.texte }}</strong>
+            </div>
           </section>
         </div>
 
