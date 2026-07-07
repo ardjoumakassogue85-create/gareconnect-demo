@@ -1,0 +1,252 @@
+<app-layout>
+  <section class="espace conteneur">
+    <a routerLink="/" class="bouton-retour">← Retour à l'accueil</a>
+
+    <div class="espace__entete">
+      <span class="espace__eyebrow">Espace voyageur</span>
+      <h1 class="espace__titre">Bonjour {{ authService.currentUser()?.nom }}</h1>
+      <p class="espace__texte">Retrouve ici tes billets et l'état de tes réservations.</p>
+    </div>
+
+    <div class="dashboard">
+      <a routerLink="/recherche" class="dashboard-action dashboard-action--primaire">
+        <span class="dashboard-action__label">Rechercher un trajet</span>
+        <span class="dashboard-action__meta">Horaires, tarifs et places disponibles</span>
+      </a>
+
+      <button type="button" class="dashboard-action" (click)="changerFiltre('A_VENIR')">
+        <span class="dashboard-action__valeur">{{ compteurOnglet('A_VENIR') }}</span>
+        <span class="dashboard-action__label">Billets à venir</span>
+      </button>
+
+      <button type="button" class="dashboard-action" (click)="changerFiltre('TERMINEE')">
+        <span class="dashboard-action__valeur">{{ compteurOnglet('TERMINEE') }}</span>
+        <span class="dashboard-action__label">Avis à laisser</span>
+      </button>
+
+      <a routerLink="/reclamations" class="dashboard-action">
+        <span class="dashboard-action__label">Réclamations</span>
+        <span class="dashboard-action__meta">Assistant IA et suivi admin</span>
+      </a>
+    </div>
+
+    <div class="espace__erreur" *ngIf="erreur()">{{ erreur() }}</div>
+
+    <h2 class="espace__soustitre">Mes réservations</h2>
+
+    <div class="onglets" *ngIf="!chargement() && reservations().length">
+      <button
+        *ngFor="let onglet of onglets"
+        type="button"
+        class="onglet"
+        [class.onglet--actif]="filtreActif() === onglet.valeur"
+        (click)="changerFiltre(onglet.valeur)"
+      >
+        {{ onglet.libelle }}
+        <span class="onglet__compteur">{{ compteurOnglet(onglet.valeur) }}</span>
+      </button>
+    </div>
+
+    <p class="espace__chargement" *ngIf="chargement()">Chargement de tes réservations…</p>
+
+    <div class="billets" *ngIf="!chargement() && reservationsFiltrees().length">
+      <article
+        class="billet"
+        *ngFor="let r of reservationsFiltrees()"
+        (click)="ouvrirDetail(r)"
+      >
+        <div class="billet__poincon" aria-hidden="true"></div>
+
+        <div class="billet__corps">
+          <div class="billet__ligne1">
+            <span class="billet__code">{{ r.codeBillet }}</span>
+            <div class="billet__etat">
+              <div class="billet__annulation" *ngIf="estAnnulable(r); else statutBillet">
+                <app-compte-a-rebours
+                  [dateLimite]="r.annulableJusquA"
+                  (expire)="delaiAnnulationExpire()"
+                ></app-compte-a-rebours>
+                <button
+                  class="billet__bouton-annuler"
+                  [disabled]="idEnAnnulation() === r.id"
+                  (click)="annuler(r); $event.stopPropagation()"
+                >
+                  {{ idEnAnnulation() === r.id ? 'Annulation...' : 'Annuler' }}
+                </button>
+              </div>
+              <ng-template #statutBillet>
+                <span class="statut" [class]="'statut--' + classeStatut(r)">
+                  {{ libelleStatut(r) }}
+                </span>
+              </ng-template>
+            </div>
+          </div>
+
+          <span class="billet__trajet">{{ r.villeDepart }} → {{ r.villeArrivee }}</span>
+
+          <div class="billet__meta">
+            <span>{{ r.date | date: 'd MMMM yyyy' }}</span>
+            <span>·</span>
+            <span>{{ r.heure }}</span>
+            <span>·</span>
+            <span>{{ r.compagnie }}</span>
+            <ng-container *ngIf="r.statutPaiement === 'REMBOURSE'">
+              <span>·</span>
+              <span>Remboursé</span>
+            </ng-container>
+          </div>
+
+          <div class="billet__avis" *ngIf="peutNoter(r) && r.note">
+            <span class="etoile-affichee" *ngFor="let e of etoiles" [class.etoile-affichee--pleine]="e <= r.note!">★</span>
+          </div>
+
+        </div>
+
+        <div class="billet__prix">{{ r.prix | number }} F</div>
+      </article>
+    </div>
+
+    <div class="espace__vide-bloc" *ngIf="!chargement() && reservations().length && !reservationsFiltrees().length">
+      <p class="espace__vide">Aucune réservation dans cette catégorie.</p>
+    </div>
+
+    <div class="espace__vide-bloc" *ngIf="!chargement() && !reservations().length">
+      <p class="espace__vide">Aucune réservation pour l'instant.</p>
+    </div>
+  </section>
+
+  <div class="modale-fond" *ngIf="reservationSelectionnee() as r" (click)="fermerDetail()">
+    <div class="modale" (click)="$event.stopPropagation()">
+      <button type="button" class="modale__fermer" (click)="fermerDetail()" aria-label="Fermer">×</button>
+
+      <span class="statut" [class]="'statut--' + classeStatut(r)">{{ libelleStatut(r) }}</span>
+
+      <h3 class="modale__trajet">{{ r.villeDepart }} → {{ r.villeArrivee }}</h3>
+
+      <div class="modale__qr" *ngIf="r.statut !== 'ANNULEE'">
+        <app-qr-code [valeur]="r.codeBillet" [taille]="120"></app-qr-code>
+        <span class="modale__qr-legende">Présente ce code à l'embarquement</span>
+      </div>
+
+      <dl class="modale__details">
+        <div class="modale__ligne">
+          <dt>Référence</dt>
+          <dd>{{ r.codeBillet }}</dd>
+        </div>
+        <div class="modale__ligne" *ngIf="r.codeGareDepart">
+          <dt>Gare de départ</dt>
+          <dd>{{ r.codeGareDepart }}</dd>
+        </div>
+        <div class="modale__ligne" *ngIf="r.codeGareArrivee">
+          <dt>Gare d'arrivée</dt>
+          <dd>{{ r.codeGareArrivee }}</dd>
+        </div>
+        <div class="modale__ligne">
+          <dt>Date</dt>
+          <dd>{{ r.date | date: 'd MMMM yyyy' }} à {{ r.heure }}</dd>
+        </div>
+        <div class="modale__ligne">
+          <dt>Compagnie</dt>
+          <dd>{{ r.compagnie }}</dd>
+        </div>
+        <div class="modale__ligne">
+          <dt>Prix</dt>
+          <dd>{{ r.prix | number }} F</dd>
+        </div>
+        <div class="modale__ligne" *ngIf="r.methodePaiement">
+          <dt>Paiement</dt>
+          <dd>{{ r.methodePaiement === 'MOBILE_MONEY' ? 'Mobile Money' : 'Carte bancaire' }}</dd>
+        </div>
+        <div class="modale__ligne" *ngIf="r.statutPaiement">
+          <dt>Statut paiement</dt>
+          <dd>{{ r.statutPaiement === 'REMBOURSE' ? 'Remboursé' : r.statutPaiement === 'PAYE' ? 'Payé' : 'Échec' }}</dd>
+        </div>
+      </dl>
+
+      <div class="modale__annulation" *ngIf="estAnnulable(r)">
+        <app-compte-a-rebours [dateLimite]="r.annulableJusquA"></app-compte-a-rebours>
+        <button
+          class="bouton bouton--fantome"
+          [disabled]="idEnAnnulation() === r.id"
+          (click)="annuler(r)"
+        >
+          {{ idEnAnnulation() === r.id ? 'Annulation...' : 'Annuler cette réservation' }}
+        </button>
+      </div>
+
+      <div class="modale__avis" *ngIf="peutNoter(r)">
+        <h4 class="modale__avis-titre">{{ r.note ? 'Ton avis' : 'Comment était ce trajet ?' }}</h4>
+
+        <div class="etoiles-choix">
+          <button
+            type="button"
+            *ngFor="let e of etoiles"
+            class="etoile-bouton"
+            [class.etoile-bouton--pleine]="e <= noteBrouillon()"
+            (click)="choisirNote(e)"
+            [attr.aria-label]="e + ' étoiles'"
+          >
+            ★
+          </button>
+        </div>
+
+        <textarea
+          class="modale__commentaire"
+          rows="2"
+          placeholder="Un commentaire (optionnel)"
+          [value]="commentaireBrouillon()"
+          (input)="commentaireBrouillon.set($any($event.target).value)"
+        ></textarea>
+
+        <div class="modale__erreur" *ngIf="erreurAvis()">{{ erreurAvis() }}</div>
+
+        <button
+          type="button"
+          class="bouton bouton--plein"
+          [disabled]="envoiAvisEnCours()"
+          (click)="envoyerAvis(r)"
+        >
+          {{ envoiAvisEnCours() ? 'Envoi...' : r.note ? "Modifier l'avis" : "Envoyer l'avis" }}
+        </button>
+      </div>
+
+      <div class="modale__avis" *ngIf="peutNoter(r) && r.codeGareDepart">
+        <h4 class="modale__avis-titre">Comment était l'accueil à {{ nomGare(r.codeGareDepart) }} ?</h4>
+
+        <p class="modale__moyenne-gare" *ngIf="moyenneGare() as m">
+          Note moyenne actuelle : {{ m.moyenne || '—' }} / 5 ({{ m.nombreAvis }} avis)
+        </p>
+
+        <ng-container *ngIf="!avisGareEnvoye(); else merciGare">
+          <div class="etoiles-choix">
+            <button
+              type="button"
+              *ngFor="let e of etoiles"
+              class="etoile-bouton"
+              [class.etoile-bouton--pleine]="e <= noteGareBrouillon()"
+              (click)="choisirNoteGare(e)"
+              [attr.aria-label]="e + ' étoiles'"
+            >
+              ★
+            </button>
+          </div>
+
+          <div class="modale__erreur" *ngIf="erreurAvisGare()">{{ erreurAvisGare() }}</div>
+
+          <button
+            type="button"
+            class="bouton bouton--fantome"
+            [disabled]="envoiAvisGareEnCours()"
+            (click)="envoyerAvisGare(r)"
+          >
+            {{ envoiAvisGareEnCours() ? 'Envoi...' : "Noter la gare" }}
+          </button>
+        </ng-container>
+
+        <ng-template #merciGare>
+          <p class="modale__merci">Merci, ton avis sur la gare a été pris en compte.</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</app-layout>

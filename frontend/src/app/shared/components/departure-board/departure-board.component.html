@@ -1,0 +1,29 @@
+<div class="tableau">
+  <div class="tableau__entete">
+    <span class="tableau__col tableau__col--code">Gare</span>
+    <span class="tableau__col tableau__col--ville">Destination</span>
+    <span class="tableau__col tableau__col--heure">Heure</span>
+    <span class="tableau__col tableau__col--compagnie">Compagnie</span>
+    <span class="tableau__col tableau__col--prix">Tarif</span>
+    <span class="tableau__col tableau__col--statut">Statut</span>
+  </div>
+
+  <div
+    class="tableau__ligne"
+    *ngFor="let ligne of lignes; let i = index"
+    [style.animation-delay.ms]="i * 70"
+  >
+    <span class="tableau__col tableau__col--code">
+      <span class="jeton-code">{{ ligne.codeGare }}</span>
+    </span>
+    <span class="tableau__col tableau__col--ville">{{ ligne.ville }}</span>
+    <span class="tableau__col tableau__col--heure">{{ ligne.heure }}</span>
+    <span class="tableau__col tableau__col--compagnie">{{ ligne.compagnie }}</span>
+    <span class="tableau__col tableau__col--prix">{{ ligne.prix | number }} F</span>
+    <span class="tableau__col tableau__col--statut">
+      <span class="statut" [class]="'statut--' + ligne.statut.toLowerCase()">
+        {{ libelleStatut(ligne.statut) }}
+      </span>
+    </span>
+  </div>
+</div>

@@ -1,0 +1,4 @@
+<span class="rebours" [class.rebours--expire]="expiree" *ngIf="dateLimite">
+  <span class="rebours__point" aria-hidden="true"></span>
+  {{ expiree ? 'Délai expiré' : 'Annulable encore ' + libelle }}
+</span>

@@ -1,0 +1,163 @@
+<app-layout>
+  <section class="recherche-page conteneur">
+    <a routerLink="/espace-client" class="bouton-retour">← Retour au dashboard</a>
+
+    <div class="recherche-page__entete">
+      <span class="recherche-page__eyebrow">Rechercher un trajet</span>
+      <h1 class="recherche-page__titre">Trouve ton prochain départ</h1>
+    </div>
+
+    <div class="carte-recherche">
+      <div class="carte-recherche__onglets">
+        <span class="carte-recherche__onglet est-actif">Recherche guidée</span>
+      </div>
+
+      <div class="carte-recherche__champs">
+        <label class="champ">
+          <span class="champ__label">Départ</span>
+          <select [(ngModel)]="villeDepart" name="villeDepart">
+            <option *ngFor="let ville of villes" [value]="ville">{{ ville }}</option>
+          </select>
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Arrivée</span>
+          <select [(ngModel)]="villeArrivee" name="villeArrivee">
+            <option *ngFor="let ville of villes" [value]="ville">{{ ville }}</option>
+          </select>
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Date</span>
+          <input type="date" [(ngModel)]="date" name="date" />
+        </label>
+
+        <label class="champ champ--submit">
+          <span class="champ__label">&nbsp;</span>
+          <button class="bouton bouton--plein carte-recherche__submit" (click)="rechercher()">
+            Rechercher
+          </button>
+        </label>
+      </div>
+
+      <div class="carte-recherche__libre">
+        <span class="carte-recherche__ou">ou décris ton besoin</span>
+        <div class="carte-recherche__libre-champ">
+          <input
+            type="text"
+            placeholder="Ex : je veux partir demain matin pas trop cher vers Bouaké"
+            [(ngModel)]="requeteLibre"
+            name="requeteLibre"
+          />
+          <button class="bouton bouton--fantome" (click)="rechercherEnLangageLibre()">
+            Assistant IA
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="resultats-zone" *ngIf="rechercheEffectuee()">
+      <span class="resultats-zone__label">
+        Départs depuis {{ villeDepart || 'toutes gares' }}
+        <ng-container *ngIf="datesAffichees().length">
+          ·
+          <ng-container *ngFor="let dateExistante of datesAffichees(); let dernier = last">
+            {{ dateExistante | date: 'd MMMM yyyy' }}<ng-container *ngIf="!dernier">, </ng-container>
+          </ng-container>
+        </ng-container>
+      </span>
+
+      <div class="assistant-reponse" [class.assistant-reponse--suggestion]="suggestionsIa" *ngIf="requeteOrigine">
+        <div class="assistant-reponse__contenu">
+          <span class="assistant-reponse__label">Recherche appliquÃ©e</span>
+          <p class="assistant-reponse__texte">
+            J'ai compris : <strong>« {{ requeteOrigine }} »</strong>
+          </p>
+          <p class="assistant-reponse__message" *ngIf="messageIa">
+            {{ messageIa }}
+          </p>
+          <div class="assistant-reponse__badges">
+            <span class="assistant-reponse__badge" *ngIf="villeDepart">Départ : {{ villeDepart }}</span>
+            <span class="assistant-reponse__badge" *ngIf="villeArrivee">Arrivée : {{ villeArrivee }}</span>
+            <span class="assistant-reponse__badge" *ngIf="criteresIa?.date">Date : {{ criteresIa?.date | date: 'd MMM yyyy' }}</span>
+            <span class="assistant-reponse__badge" *ngIf="criteresIa?.heureDepart">Heure : {{ criteresIa?.heureDepart }}</span>
+            <span class="assistant-reponse__badge" *ngIf="criteresIa?.compagnie">Compagnie : {{ criteresIa?.compagnie }}</span>
+            <span class="assistant-reponse__badge" *ngIf="tri === 'prix_asc'">Moins cher d'abord</span>
+            <span class="assistant-reponse__badge" *ngIf="tri === 'prix_desc'">Plus cher d'abord</span>
+            <span class="assistant-reponse__badge" *ngIf="criteresIa?.prixMin">
+              Prix min : {{ criteresIa?.prixMin | number }} F
+            </span>
+            <span class="assistant-reponse__badge" *ngIf="criteresIa?.budgetMax">
+              Budget max : {{ criteresIa?.budgetMax | number }} F
+            </span>
+            <span class="assistant-reponse__badge" *ngIf="criteresIa?.statut">Statut : {{ criteresIa?.statut }}</span>
+            <span class="assistant-reponse__badge assistant-reponse__badge--accent" *ngIf="criteresIa?.nombreResultats === 1">
+              1 seul trajet affiché
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="resultats-zone__chargement" *ngIf="chargement()">Recherche des meilleurs trajets...</div>
+
+      <div class="tableau-resultats" *ngIf="!chargement() && resultats().length">
+        <div class="tableau-resultats__entete">
+          <span class="tableau-resultats__col tableau-resultats__col--code">Gare</span>
+          <span class="tableau-resultats__col tableau-resultats__col--ville">Destination</span>
+          <span class="tableau-resultats__col tableau-resultats__col--date">Date</span>
+          <span class="tableau-resultats__col tableau-resultats__col--heure">Heure</span>
+          <span class="tableau-resultats__col tableau-resultats__col--compagnie">Compagnie</span>
+          <span class="tableau-resultats__col tableau-resultats__col--prix">Tarif</span>
+          <span class="tableau-resultats__col tableau-resultats__col--statut">Statut</span>
+          <span class="tableau-resultats__col tableau-resultats__col--action">Action</span>
+        </div>
+
+        <div
+          class="tableau-resultats__ligne"
+          *ngFor="let trajet of resultats(); let i = index"
+          [style.animation-delay.ms]="i * 70"
+        >
+          <span class="tableau-resultats__col tableau-resultats__col--code">
+            <span class="jeton-code">{{ trajet.codeGareDepart }}</span>
+          </span>
+          <span class="tableau-resultats__col tableau-resultats__col--ville">{{ trajet.villeArrivee }}</span>
+          <span class="tableau-resultats__col tableau-resultats__col--date">
+            {{ trajet.date | date: 'd MMM yyyy' }}
+          </span>
+          <span class="tableau-resultats__col tableau-resultats__col--heure">{{ trajet.heureDepart }}</span>
+          <span class="tableau-resultats__col tableau-resultats__col--compagnie">
+            <span>{{ trajet.compagnie }}</span>
+            <button
+              type="button"
+              class="tableau-resultats__compagnie-bouton"
+              [attr.aria-label]="'Voir les informations de ' + trajet.compagnie"
+              (click)="voirCompagnie(trajet)"
+            >
+              Infos
+            </button>
+          </span>
+          <span class="tableau-resultats__col tableau-resultats__col--prix">{{ trajet.prix | number }} F</span>
+          <span class="tableau-resultats__col tableau-resultats__col--statut">
+            <span class="statut" [class]="'statut--' + classeStatut(trajet)">
+              {{ libelleStatut(trajet) }}
+            </span>
+          </span>
+          <span class="tableau-resultats__col tableau-resultats__col--action">
+            <button
+              type="button"
+              class="tableau-resultats__bouton"
+              [disabled]="trajet.placesDisponibles === 0"
+              (click)="reserver(trajet)"
+            >
+              {{ trajet.placesDisponibles === 0 ? 'Complet' : 'Réserver' }}
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <p class="resultats-zone__vide" *ngIf="!chargement() && !resultats().length">
+        Aucun trajet trouvé pour cette recherche. Essaie d'autres villes ou une autre date.
+      </p>
+    </div>
+  </section>
+</app-layout>

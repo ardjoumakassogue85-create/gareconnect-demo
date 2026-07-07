@@ -1,0 +1,50 @@
+<app-layout>
+  <section class="auth">
+    <div class="auth__carte">
+      <a routerLink="/" class="auth__retour">← Retour à l'accueil</a>
+      <h1 class="auth__titre">Connexion</h1>
+
+      <div class="auth__info" *ngIf="message()">{{ message() }}</div>
+      <div class="auth__info" *ngIf="motDePasseTemporaire()">
+        Mot de passe temporaire : <strong>{{ motDePasseTemporaire() }}</strong>
+      </div>
+      <div class="auth__erreur" *ngIf="erreur()">{{ erreur() }}</div>
+
+      <form (ngSubmit)="soumettre()">
+        <label class="champ">
+          <span class="champ__label">Email</span>
+          <input type="email" [(ngModel)]="email" name="email" required autocomplete="email" />
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Mot de passe</span>
+          <input type="password" [(ngModel)]="password" name="password" required autocomplete="current-password" />
+        </label>
+
+        <div class="auth__options">
+          <label class="auth__souvenir">
+            <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe" />
+            <span>Se souvenir de moi</span>
+          </label>
+
+          <button
+            type="button"
+            class="auth__lien"
+            [disabled]="envoiMotDePasse()"
+            (click)="motDePasseOublie()"
+          >
+            {{ envoiMotDePasse() ? 'Envoi...' : 'Mot de passe oublié ?' }}
+          </button>
+        </div>
+
+        <button type="submit" class="bouton bouton--plein auth__submit" [disabled]="chargement()">
+          {{ chargement() ? 'Connexion...' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <p class="auth__bascule">
+        Pas encore de compte ? <a routerLink="/inscription">Créer un compte</a>
+      </p>
+    </div>
+  </section>
+</app-layout>

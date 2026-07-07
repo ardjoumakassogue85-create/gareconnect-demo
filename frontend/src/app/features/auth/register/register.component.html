@@ -1,0 +1,106 @@
+<app-layout>
+  <section class="auth">
+    <div class="auth__carte">
+      <span class="auth__eyebrow">Rejoindre le reseau</span>
+      <h1 class="auth__titre">{{ verificationDemandee() ? 'Verifier mon email' : 'Creer un compte' }}</h1>
+
+      <div class="auth__info" *ngIf="message()">{{ message() }}</div>
+      <div class="auth__erreur" *ngIf="erreur()">{{ erreur() }}</div>
+
+      <form *ngIf="!verificationDemandee(); else verificationEmail" (ngSubmit)="soumettre()">
+        <div class="auth__roles">
+          <button
+            type="button"
+            class="auth__role"
+            [class.est-selectionne]="role === 'CLIENT'"
+            (click)="choisirRole('CLIENT')"
+          >
+            <span class="auth__role-titre">Voyageur</span>
+            <span class="auth__role-texte">Rechercher et reserver un trajet</span>
+          </button>
+
+          <button
+            type="button"
+            class="auth__role"
+            [class.est-selectionne]="role === 'COMPAGNIE'"
+            (click)="choisirRole('COMPAGNIE')"
+          >
+            <span class="auth__role-titre">Compagnie</span>
+            <span class="auth__role-texte">Gerer mes gares et mes trajets</span>
+          </button>
+        </div>
+
+        <label class="champ">
+          <span class="champ__label">{{ role === 'CLIENT' ? 'Nom complet' : 'Nom de la compagnie' }}</span>
+          <input type="text" [(ngModel)]="nom" name="nom" required autocomplete="name" />
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Email</span>
+          <input type="email" [(ngModel)]="email" name="email" required autocomplete="email" />
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Mot de passe</span>
+          <input
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            required
+            minlength="8"
+            autocomplete="new-password"
+          />
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Confirmer le mot de passe</span>
+          <input
+            type="password"
+            [(ngModel)]="confirmationPassword"
+            name="confirmationPassword"
+            required
+            minlength="8"
+            autocomplete="new-password"
+          />
+        </label>
+
+        <button type="submit" class="bouton bouton--plein auth__submit" [disabled]="chargement()">
+          {{ chargement() ? 'Creation...' : 'Creer mon compte' }}
+        </button>
+      </form>
+
+      <ng-template #verificationEmail>
+        <form (ngSubmit)="verifierEmail()">
+          <p class="auth__texte">
+            Un code de verification a ete envoye a <strong>{{ emailEnVerification || email }}</strong>.
+          </p>
+
+          <label class="champ">
+            <span class="champ__label">Code de verification</span>
+            <input
+              type="text"
+              [(ngModel)]="codeVerification"
+              name="codeVerification"
+              required
+              maxlength="6"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+            />
+          </label>
+
+          <button type="submit" class="bouton bouton--plein auth__submit" [disabled]="verificationEnCours()">
+            {{ verificationEnCours() ? 'Verification...' : 'Valider mon email' }}
+          </button>
+
+          <button type="button" class="auth__lien auth__lien--bloc" [disabled]="renvoiEnCours()" (click)="renvoyerCode()">
+            {{ renvoiEnCours() ? 'Renvoi...' : 'Renvoyer le code' }}
+          </button>
+        </form>
+      </ng-template>
+
+      <p class="auth__bascule">
+        Deja un compte ? <a routerLink="/connexion">Se connecter</a>
+      </p>
+    </div>
+  </section>
+</app-layout>

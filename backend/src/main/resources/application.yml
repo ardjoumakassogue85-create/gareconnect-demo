@@ -1,0 +1,45 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  mail:
+    host: ${SMTP_HOST:}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${SMTP_AUTH:true}
+          starttls:
+            enable: ${SMTP_STARTTLS_ENABLE:true}
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-local-secret-key-at-least-32-characters-long}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+    remember-me-expiration-ms: ${JWT_REMEMBER_ME_EXPIRATION_MS:2592000000}
+  frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:4200}
+  email:
+    from: ${MAIL_FROM:}
+
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:4200}
+
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-flash-latest}
+  base-url: https://generativelanguage.googleapis.com/v1beta

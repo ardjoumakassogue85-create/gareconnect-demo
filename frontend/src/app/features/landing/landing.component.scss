@@ -1,0 +1,336 @@
+@use 'tokens' as t;
+
+.hero {
+  padding: t.$espace-16 0 t.$espace-24;
+
+  @include t.tablette {
+    padding: t.$espace-8 0 t.$espace-16;
+  }
+}
+
+.hero__grille {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: t.$espace-16;
+  align-items: start;
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+    gap: t.$espace-8;
+  }
+}
+
+.hero__intro {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero__texte-haut {
+  max-width: 920px;
+  margin: 0 auto t.$espace-16;
+  text-align: center;
+
+  @include t.tablette {
+    margin-bottom: t.$espace-8;
+  }
+}
+
+.hero__eyebrow {
+  display: inline-block;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: t.$or-phare-fonce;
+  margin-bottom: t.$espace-4;
+}
+
+.hero__titre {
+  font-size: t.$taille-4xl;
+  line-height: 1.08;
+  margin-bottom: t.$espace-4;
+
+  @include t.tablette {
+    font-size: t.$taille-3xl;
+  }
+}
+
+.hero__texte {
+  font-size: t.$taille-lg;
+  color: t.$bitume-attenue;
+  max-width: none;
+  margin: 0 auto;
+  white-space: nowrap;
+
+  @include t.tablette {
+    white-space: normal;
+  }
+}
+
+.hero__tableau-label {
+  display: block;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: t.$bitume-attenue;
+  margin-bottom: t.$espace-3;
+}
+
+.hero__tableau {
+  margin-top: t.$espace-8;
+  width: 100%;
+}
+
+// --- Carte de recherche ---
+
+.carte-recherche {
+  width: 100%;
+  background: white;
+  border-radius: t.$rayon-lg;
+  padding: t.$espace-6;
+  box-shadow: t.$ombre-carte;
+  border: 1px solid t.$papier-fonce;
+}
+
+.carte-recherche__onglets {
+  margin-bottom: t.$espace-4;
+}
+
+.carte-recherche__onglet {
+  font-size: t.$taille-sm;
+  font-weight: 600;
+  color: t.$nuit;
+  padding-bottom: t.$espace-2;
+  border-bottom: 2px solid t.$or-phare;
+  display: inline-block;
+}
+
+.carte-recherche__champs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: t.$espace-4;
+
+  @include t.mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: t.$espace-1;
+
+  select,
+  input {
+    font-family: t.$police-texte;
+    font-size: t.$taille-base;
+    padding: t.$espace-3;
+    border-radius: t.$rayon-md;
+    border: 1px solid t.$papier-fonce;
+    background: t.$papier;
+    color: t.$bitume;
+
+    &:focus {
+      border-color: t.$or-phare;
+    }
+  }
+}
+
+.champ__label {
+  font-size: t.$taille-xs;
+  font-weight: 600;
+  color: t.$bitume-attenue;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.champ--submit {
+  justify-content: flex-end;
+}
+
+.carte-recherche__submit {
+  width: 100%;
+  padding: t.$espace-3 t.$espace-4;
+  font-size: t.$taille-base;
+
+  @include t.mobile {
+    grid-column: 1 / -1;
+  }
+}
+
+.carte-recherche__libre {
+  margin-top: t.$espace-6;
+  padding-top: t.$espace-6;
+  border-top: 1px dashed t.$papier-fonce;
+}
+
+.carte-recherche__ou {
+  display: block;
+  font-size: t.$taille-xs;
+  color: t.$bitume-attenue;
+  margin-bottom: t.$espace-2;
+}
+
+.carte-recherche__libre-champ {
+  display: flex;
+  gap: t.$espace-2;
+
+  @include t.mobile {
+    flex-direction: column;
+  }
+
+  input {
+    flex: 1;
+    font-family: t.$police-texte;
+    padding: t.$espace-3;
+    border-radius: t.$rayon-md;
+    border: 1px solid t.$papier-fonce;
+
+    &:focus {
+      border-color: t.$or-phare;
+    }
+  }
+}
+
+// --- Section compagnies ---
+
+.section-compagnies {
+  background: white;
+  border-top: 1px solid t.$papier-fonce;
+  border-bottom: 1px solid t.$papier-fonce;
+  padding: t.$espace-16 0;
+}
+
+.section-compagnies__grille {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: t.$espace-12;
+  align-items: center;
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+    gap: t.$espace-8;
+  }
+}
+
+.section-compagnies__texte {
+  max-width: 60ch;
+
+  h2 {
+    font-size: t.$taille-2xl;
+    margin-bottom: t.$espace-4;
+  }
+
+  p {
+    color: t.$bitume-attenue;
+    font-size: t.$taille-base;
+    margin-bottom: t.$espace-4;
+  }
+}
+
+.lien-souligne {
+  font-weight: 600;
+  color: t.$nuit;
+  border-bottom: 2px solid t.$or-phare;
+  padding-bottom: 2px;
+}
+
+.vitrine-slider {
+  display: grid;
+  align-items: center;
+}
+
+.maquette-vitrine {
+  grid-area: 1 / 1;
+  background: t.$papier;
+  border: 1px solid t.$papier-fonce;
+  border-radius: t.$rayon-lg;
+  padding: t.$espace-4;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(14px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+
+  &.est-active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+}
+
+.maquette-vitrine__entete {
+  display: flex;
+  align-items: center;
+  gap: t.$espace-3;
+  margin-bottom: t.$espace-4;
+}
+
+.maquette-vitrine__logo {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: t.$rayon-md;
+  background: t.$nuit;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: t.$police-titre;
+  font-weight: 800;
+}
+
+.maquette-vitrine__entete div {
+  display: flex;
+  flex-direction: column;
+}
+
+.maquette-vitrine__nom {
+  font-weight: 700;
+  color: t.$nuit;
+  font-size: t.$taille-sm;
+}
+
+.maquette-vitrine__sous {
+  font-size: t.$taille-xs;
+  color: t.$bitume-attenue;
+}
+
+.maquette-vitrine__ligne {
+  display: flex;
+  justify-content: space-between;
+  gap: t.$espace-4;
+  font-size: t.$taille-sm;
+  padding: t.$espace-2 0;
+  border-top: 1px dashed t.$papier-fonce;
+  color: t.$bitume-attenue;
+
+  span:last-child {
+    font-family: t.$police-donnee;
+    color: t.$nuit;
+    font-weight: 600;
+  }
+}
+
+.vitrine-slider__points {
+  display: flex;
+  justify-content: center;
+  gap: t.$espace-2;
+  margin-top: t.$espace-4;
+}
+
+.vitrine-slider__point {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: t.$papier-fonce;
+  transition: width 0.2s ease, background 0.2s ease;
+
+  &.est-actif {
+    width: 24px;
+    background: t.$or-phare;
+  }
+}

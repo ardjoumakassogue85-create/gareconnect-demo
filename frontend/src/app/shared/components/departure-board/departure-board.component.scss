@@ -1,0 +1,110 @@
+@use 'tokens' as t;
+
+.tableau {
+  background: t.$nuit;
+  border-radius: t.$rayon-lg;
+  padding: t.$espace-6;
+  box-shadow: t.$ombre-carte;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tableau__entete,
+.tableau__ligne {
+  display: grid;
+  grid-template-columns: 84px 1.4fr 96px 1.2fr 100px 140px;
+  align-items: center;
+  gap: t.$espace-4;
+  min-width: 640px;
+}
+
+.tableau__entete {
+  padding-bottom: t.$espace-3;
+  margin-bottom: t.$espace-2;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+
+  .tableau__col {
+    font-family: t.$police-texte;
+    font-size: t.$taille-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.55);
+    font-weight: 500;
+  }
+}
+
+.tableau__ligne {
+  padding: t.$espace-3 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  animation: apparition 0.4s ease backwards;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.tableau__col--ville,
+.tableau__col--compagnie {
+  color: t.$papier;
+  font-size: t.$taille-sm;
+}
+
+.tableau__col--heure,
+.tableau__col--prix {
+  font-family: t.$police-donnee;
+  color: t.$papier;
+  font-size: t.$taille-base;
+  font-variant-numeric: tabular-nums;
+}
+
+.jeton-code {
+  display: inline-block;
+  font-family: t.$police-donnee;
+  font-weight: 600;
+  font-size: t.$taille-sm;
+  color: t.$nuit;
+  background: t.$or-phare;
+  padding: t.$espace-1 t.$espace-2;
+  border-radius: t.$rayon-sm;
+  letter-spacing: 0.04em;
+}
+
+.statut {
+  font-size: t.$taille-xs;
+  font-weight: 500;
+  padding: t.$espace-1 t.$espace-2;
+  border-radius: t.$rayon-sm;
+  white-space: nowrap;
+
+  &--a_l_heure {
+    color: t.$vert-signal;
+    background: rgba(31, 157, 109, 0.15);
+  }
+
+  &--bientot {
+    color: t.$or-phare;
+    background: rgba(231, 169, 60, 0.15);
+  }
+
+  &--complet {
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+@keyframes apparition {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tableau__ligne {
+    animation: none;
+  }
+}

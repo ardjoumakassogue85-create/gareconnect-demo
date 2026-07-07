@@ -1,0 +1,58 @@
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a routerLink="/" class="entete__marque">
+      <img class="entete__logo" src="/gareConnect.png" alt="GareConnect" />
+    </a>
+
+    <nav class="entete__nav">
+      <a routerLink="/recherche" routerLinkActive="est-actif">Rechercher</a>
+      <a
+        *ngIf="authService.isAuthenticated() && authService.role() === 'CLIENT'"
+        routerLink="/reclamations"
+        routerLinkActive="est-actif"
+      >
+        Aide
+      </a>
+      <a routerLink="/inscription" [queryParams]="{ role: 'COMPAGNIE' }">Pour les compagnies</a>
+    </nav>
+
+    <div class="entete__actions">
+      <ng-container *ngIf="!authService.isAuthenticated(); else connecte">
+        <a routerLink="/connexion" class="bouton bouton--fantome">Connexion</a>
+        <a routerLink="/inscription" class="bouton bouton--plein">Créer un compte</a>
+      </ng-container>
+      <ng-template #connecte>
+        <a
+          [routerLink]="authService.role() === 'COMPAGNIE' ? '/espace-compagnie' : '/espace-client'"
+          class="entete__utilisateur"
+        >
+          {{ authService.currentUser()?.nom }}
+        </a>
+        <button class="bouton bouton--fantome" (click)="authService.logout()">Déconnexion</button>
+      </ng-template>
+    </div>
+  </div>
+</header>
+
+<main>
+  <ng-content></ng-content>
+</main>
+
+<footer class="pied">
+  <div class="conteneur pied__grille">
+    <div>
+      <img class="pied__logo" src="/gareConnect.png" alt="GareConnect" />
+      <p class="pied__baseline">Le réseau qui connecte les gares interurbaines de Côte d'Ivoire.</p>
+    </div>
+    <div>
+      <h4 class="pied__titre">Voyageurs</h4>
+      <a routerLink="/recherche">Rechercher un trajet</a>
+      <a routerLink="/inscription">Créer un compte</a>
+    </div>
+    <div>
+      <h4 class="pied__titre">Compagnies</h4>
+      <a routerLink="/inscription" [queryParams]="{ role: 'COMPAGNIE' }">Rejoindre le réseau</a>
+      <a [routerLink]="authService.isAuthenticated() ? '/espace-compagnie' : '/connexion'">Espace compagnie</a>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,137 @@
+@use 'tokens' as t;
+
+.entete {
+  background: white;
+  border-bottom: 1px solid t.$papier-fonce;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.entete__barre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: t.$espace-4;
+  padding-bottom: t.$espace-4;
+  gap: t.$espace-6;
+}
+
+.entete__marque {
+  display: flex;
+  align-items: center;
+  gap: t.$espace-2;
+}
+
+.entete__logo {
+  display: block;
+  width: 156px;
+  height: 48px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.entete__pastille {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: t.$rayon-md;
+  background: t.$nuit;
+  color: white;
+  font-family: t.$police-donnee;
+  font-weight: 600;
+  font-size: t.$taille-sm;
+  letter-spacing: 0.04em;
+}
+
+.entete__nom {
+  font-family: t.$police-titre;
+  font-size: t.$taille-lg;
+  color: t.$nuit;
+
+  strong {
+    color: t.$or-phare-fonce;
+  }
+}
+
+.entete__nav {
+  display: flex;
+  gap: t.$espace-6;
+  font-size: t.$taille-sm;
+  font-weight: 500;
+  color: t.$bitume-attenue;
+
+  @include t.tablette {
+    display: none;
+  }
+
+  a.est-actif {
+    color: t.$nuit;
+  }
+}
+
+.entete__actions {
+  display: flex;
+  align-items: center;
+  gap: t.$espace-3;
+}
+
+.entete__utilisateur {
+  font-size: t.$taille-sm;
+  font-weight: 500;
+  color: t.$nuit;
+}
+
+.pied {
+  background: white;
+  color: t.$bitume-attenue;
+  margin-top: t.$espace-24;
+  border-top: 1px solid t.$papier-fonce;
+}
+
+.pied__grille {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: t.$espace-8;
+  padding: t.$espace-16 0 t.$espace-12;
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+    gap: t.$espace-6;
+  }
+
+  a {
+    display: block;
+    font-size: t.$taille-sm;
+    padding: t.$espace-1 0;
+    color: t.$bitume-attenue;
+
+    &:hover {
+      color: t.$nuit;
+    }
+  }
+}
+
+.pied__baseline {
+  margin-top: t.$espace-3;
+  font-size: t.$taille-sm;
+  max-width: 32ch;
+  color: t.$bitume-attenue;
+}
+
+.pied__logo {
+  display: block;
+  width: 190px;
+  height: auto;
+}
+
+.pied__titre {
+  font-size: t.$taille-sm;
+  font-weight: 700;
+  color: t.$nuit;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: t.$espace-2;
+}

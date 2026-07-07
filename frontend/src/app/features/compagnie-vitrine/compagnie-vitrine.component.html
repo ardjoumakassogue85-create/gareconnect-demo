@@ -1,0 +1,75 @@
+<app-layout>
+  <section class="vitrine-compagnie conteneur">
+    <div class="vitrine-compagnie__barre">
+      <a routerLink="/recherche" class="bouton-retour">Retour aux trajets</a>
+      <span>Page publique</span>
+    </div>
+
+    <div
+      class="vitrine-compagnie__hero"
+      [class.vitrine-compagnie__hero--image]="vitrine()?.imageCouvertureUrl"
+      [style.background-image]="vitrine()?.imageCouvertureUrl ? 'linear-gradient(90deg, rgba(14, 34, 56, 0.88), rgba(14, 34, 56, 0.42)), url(' + vitrine()?.imageCouvertureUrl + ')' : null"
+    >
+      <div class="vitrine-compagnie__hero-contenu">
+        <span class="vitrine-compagnie__eyebrow">Site vitrine de gare</span>
+        <div class="vitrine-compagnie__identite">
+          <img *ngIf="vitrine()?.logoUrl" [src]="vitrine()?.logoUrl" alt="Logo de la compagnie" />
+          <span *ngIf="!vitrine()?.logoUrl" class="vitrine-compagnie__logo">{{ compagnie.charAt(0) }}</span>
+          <div>
+            <h1>{{ vitrine()?.compagnie || compagnie }}</h1>
+            <p>{{ vitrine()?.description }}</p>
+          </div>
+        </div>
+
+        <div class="vitrine-compagnie__stats">
+          <span>{{ vitrine()?.noteMoyenne || 0 }}/5</span>
+          <span>{{ vitrine()?.nombreAvis || 0 }} avis</span>
+          <span>{{ trajets().length }} trajet(s)</span>
+        </div>
+      </div>
+
+      <div class="vitrine-compagnie__reservation">
+        <span>Depart le plus proche</span>
+        <strong *ngIf="trajets().length; else aucunDepartHero">
+          {{ trajets()[0].villeDepart }} -> {{ trajets()[0].villeArrivee }}
+        </strong>
+        <ng-template #aucunDepartHero>
+          <strong>Aucun depart publie</strong>
+        </ng-template>
+        <p *ngIf="trajets().length">{{ trajets()[0].date || 'Date flexible' }} - {{ trajets()[0].heureDepart }}</p>
+        <a *ngIf="trajets().length" [routerLink]="['/reservation', trajets()[0].id]">Reserver</a>
+      </div>
+    </div>
+
+    <section class="vitrine-compagnie__galerie" *ngIf="vitrine()?.galerieImages?.length">
+      <h2>Photos</h2>
+      <div>
+        <img *ngFor="let image of vitrine()?.galerieImages" [src]="image" alt="Photo de la vitrine" />
+      </div>
+    </section>
+
+    <div class="vitrine-compagnie__grille">
+      <section>
+        <h2>Localisation</h2>
+        <p>{{ vitrine()?.localisation || 'Aucune localisation renseignee.' }}</p>
+      </section>
+
+      <section>
+        <h2>Gares desservies</h2>
+        <ul>
+          <li *ngFor="let gare of vitrine()?.garesDesservies">{{ gare }}</li>
+          <li *ngIf="!vitrine()?.garesDesservies?.length">Aucune gare renseignee.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Services</h2>
+        <ul>
+          <li *ngFor="let service of vitrine()?.flotte">{{ service }}</li>
+          <li *ngIf="!vitrine()?.flotte?.length">Aucun service renseigne.</li>
+        </ul>
+      </section>
+    </div>
+
+  </section>
+</app-layout>

@@ -1,0 +1,223 @@
+@use 'tokens' as t;
+
+.reservation {
+  padding: t.$espace-12 0 t.$espace-24;
+}
+
+.reservation__introuvable {
+  text-align: center;
+  padding: t.$espace-16 0;
+
+  h1 {
+    margin-bottom: t.$espace-2;
+  }
+
+  p {
+    color: t.$bitume-attenue;
+    margin-bottom: t.$espace-6;
+  }
+}
+
+.reservation__grille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: t.$espace-8;
+  align-items: start;
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+  }
+}
+
+.recap {
+  background: t.$nuit;
+  color: white;
+  border-radius: t.$rayon-lg;
+  padding: t.$espace-8;
+}
+
+.recap__eyebrow {
+  display: inline-block;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: t.$or-phare;
+  margin-bottom: t.$espace-2;
+}
+
+.recap__titre {
+  color: white;
+  font-size: t.$taille-2xl;
+  margin-bottom: t.$espace-6;
+}
+
+.recap__ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: t.$espace-4;
+  padding: t.$espace-3 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: t.$taille-sm;
+  color: rgba(255, 255, 255, 0.75);
+
+  strong {
+    color: white;
+  }
+
+  &--total {
+    border-bottom: none;
+    padding-top: t.$espace-4;
+    font-size: t.$taille-lg;
+
+    strong {
+      font-family: t.$police-donnee;
+      color: t.$or-phare;
+    }
+  }
+}
+
+.recap__ligne--tickets {
+  input {
+    width: 92px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: t.$rayon-md;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    font-family: t.$police-donnee;
+    font-size: t.$taille-base;
+    font-weight: 600;
+    padding: t.$espace-2 t.$espace-3;
+    text-align: right;
+
+    &:focus {
+      border-color: t.$or-phare;
+      outline: none;
+    }
+  }
+}
+
+.recap__note {
+  margin-top: t.$espace-6;
+  font-size: t.$taille-sm;
+  color: rgba(255, 255, 255, 0.65);
+
+  strong {
+    color: t.$or-phare;
+  }
+}
+
+.paiement {
+  background: white;
+  border: 1px solid t.$papier-fonce;
+  border-radius: t.$rayon-lg;
+  box-shadow: t.$ombre-carte;
+  padding: t.$espace-8;
+}
+
+.paiement__titre {
+  font-size: t.$taille-xl;
+  margin-bottom: t.$espace-4;
+}
+
+.paiement__onglets {
+  display: flex;
+  gap: t.$espace-2;
+  margin-bottom: t.$espace-6;
+}
+
+.paiement__onglet {
+  flex: 1;
+  padding: t.$espace-3;
+  border-radius: t.$rayon-md;
+  border: 1px solid t.$papier-fonce;
+  background: t.$papier;
+  font-weight: 600;
+  font-size: t.$taille-sm;
+  color: t.$bitume-attenue;
+
+  &.est-actif {
+    background: t.$nuit;
+    color: white;
+    border-color: t.$nuit;
+  }
+}
+
+.paiement__operateurs {
+  display: flex;
+  align-items: center;
+  gap: t.$espace-6;
+  margin-bottom: t.$espace-4;
+  flex-wrap: wrap;
+
+  @include t.mobile {
+    gap: t.$espace-3;
+  }
+}
+
+.paiement__operateur {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: t.$bitume-attenue;
+  font-family: t.$police-texte;
+  font-size: t.$taille-sm;
+  font-weight: 600;
+  padding: 0 0 t.$espace-1;
+  cursor: pointer;
+
+  &.est-actif {
+    border-bottom-color: t.$or-phare;
+    color: t.$nuit;
+  }
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: t.$espace-1;
+  margin-bottom: t.$espace-4;
+
+  input {
+    font-family: t.$police-texte;
+    font-size: t.$taille-base;
+    padding: t.$espace-3;
+    border-radius: t.$rayon-md;
+    border: 1px solid t.$papier-fonce;
+    background: t.$papier;
+
+    &:focus {
+      border-color: t.$or-phare;
+    }
+  }
+}
+
+.champ__label {
+  font-size: t.$taille-xs;
+  font-weight: 600;
+  color: t.$bitume-attenue;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.paiement__submit {
+  width: 100%;
+  padding: t.$espace-4;
+}
+
+.paiement__erreur {
+  background: rgba(201, 79, 61, 0.1);
+  color: t.$rouge-alerte;
+  font-size: t.$taille-sm;
+  padding: t.$espace-3;
+  border-radius: t.$rayon-md;
+  margin-bottom: t.$espace-4;
+}
+
+.paiement__mention {
+  margin-top: t.$espace-4;
+  font-size: t.$taille-xs;
+  color: t.$bitume-attenue;
+  text-align: center;
+}

@@ -1,0 +1,39 @@
+@use 'tokens' as t;
+
+.rebours {
+  display: inline-flex;
+  align-items: center;
+  gap: t.$espace-2;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-sm;
+  font-weight: 600;
+  color: t.$or-phare-fonce;
+
+  &--expire {
+    color: t.$bitume-attenue;
+  }
+}
+
+.rebours__point {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulsation 1.4s ease-in-out infinite;
+}
+
+@keyframes pulsation {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rebours__point {
+    animation: none;
+  }
+}
