@@ -284,7 +284,13 @@ export class EspaceCompagnieComponent implements OnInit {
         garesDesservies: this.lignesTexte(this.garesDesserviesTexte),
         flotte: this.lignesTexte(this.servicesTexte),
       })
-      .subscribe((vitrine) => this.vitrine.set(vitrine));
+      .subscribe({
+        next: (vitrine) => this.vitrine.set(vitrine),
+        error: () =>
+          window.alert(
+            "La sauvegarde de la vitrine a échoué. Vérifie ta connexion et réessaie.",
+          ),
+      });
   }
 
   brouillonReponse(id: string): string {

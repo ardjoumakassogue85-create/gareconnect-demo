@@ -19,8 +19,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -192,7 +194,16 @@ public class CompagnieService {
     }
 
     private static List<String> liste(List<String> valeurs) {
-        return valeurs == null ? List.of() : valeurs.stream().filter(v -> v != null && !v.isBlank()).map(String::trim).toList();
+        // Liste MUTABLE obligatoire : Hibernate doit pouvoir clear()/reremplir la
+        // collection @ElementCollection lors du merge. Une liste immuable
+        // (List.of() ou Stream.toList()) provoque une UnsupportedOperationException.
+        if (valeurs == null) {
+            return new ArrayList<>();
+        }
+        return valeurs.stream()
+                .filter(v -> v != null && !v.isBlank())
+                .map(String::trim)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private static LocalDate parseDate(String date) {
