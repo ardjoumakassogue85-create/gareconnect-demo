@@ -2,6 +2,7 @@ package com.hackathon.gares.repository;
 
 import com.hackathon.gares.model.CompagnieProfile;
 import com.hackathon.gares.model.Reservation;
+import com.hackathon.gares.model.StatutReservation;
 import com.hackathon.gares.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,8 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findByClientOrderByCreeLeDesc(User client);
+
+    List<Reservation> findByVilleDepartIgnoreCaseAndStatut(String villeDepart, StatutReservation statut);
 
     @Query("""
             select r from Reservation r

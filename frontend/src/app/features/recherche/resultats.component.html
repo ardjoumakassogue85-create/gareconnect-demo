@@ -67,6 +67,144 @@
         </ng-container>
       </span>
 
+      <div
+        class="contexte-alerte"
+        *ngIf="contexte() as ctx"
+        [class.contexte-alerte--hausse]="ctx.facteur > 1"
+        [class.contexte-alerte--baisse]="ctx.facteur < 1"
+      >
+        <span class="contexte-alerte__icone">{{ ctx.facteur > 1 ? '⚠️' : 'ℹ️' }}</span>
+        <span class="contexte-alerte__texte">
+          <strong>
+            {{ ctx.facteur > 1 ? 'Affluence exceptionnelle' : 'Affluence réduite' }} prévue
+            ({{ ctx.facteur > 1 ? '+' : '' }}{{ (ctx.facteur - 1) * 100 | number: '1.0-0' }}%)
+          </strong>
+          — {{ ctx.raison }}<span *ngIf="ctx.facteur > 1"> Pense à arriver plus tôt que d'habitude.</span>
+          <span class="contexte-alerte__ia">via IA</span>
+        </span>
+      </div>
+
+      <div class="anti-file anti-file--chargement" *ngIf="!conseil() && conseilChargement()">
+        <span class="anti-file__spinner"></span> L'assistant anti-file analyse les départs…
+      </div>
+
+      <div class="anti-file" *ngIf="conseil() as c">
+        <div class="anti-file__tete">
+          <span class="anti-file__label">🤖 Assistant anti-file</span>
+          <span class="anti-file__source" [class.anti-file__source--ia]="c.source === 'IA'">
+            {{ c.source === 'IA' ? 'IA' : 'conseil auto' }}
+          </span>
+        </div>
+
+        <p class="anti-file__message">{{ c.message }}</p>
+
+        <div class="anti-file__reco" *ngIf="c.trajetRecommande as t">
+          <div class="anti-file__reco-infos">
+            <div class="anti-file__reco-tete">
+              <span class="anti-file__ruban">✓ Recommandé</span>
+              <strong class="anti-file__heure">{{ t.heureDepart }}</strong>
+              <span
+                class="affluence-chip"
+                *ngIf="c.niveauAffluence as niv"
+                [class]="'affluence-chip--' + classeAffluence(niv)"
+              >
+                {{ niveauCourt(niv) }}
+              </span>
+            </div>
+            <span class="anti-file__detail">
+              {{ t.villeDepart }} → {{ t.villeArrivee }} · {{ t.compagnie }} ·
+              {{ t.prix | number }} F · {{ t.placesDisponibles }} place(s)
+            </span>
+            <span class="anti-file__arrivee" *ngIf="c.heureArrivee">
+              🎯 Arrive à la gare vers <strong>{{ c.heureArrivee }}</strong>
+            </span>
+          </div>
+          <button
+            class="bouton bouton--plein"
+            [disabled]="t.placesDisponibles === 0"
+            (click)="reserverConseil()"
+          >
+            {{ t.placesDisponibles === 0 ? 'Complet' : 'Réserver' }}
+          </button>
+        </div>
+
+        <div class="coupe-file" *ngIf="c.trajetRecommande">
+          <button
+            *ngIf="!creneau()"
+            class="coupe-file__bouton"
+            [disabled]="creneauChargement()"
+            (click)="prendreCreneau()"
+          >
+            🎟️ {{ creneauChargement() ? 'Attribution…' : 'Prendre mon créneau coupe-file' }}
+          </button>
+          <p class="coupe-file__erreur" *ngIf="creneauErreur()">{{ creneauErreur() }}</p>
+
+          <div class="coupe-file__pass" *ngIf="creneau() as cr">
+            <div class="coupe-file__pass-tete">
+              <span class="coupe-file__pass-titre">🎟️ Pass coupe-file</span>
+              <span class="coupe-file__pass-pos">{{ cr.position }}<sup>{{ cr.position === 1 ? 'er' : 'e' }}</sup> sur ce créneau</span>
+            </div>
+            <div class="coupe-file__pass-fenetre">
+              Arrive entre <strong>{{ cr.fenetreDebut }}</strong> et <strong>{{ cr.fenetreFin }}</strong>
+            </div>
+            <p class="coupe-file__pass-message">{{ cr.message }}</p>
+          </div>
+        </div>
+
+        <div class="anti-file__alts" *ngIf="c.alternatives.length">
+          <span class="anti-file__alts-label">Autres créneaux calmes :</span>
+          <button class="anti-file__alt" *ngFor="let a of c.alternatives" (click)="reserver(a)">
+            {{ a.heureDepart }} · {{ a.prix | number }} F
+          </button>
+        </div>
+
+        <div class="anti-file__refine">
+          <input
+            type="text"
+            [(ngModel)]="demandeAntiFile"
+            name="demandeAntiFile"
+            placeholder="Précise ton besoin (ex : le moins cher, avant 8h, sans stress)…"
+            (keyup.enter)="demanderConseil()"
+          />
+          <button class="bouton bouton--fantome" [disabled]="conseilChargement()" (click)="demanderConseil()">
+            {{ conseilChargement() ? '…' : 'Demander' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="affluence" *ngIf="affluence() as a">
+        <div class="affluence__tete">
+          <div class="affluence__intro">
+            <span class="affluence__label">🚦 Anti-file d'attente</span>
+            <p class="affluence__titre">
+              {{ a.gare }} · {{ a.jour }} —
+              <span class="affluence__niveau" [class]="'affluence__niveau--' + classeAffluence(a.niveauGlobal)">
+                affluence {{ a.niveauGlobal | lowercase }}
+              </span>
+            </p>
+            <p class="affluence__conseil">
+              Arrive plutôt vers <strong>{{ a.creneauLePlusCalme }}</strong> (plus calme) ·
+              évite le pic de <strong>{{ a.heureLaPlusChargee }}</strong>
+            </p>
+          </div>
+          <span class="affluence__confiance" title="Part de données réelles dans l'estimation">
+            {{ a.confiance }}% données réelles
+          </span>
+        </div>
+        <div class="affluence__graphe">
+          <div class="affluence__col" *ngFor="let c of a.creneaux" [title]="c.heure + ' · affluence ' + c.niveau">
+            <div class="affluence__piste">
+              <div
+                class="affluence__barre"
+                [class]="'affluence__barre--' + classeAffluence(c.niveau)"
+                [style.height.%]="c.score"
+              ></div>
+            </div>
+            <span class="affluence__heure">{{ c.heure.slice(0, 2) }}h</span>
+          </div>
+        </div>
+      </div>
+
       <div class="assistant-reponse" [class.assistant-reponse--suggestion]="suggestionsIa" *ngIf="requeteOrigine">
         <div class="assistant-reponse__contenu">
           <span class="assistant-reponse__label">Recherche appliquÃ©e</span>
@@ -124,7 +262,20 @@
           <span class="tableau-resultats__col tableau-resultats__col--date">
             {{ trajet.date | date: 'd MMM yyyy' }}
           </span>
-          <span class="tableau-resultats__col tableau-resultats__col--heure">{{ trajet.heureDepart }}</span>
+          <span class="tableau-resultats__col tableau-resultats__col--heure">
+            <span class="heure-depart">{{ trajet.heureDepart }}</span>
+            <span
+              class="affluence-chip"
+              *ngIf="niveauTrajet(trajet) as niv"
+              [class]="'affluence-chip--' + classeAffluence(niv)"
+              [title]="'Affluence ' + niveauCourt(niv) + ' à cette heure'"
+            >
+              {{ niveauCourt(niv) }}
+            </span>
+            <span class="arrivee-conseil" *ngIf="heureArriveeTrajet(trajet) as arr">
+              arrive {{ arr }}
+            </span>
+          </span>
           <span class="tableau-resultats__col tableau-resultats__col--compagnie">
             <span>{{ trajet.compagnie }}</span>
             <button

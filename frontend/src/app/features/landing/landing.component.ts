@@ -68,6 +68,26 @@ export class LandingComponent implements OnInit, OnDestroy {
       date: this.date || undefined,
     });
   }
+  ngAfterViewInit() {
+  const video = document.getElementById('heroVideo') as HTMLVideoElement;
+
+  const playVideo = () => {
+    if (video) {
+      video.muted = true;
+      video.play().catch(() => {});
+    }
+  };
+
+  playVideo();
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      playVideo();
+    }
+  });
+
+  window.addEventListener('focus', playVideo);
+}
 
   /**
    * Assistant IA en langage libre.

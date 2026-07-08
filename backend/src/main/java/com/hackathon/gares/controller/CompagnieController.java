@@ -1,6 +1,7 @@
 package com.hackathon.gares.controller;
 
 import com.hackathon.gares.dto.*;
+import com.hackathon.gares.service.AffluenceService;
 import com.hackathon.gares.service.CompagnieService;
 import com.hackathon.gares.service.ReclamationService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class CompagnieController {
 
     private final CompagnieService compagnieService;
     private final ReclamationService reclamationService;
+    private final AffluenceService affluenceService;
 
     @PutMapping("/vitrine")
     public VitrineDto enregistrerVitrine(Authentication authentication, @RequestBody VitrineRequest request) {
@@ -50,6 +52,11 @@ public class CompagnieController {
     @PatchMapping("/trajets/{id}/statut")
     public TrajetDto basculerStatutTrajet(Authentication authentication, @PathVariable Long id) {
         return compagnieService.basculerStatutTrajet(authentication, id);
+    }
+
+    @GetMapping("/affluence")
+    public AffluenceCompagnieDto affluence(Authentication authentication) {
+        return affluenceService.affluenceCompagnie(compagnieService.getCompagnieConnectee(authentication));
     }
 
     @GetMapping("/reclamations")

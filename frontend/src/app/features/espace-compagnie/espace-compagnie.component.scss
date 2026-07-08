@@ -645,3 +645,122 @@
     min-height: 48px;
   }
 }
+
+/* --- Intelligence d'affluence : heatmap compagnie --- */
+.affluence-compagnie {
+  margin-bottom: t.$espace-6;
+  padding: t.$espace-6;
+  border-radius: t.$rayon-lg;
+  background: t.$papier;
+  border: 1px solid rgba(31, 108, 214, 0.16);
+  box-shadow: 0 10px 30px rgba(14, 34, 56, 0.05);
+}
+
+.affluence-compagnie__tete {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: t.$espace-4;
+  flex-wrap: wrap;
+  margin-bottom: t.$espace-4;
+}
+
+.affluence-compagnie__titre {
+  margin: t.$espace-1 0 0;
+  color: t.$nuit;
+  font-size: t.$taille-lg;
+}
+
+.affluence-compagnie__legende {
+  display: flex;
+  gap: t.$espace-3;
+  font-size: t.$taille-xs;
+  color: t.$nuit;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: t.$espace-1;
+  }
+}
+
+.pastille {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+.pastille--faible { background: #35c48b; }
+.pastille--moyenne { background: #f0a838; }
+.pastille--forte { background: #e2604d; }
+
+.heatmap-scroll {
+  overflow-x: auto;
+}
+
+.heatmap {
+  min-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heatmap__ligne {
+  display: flex;
+  gap: 4px;
+  align-items: stretch;
+}
+
+.heatmap__jour {
+  flex: 0 0 74px;
+  display: flex;
+  align-items: center;
+  font-size: t.$taille-xs;
+  font-weight: 600;
+  color: t.$nuit;
+}
+
+.heatmap__creneau {
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(14, 34, 56, 0.55);
+}
+
+.heatmap__cellule {
+  flex: 1;
+  min-width: 44px;
+  padding: t.$espace-2 0;
+  text-align: center;
+  border-radius: 6px;
+  font-size: t.$taille-xs;
+  font-weight: 700;
+  color: t.$nuit;
+}
+.heatmap__cellule--faible { background: rgba(53, 196, 139, 0.18); color: #14804f; }
+.heatmap__cellule--moyenne { background: rgba(240, 168, 56, 0.22); color: #9a5b00; }
+.heatmap__cellule--forte { background: rgba(226, 96, 77, 0.22); color: #b23a29; }
+
+.affluence-compagnie__suggestions {
+  margin-top: t.$espace-4;
+  padding-top: t.$espace-4;
+  border-top: 1px solid rgba(14, 34, 56, 0.08);
+}
+
+.affluence-compagnie__suggestions-titre {
+  font-size: t.$taille-xs;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #1f6cd6;
+}
+
+.suggestion {
+  margin: t.$espace-2 0 0;
+  padding: t.$espace-3;
+  border-radius: t.$rayon-md;
+  background: rgba(31, 108, 214, 0.06);
+  color: t.$nuit;
+  font-size: t.$taille-sm;
+}

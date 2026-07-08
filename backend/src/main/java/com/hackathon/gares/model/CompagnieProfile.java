@@ -31,15 +31,17 @@ public class CompagnieProfile {
     @Column(length = 1200)
     private String description;
 
-    @Column(length = 2000)
+    // Images stockees en base64 (data URI) : peuvent depasser plusieurs Ko,
+    // d'ou une colonne "text" illimitee plutot qu'un varchar borne.
+    @Column(columnDefinition = "text")
     private String logoUrl;
 
-    @Column(length = 2000)
+    @Column(columnDefinition = "text")
     private String imageCouvertureUrl;
 
     @ElementCollection
     @CollectionTable(name = "compagnie_galerie_images", joinColumns = @JoinColumn(name = "compagnie_id"))
-    @Column(name = "image_url", length = 4000)
+    @Column(name = "image_url", columnDefinition = "text")
     @Builder.Default
     private List<String> galerieImages = new ArrayList<>();
 

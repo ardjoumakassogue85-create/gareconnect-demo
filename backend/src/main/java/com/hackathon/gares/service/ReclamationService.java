@@ -1,6 +1,8 @@
 package com.hackathon.gares.service;
 
 import com.hackathon.gares.dto.ReclamationDto;
+import com.hackathon.gares.dto.ReclamationIaRequest;
+import com.hackathon.gares.dto.ReclamationIaResponse;
 import com.hackathon.gares.dto.ReclamationStatutRequest;
 import com.hackathon.gares.model.*;
 import com.hackathon.gares.repository.ReclamationRepository;
@@ -19,9 +21,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReclamationService {
 
+    private static final String MESSAGE_ESCALADE =
+            "Votre demande necessite l'intervention d'un agent. Elle a ete transmise a la gare concernee, "
+                    + "qui reviendra vers vous rapidement.";
+
     private final ReclamationRepository reclamationRepository;
     private final UserRepository userRepository;
     private final MetierMapper mapper;
+    private final ReclamationIaClient reclamationIaClient;
 
     @Transactional(readOnly = true)
     public List<ReclamationDto> listerMesReclamations(Authentication authentication) {
@@ -37,13 +44,14 @@ public class ReclamationService {
         Reclamation reclamation = Reclamation.builder()
                 .client(client)
                 .sujet(sujetDepuis(message))
-                .statut(StatutReclamation.REPONDUE_IA)
+                .statut(StatutReclamation.EN_ATTENTE_ADMIN)
                 .creeLe(maintenant)
                 .majLe(maintenant)
                 .build();
         reclamation.getMessages().add(message(reclamation, AuteurMessage.CLIENT, message, maintenant));
-        reclamation.getMessages().add(message(reclamation, AuteurMessage.ASSISTANT,
-                "Votre reclamation est enregistree. Un agent pourra la reprendre si besoin.", maintenant.plusMillis(1)));
+
+        traiterAvecIa(reclamation, message, maintenant.plusMillis(1));
+
         return mapper.toReclamationDto(reclamationRepository.save(reclamation));
     }
 
@@ -52,8 +60,9 @@ public class ReclamationService {
         Reclamation reclamation = reclamationDuClient(authentication, id);
         Instant maintenant = Instant.now();
         reclamation.getMessages().add(message(reclamation, AuteurMessage.CLIENT, texte, maintenant));
-        reclamation.setStatut(StatutReclamation.EN_ATTENTE_ADMIN);
-        reclamation.setMajLe(maintenant);
+
+        traiterAvecIa(reclamation, texte, maintenant.plusMillis(1));
+
         return mapper.toReclamationDto(reclamation);
     }
 
@@ -79,6 +88,38 @@ public class ReclamationService {
         }
         reclamation.setMajLe(maintenant);
         return mapper.toReclamationDto(reclamation);
+    }
+
+    private void traiterAvecIa(Reclamation reclamation, String dernierMessage, Instant horodatage) {
+        ReclamationIaResponse reponseIa = reclamationIaClient.traiter(requeteIa(reclamation, dernierMessage));
+
+        if (reponseIa.reponseAutomatiqueValide()) {
+            reclamation.getMessages().add(message(reclamation, AuteurMessage.ASSISTANT, reponseIa.reponse(), horodatage));
+            reclamation.setStatut(StatutReclamation.REPONDUE_IA);
+        } else {
+            reclamation.getMessages().add(message(reclamation, AuteurMessage.ASSISTANT, MESSAGE_ESCALADE, horodatage));
+            reclamation.setStatut(StatutReclamation.EN_ATTENTE_ADMIN);
+        }
+        reclamation.setMajLe(horodatage);
+    }
+
+    private ReclamationIaRequest requeteIa(Reclamation reclamation, String dernierMessage) {
+        List<ReclamationIaRequest.HistoriqueMessage> historique = reclamation.getMessages().stream()
+                .map(m -> new ReclamationIaRequest.HistoriqueMessage(
+                        m.getAuteur().name(),
+                        m.getTexte(),
+                        m.getEnvoyeLe() == null ? null : m.getEnvoyeLe().toString()))
+                .toList();
+
+        return new ReclamationIaRequest(
+                reclamation.getId() == null ? null : String.valueOf(reclamation.getId()),
+                reclamation.getClient() == null ? null : reclamation.getClient().getNom(),
+                reclamation.getClient() == null ? null : reclamation.getClient().getEmail(),
+                reclamation.getSujet(),
+                reclamation.getStatut() == null ? null : reclamation.getStatut().name(),
+                dernierMessage,
+                historique
+        );
     }
 
     private Reclamation reclamationDuClient(Authentication authentication, Long id) {

@@ -6,6 +6,10 @@ import { LayoutComponent } from '../../shared/components/layout/layout.component
 import { ReservationService } from '../../core/services/reservation.service';
 import { CritereRecherche, CriteresRechercheIa, TrajetRecherche } from '../../core/models/metier.model';
 import { estDepartImminent, estExpire } from '../../core/utils/trajet-temps';
+import { AffluenceService } from '../../core/services/affluence.service';
+import { AffluenceGare, ContexteAffluence, NiveauAffluence } from '../../core/models/affluence.model';
+import { AssistantService } from '../../core/services/assistant.service';
+import { ConseilAntiFile, CreneauArrivee } from '../../core/models/assistant.model';
 
 @Component({
   selector: 'app-resultats',
@@ -19,6 +23,14 @@ export class ResultatsComponent implements OnInit {
   resultats = signal<TrajetRecherche[]>([]);
   datesAffichees = signal<string[]>([]);
   rechercheEffectuee = signal(false);
+  affluence = signal<AffluenceGare | null>(null);
+  contexte = signal<ContexteAffluence | null>(null);
+  conseil = signal<ConseilAntiFile | null>(null);
+  conseilChargement = signal(false);
+  demandeAntiFile = '';
+  creneau = signal<CreneauArrivee | null>(null);
+  creneauChargement = signal(false);
+  creneauErreur = signal<string | null>(null);
 
   villes = ['Abidjan', 'Bouaké', 'Yamoussoukro', 'San-Pédro', 'Korhogo'];
   villeDepart = '';
@@ -35,6 +47,8 @@ export class ResultatsComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly reservationService: ReservationService,
+    private readonly affluenceService: AffluenceService,
+    private readonly assistantService: AssistantService,
   ) {}
 
   ngOnInit(): void {
@@ -102,6 +116,9 @@ export class ResultatsComponent implements OnInit {
           [...new Set(resultatsFiltres.map((trajet) => trajet.date).filter((date): date is string => !!date))].sort(),
         );
         this.chargement.set(false);
+        this.chargerAffluence();
+        this.chargerContexte();
+        this.chargerConseil(texte);
 
         this.router.navigate([], {
           relativeTo: this.route,
@@ -136,6 +153,118 @@ export class ResultatsComponent implements OnInit {
     this.router.navigate(['/vitrine', trajet.compagnie]);
   }
 
+  private chargerAffluence(): void {
+    const ville = this.villeDepart?.trim();
+    if (!ville) {
+      this.affluence.set(null);
+      return;
+    }
+    this.affluenceService.gare(ville, this.date || undefined).subscribe({
+      next: (a) => this.affluence.set(a),
+      error: () => this.affluence.set(null),
+    });
+  }
+
+  private chargerContexte(): void {
+    const ville = this.villeDepart?.trim();
+    if (!ville) {
+      this.contexte.set(null);
+      return;
+    }
+    this.contexte.set(null);
+    this.affluenceService.contexte(ville, this.date || undefined).subscribe({
+      next: (ctx) => this.contexte.set(ctx.actif ? ctx : null),
+      error: () => this.contexte.set(null),
+    });
+  }
+
+  private chargerConseil(texteLibre?: string): void {
+    const villeDepart = this.villeDepart?.trim();
+    const villeArrivee = this.villeArrivee?.trim();
+    if (!villeDepart || !villeArrivee) {
+      this.conseil.set(null);
+      return;
+    }
+    this.conseilChargement.set(true);
+    this.assistantService
+      .conseilAntiFile({
+        texteLibre: texteLibre || undefined,
+        villeDepart,
+        villeArrivee,
+        date: this.date || undefined,
+      })
+      .subscribe({
+        next: (conseil) => {
+          this.conseil.set(conseil);
+          this.conseilChargement.set(false);
+          // Nouveau conseil => on remet a zero le pass coupe-file.
+          this.creneau.set(null);
+          this.creneauErreur.set(null);
+        },
+        error: () => {
+          this.conseil.set(null);
+          this.conseilChargement.set(false);
+        },
+      });
+  }
+
+  demanderConseil(): void {
+    const texte = this.demandeAntiFile.trim();
+    this.chargerConseil(texte || undefined);
+  }
+
+  reserverConseil(): void {
+    const trajet = this.conseil()?.trajetRecommande;
+    if (trajet) {
+      this.reserver(trajet);
+    }
+  }
+
+  prendreCreneau(): void {
+    const trajet = this.conseil()?.trajetRecommande;
+    if (!trajet) {
+      return;
+    }
+    this.creneauErreur.set(null);
+    this.creneauChargement.set(true);
+    this.assistantService.prendreCreneauCoupeFile(trajet.id).subscribe({
+      next: (creneau) => {
+        this.creneau.set(creneau);
+        this.creneauChargement.set(false);
+      },
+      error: (err) => {
+        this.creneauChargement.set(false);
+        this.creneauErreur.set(err?.error?.message ?? 'Impossible de réserver un créneau pour le moment.');
+      },
+    });
+  }
+
+  niveauTrajet(trajet: TrajetRecherche): NiveauAffluence | null {
+    const a = this.affluence();
+    if (!a || !trajet.heureDepart) return null;
+    const heure = trajet.heureDepart.slice(0, 2) + ':00';
+    return a.creneaux.find((c) => c.heure === heure)?.niveau ?? null;
+  }
+
+  heureArriveeTrajet(trajet: TrajetRecherche): string | null {
+    const niveau = this.niveauTrajet(trajet);
+    return niveau ? this.affluenceService.heureArrivee(trajet.heureDepart, niveau) : null;
+  }
+
+  libelleAffluence(niveau: NiveauAffluence): string {
+    if (niveau === 'FORTE') return 'Forte affluence';
+    if (niveau === 'MOYENNE') return 'Affluence moyenne';
+    return 'Faible affluence';
+  }
+
+  niveauCourt(niveau: NiveauAffluence): string {
+    return niveau.charAt(0) + niveau.slice(1).toLowerCase();
+  }
+
+  classeAffluence(niveau: NiveauAffluence | null): string {
+    return niveau ? niveau.toLowerCase() : '';
+  }
+
   libelleStatut(trajet: TrajetRecherche): string {
     if (trajet.placesDisponibles <= 0) return 'Complet';
     return estDepartImminent(trajet.date, trajet.heureDepart) ? 'Départ imminent' : "À l'heure";
@@ -164,6 +293,9 @@ export class ResultatsComponent implements OnInit {
           [...new Set(tries.map((trajet) => trajet.date).filter((date): date is string => !!date))].sort(),
         );
         this.chargement.set(false);
+        this.chargerAffluence();
+        this.chargerContexte();
+        this.chargerConseil();
       });
   }
 

@@ -8,6 +8,8 @@ import { Reclamation, ReservationCompagnie, Trajet, VitrineCompagnie } from '../
 import { VitrineService } from '../../core/services/vitrine.service';
 import { estDepartImminent } from '../../core/utils/trajet-temps';
 import { ReclamationService } from '../../core/services/reclamation.service';
+import { AffluenceService } from '../../core/services/affluence.service';
+import { AffluenceCompagnie, NiveauAffluence } from '../../core/models/affluence.model';
 
 @Component({
   selector: 'app-espace-compagnie',
@@ -21,6 +23,7 @@ export class EspaceCompagnieComponent implements OnInit {
     readonly authService: AuthService,
     private readonly vitrineService: VitrineService,
     private readonly reclamationService: ReclamationService,
+    private readonly affluenceService: AffluenceService,
   ) {}
 
   description = 'Compagnie de transport interurbain reliant Abidjan aux principales villes du pays.';
@@ -37,6 +40,7 @@ export class EspaceCompagnieComponent implements OnInit {
   villes = ['Abidjan', 'Bouaké', 'Yamoussoukro', 'San-Pédro', 'Korhogo'];
 
   reservations = signal<ReservationCompagnie[]>([]);
+  affluenceCompagnie = signal<AffluenceCompagnie | null>(null);
 
   reclamations = signal<Reclamation[]>([]);
   brouillonsReponse = signal<Record<string, string>>({});
@@ -125,6 +129,18 @@ export class EspaceCompagnieComponent implements OnInit {
     this.chargerTrajets();
     this.chargerReservations();
     this.chargerReclamations();
+    this.chargerAffluence();
+  }
+
+  classeAffluence(niveau: NiveauAffluence): string {
+    return niveau.toLowerCase();
+  }
+
+  private chargerAffluence(): void {
+    this.affluenceService.compagnie().subscribe({
+      next: (affluence) => this.affluenceCompagnie.set(affluence),
+      error: () => this.affluenceCompagnie.set(null),
+    });
   }
 
   surChangementLogo(evenement: Event): void {

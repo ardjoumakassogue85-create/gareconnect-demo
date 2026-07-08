@@ -73,8 +73,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/vitrines/**", "/api/trajets/recherche", "/api/trajets/*", "/api/gares/*/note").permitAll()
+                .requestMatchers("/api/affluence/**").permitAll()
+                .requestMatchers("/api/assistant/**").permitAll()
                 .requestMatchers("/api/compagnies/**").hasRole("COMPAGNIE")
                 .requestMatchers("/api/reservations/**").hasRole("CLIENT")
+                .requestMatchers("/api/file-virtuelle/**").hasRole("CLIENT")
                 .requestMatchers("/api/reclamations/**", "/api/gares/**").hasRole("CLIENT")
                 .anyRequest().authenticated()
             )

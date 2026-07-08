@@ -33,6 +33,7 @@ app:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
     remember-me-expiration-ms: ${JWT_REMEMBER_ME_EXPIRATION_MS:2592000000}
   frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:4200}
+  seed-demo: ${SEED_DEMO:false}
   email:
     from: ${MAIL_FROM:}
 
@@ -43,3 +44,5 @@ gemini:
   api-key: ${GEMINI_API_KEY:}
   model: ${GEMINI_MODEL:gemini-flash-latest}
   base-url: https://generativelanguage.googleapis.com/v1beta
+make:
+  reclamation-webhook-url: https://hook.us2.make.com/3b963u96vlljqvaqaktbr5wb04y9u7ig

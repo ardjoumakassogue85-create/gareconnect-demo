@@ -33,6 +33,46 @@
       </article>
     </div>
 
+    <div class="affluence-compagnie" *ngIf="affluenceCompagnie() as aff">
+      <div class="affluence-compagnie__tete">
+        <div>
+          <span class="espace__eyebrow">🚦 Intelligence d'affluence</span>
+          <h2 class="affluence-compagnie__titre">Demande prévue sur tes gares</h2>
+          <p class="espace__texte" *ngIf="aff.gares.length">Gares analysées : {{ aff.gares.join(', ') }}</p>
+        </div>
+        <div class="affluence-compagnie__legende">
+          <span><i class="pastille pastille--faible"></i> Faible</span>
+          <span><i class="pastille pastille--moyenne"></i> Moyenne</span>
+          <span><i class="pastille pastille--forte"></i> Forte</span>
+        </div>
+      </div>
+
+      <div class="heatmap-scroll">
+        <div class="heatmap">
+          <div class="heatmap__ligne heatmap__ligne--entete">
+            <span class="heatmap__jour"></span>
+            <span class="heatmap__creneau" *ngFor="let c of aff.creneaux">{{ c }}</span>
+          </div>
+          <div class="heatmap__ligne" *ngFor="let ligne of aff.heatmap">
+            <span class="heatmap__jour">{{ ligne.jour }}</span>
+            <span
+              class="heatmap__cellule"
+              *ngFor="let c of ligne.creneaux"
+              [class]="'heatmap__cellule--' + classeAffluence(c.niveau)"
+              [title]="ligne.jour + ' ' + c.heure + ' · affluence ' + c.score + '%'"
+            >
+              {{ c.score }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="affluence-compagnie__suggestions" *ngIf="aff.suggestions.length">
+        <span class="affluence-compagnie__suggestions-titre">💡 Recommandations</span>
+        <p class="suggestion" *ngFor="let s of aff.suggestions">{{ s }}</p>
+      </div>
+    </div>
+
     <div class="dashboard">
       <div class="dashboard__principal">
         <div class="carte">
