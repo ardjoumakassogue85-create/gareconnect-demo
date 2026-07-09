@@ -6,6 +6,7 @@ import { LayoutComponent } from '../../shared/components/layout/layout.component
 import { AuthService, RechercheEnAttente } from '../../core/services/auth.service';
 import { ReservationService } from '../../core/services/reservation.service';
 import { GareService } from '../../core/services/gare.service';
+import { VoiceService } from '../../core/services/voice.service';
 import { TrajetRecherche } from '../../core/models/metier.model';
 
 interface VitrineGare {
@@ -41,7 +42,24 @@ export class LandingComponent implements OnInit, OnDestroy {
     private readonly authService: AuthService,
     private readonly reservationService: ReservationService,
     private readonly gareService: GareService,
+    private readonly voiceService: VoiceService,
   ) {}
+
+  get microDisponible(): boolean {
+    return this.voiceService.estDisponible();
+  }
+
+  estEnEcoute(): boolean {
+    return this.voiceService.ecouteEnCours();
+  }
+
+  /** Dictee vocale : « dis ou tu veux aller ». */
+  dicterRecherche(): void {
+    this.voiceService.ecouter((texte) => {
+      this.requeteLibre = texte;
+      this.rechercherEnLangageLibre();
+    });
+  }
 
   ngOnInit(): void {
     this.reservationService.rechercherTrajets({}).subscribe((trajets) => {

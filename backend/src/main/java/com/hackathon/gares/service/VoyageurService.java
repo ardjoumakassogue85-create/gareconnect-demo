@@ -5,6 +5,7 @@ import com.hackathon.gares.dto.ReservationDto;
 import com.hackathon.gares.dto.ReservationRequest;
 import com.hackathon.gares.dto.TrajetDto;
 import com.hackathon.gares.model.*;
+import com.hackathon.gares.repository.CompagnieProfileRepository;
 import com.hackathon.gares.repository.RechercheLogRepository;
 import com.hackathon.gares.repository.ReservationRepository;
 import com.hackathon.gares.repository.TrajetRepository;
@@ -32,6 +33,8 @@ public class VoyageurService {
     private final ReservationRepository reservationRepository;
     private final RechercheLogRepository rechercheLogRepository;
     private final UserRepository userRepository;
+    private final CompagnieProfileRepository compagnieProfileRepository;
+    private final NotificationService notificationService;
     private final MetierMapper mapper;
     private final SecureRandom random = new SecureRandom();
 
@@ -152,7 +155,24 @@ public class VoyageurService {
         int note = Math.max(1, Math.min(5, request.note()));
         reservation.setNote(note);
         reservation.setCommentaire(request.commentaire());
+        // La note alimente le badge de notation de la compagnie...
+        mettreAJourNoteCompagnie(reservation.getCompagnie());
+        // ...et clot le rappel de notation si il existait.
+        notificationService.marquerNotationFaite(reservation.getId());
         return mapper.toReservationDto(reservation);
+    }
+
+    private void mettreAJourNoteCompagnie(String compagnie) {
+        if (compagnie == null || compagnie.isBlank()) {
+            return;
+        }
+        List<Reservation> notees = reservationRepository.findByCompagnieIgnoreCaseAndNoteNotNull(compagnie);
+        compagnieProfileRepository.findByNomIgnoreCase(compagnie).ifPresent(profile -> {
+            double moyenne = notees.stream().mapToInt(Reservation::getNote).average().orElse(0);
+            profile.setNoteMoyenne(Math.round(moyenne * 10.0) / 10.0);
+            profile.setNombreAvis(notees.size());
+            compagnieProfileRepository.save(profile);
+        });
     }
 
     private Reservation reservationDuClient(Authentication authentication, Long id) {

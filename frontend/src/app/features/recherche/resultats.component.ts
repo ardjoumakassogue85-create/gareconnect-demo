@@ -10,6 +10,7 @@ import { AffluenceService } from '../../core/services/affluence.service';
 import { AffluenceGare, ContexteAffluence, NiveauAffluence } from '../../core/models/affluence.model';
 import { AssistantService } from '../../core/services/assistant.service';
 import { ConseilAntiFile, CreneauArrivee } from '../../core/models/assistant.model';
+import { VoiceService } from '../../core/services/voice.service';
 
 @Component({
   selector: 'app-resultats',
@@ -49,7 +50,32 @@ export class ResultatsComponent implements OnInit {
     private readonly reservationService: ReservationService,
     private readonly affluenceService: AffluenceService,
     private readonly assistantService: AssistantService,
+    private readonly voiceService: VoiceService,
   ) {}
+
+  get microDisponible(): boolean {
+    return this.voiceService.estDisponible();
+  }
+
+  estEnEcoute(): boolean {
+    return this.voiceService.ecouteEnCours();
+  }
+
+  /** Dictee vocale pour la recherche en langage libre (assistant IA). */
+  dicterRecherche(): void {
+    this.voiceService.ecouter((texte) => {
+      this.requeteLibre = texte;
+      this.rechercherEnLangageLibre();
+    });
+  }
+
+  /** Dictee vocale pour affiner le conseil anti-file. */
+  dicterConseil(): void {
+    this.voiceService.ecouter((texte) => {
+      this.demandeAntiFile = texte;
+      this.demanderConseil();
+    });
+  }
 
   ngOnInit(): void {
     const params = this.route.snapshot.queryParamMap;

@@ -78,6 +78,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/compagnies/**").hasRole("COMPAGNIE")
                 .requestMatchers("/api/reservations/**").hasRole("CLIENT")
                 .requestMatchers("/api/file-virtuelle/**").hasRole("CLIENT")
+                .requestMatchers("/api/notifications/**").hasRole("CLIENT")
                 .requestMatchers("/api/reclamations/**", "/api/gares/**").hasRole("CLIENT")
                 .anyRequest().authenticated()
             )

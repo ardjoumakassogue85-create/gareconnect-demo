@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LayoutComponent } from '../../shared/components/layout/layout.component';
 import { CompteARceboursComponent } from '../../shared/components/compte-a-rebours/compte-a-rebours.component';
 import { QrCodeComponent } from '../../shared/components/qr-code/qr-code.component';
@@ -59,10 +59,12 @@ export class EspaceClientComponent implements OnInit {
     readonly authService: AuthService,
     private readonly reservationService: ReservationService,
     private readonly gareService: GareService,
+    private readonly route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.charger();
+    // Ouverture directe de la notation via une notification (?noter=<id>).
+    this.charger(this.route.snapshot.queryParamMap.get('noter'));
   }
 
   compteurOnglet(valeur: FiltreOnglet): number {
@@ -176,10 +178,18 @@ export class EspaceClientComponent implements OnInit {
     });
   }
 
-  private charger(): void {
+  private charger(reservationANoter?: string | null): void {
     this.reservationService.listerMesReservations().subscribe((reservations) => {
       this.reservations.set(reservations);
       this.chargement.set(false);
+
+      if (reservationANoter) {
+        const cible = reservations.find((r) => r.id === reservationANoter);
+        if (cible) {
+          this.filtreActif.set('TERMINEE');
+          this.ouvrirDetail(cible);
+        }
+      }
     });
   }
 

@@ -28,6 +28,37 @@
         >
           {{ authService.currentUser()?.nom }}
         </a>
+
+        <div class="notif" *ngIf="estClient()">
+          <button
+            type="button"
+            class="notif__cloche"
+            (click)="basculerPanneau()"
+            [class.notif__cloche--actif]="panneauOuvert()"
+            aria-label="Notifications"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-5.5-1.6-1.6V10a5.4 5.4 0 0 0-4-5.22V4a1.4 1.4 0 0 0-2.8 0v.78A5.4 5.4 0 0 0 6.6 10v4.9L5 16.5a.75.75 0 0 0 .53 1.28h12.94A.75.75 0 0 0 19 16.5z" />
+            </svg>
+            <span class="notif__badge" *ngIf="nonLues() > 0">{{ nonLues() }}</span>
+          </button>
+
+          <div class="notif__panneau" *ngIf="panneauOuvert()">
+            <div class="notif__entete">Notifications</div>
+            <p class="notif__vide" *ngIf="!notifications().length">Aucune notification pour l'instant.</p>
+            <button
+              type="button"
+              class="notif__item"
+              *ngFor="let n of notifications()"
+              [class.notif__item--nonlu]="!n.lu"
+              (click)="ouvrirNotification(n)"
+            >
+              <span class="notif__item-titre">⭐ {{ n.titre }}</span>
+              <span class="notif__item-message">{{ n.message }}</span>
+            </button>
+          </div>
+        </div>
+
         <a routerLink="/mon-compte" routerLinkActive="est-actif" class="bouton bouton--fantome">Mon compte</a>
         <button class="bouton bouton--fantome" (click)="authService.logout()">Déconnexion</button>
       </ng-template>

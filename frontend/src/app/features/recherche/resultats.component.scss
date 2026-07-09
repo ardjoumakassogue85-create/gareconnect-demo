@@ -802,3 +802,60 @@
   font-weight: 700;
   text-transform: uppercase;
 }
+
+/* --- Bouton micro (dictee vocale) --- */
+.bouton-micro {
+  display: inline-flex;
+  align-items: center;
+  gap: t.$espace-2;
+  padding: t.$espace-2 t.$espace-3;
+  border-radius: t.$rayon-md;
+  border: 1px solid rgba(231, 169, 60, 0.55);
+  background: rgba(231, 169, 60, 0.14);
+  color: t.$or-phare-fonce;
+  font-weight: 700;
+  font-size: t.$taille-sm;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+.bouton-micro:hover {
+  background: rgba(231, 169, 60, 0.26);
+}
+
+.bouton-micro--compact {
+  padding: t.$espace-2;
+  color: t.$or-phare;
+}
+
+.bouton-micro--actif {
+  border-color: t.$or-phare;
+  background: t.$or-phare;
+  color: #3a2a06;
+  animation: micro-pulse 1.2s ease-in-out infinite;
+}
+.bouton-micro--compact.bouton-micro--actif {
+  color: #3a2a06;
+}
+
+@keyframes micro-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(231, 169, 60, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(231, 169, 60, 0);
+  }
+}
+
+.bouton-micro__icone {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+@include t.mobile {
+  .bouton-micro__label {
+    display: none;
+  }
+}

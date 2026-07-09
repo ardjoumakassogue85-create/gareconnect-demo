@@ -15,6 +15,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByVilleDepartIgnoreCaseAndStatut(String villeDepart, StatutReservation statut);
 
+    List<Reservation> findByStatutAndNoteIsNull(StatutReservation statut);
+
+    List<Reservation> findByCompagnieIgnoreCaseAndNoteNotNull(String compagnie);
+
+    boolean existsByCodeBillet(String codeBillet);
+
     @Query("""
             select r from Reservation r
             join fetch r.client

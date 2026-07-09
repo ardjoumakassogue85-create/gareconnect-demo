@@ -135,3 +135,114 @@
   letter-spacing: 0.05em;
   margin-bottom: t.$espace-2;
 }
+
+/* --- Cloche de notifications --- */
+.notif {
+  position: relative;
+}
+
+.notif__cloche {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(14, 34, 56, 0.15);
+  background: transparent;
+  color: t.$nuit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+.notif__cloche:hover,
+.notif__cloche--actif {
+  background: rgba(231, 169, 60, 0.16);
+  color: t.$or-phare-fonce;
+}
+
+.notif__badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: t.$rouge-alerte;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notif__panneau {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 340px;
+  max-width: 90vw;
+  max-height: 420px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid rgba(14, 34, 56, 0.12);
+  border-radius: t.$rayon-md;
+  box-shadow: 0 18px 40px rgba(14, 34, 56, 0.16);
+  z-index: 50;
+  padding: t.$espace-2;
+}
+
+.notif__entete {
+  font-size: t.$taille-xs;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(14, 34, 56, 0.6);
+  padding: t.$espace-2 t.$espace-3;
+}
+
+.notif__vide {
+  padding: t.$espace-4 t.$espace-3;
+  color: rgba(14, 34, 56, 0.6);
+  font-size: t.$taille-sm;
+  text-align: center;
+}
+
+.notif__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  padding: t.$espace-3;
+  border: none;
+  border-radius: t.$rayon-sm;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.notif__item:hover {
+  background: rgba(231, 169, 60, 0.1);
+}
+.notif__item--nonlu {
+  background: rgba(231, 169, 60, 0.08);
+}
+
+.notif__item-titre {
+  font-weight: 700;
+  color: t.$nuit;
+  font-size: t.$taille-sm;
+}
+
+.notif__item-message {
+  color: rgba(14, 34, 56, 0.72);
+  font-size: t.$taille-xs;
+  line-height: 1.4;
+}
