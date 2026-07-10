@@ -1,0 +1,113 @@
+<app-layout>
+  <section class="controle conteneur">
+    <div class="controle__entete">
+      <span class="controle__eyebrow">Agent d'embarquement</span>
+      <h1 class="controle__titre">Contrôle des billets</h1>
+      <p class="controle__texte">
+        Scanne ou colle le QR d'un billet. La signature est vérifiée pour empêcher toute
+        falsification ; un billet ne peut être validé qu'une seule fois.
+      </p>
+    </div>
+
+    <div class="controle__grille">
+      <!-- Saisie / scan -->
+      <div class="controle__carte">
+        <button
+          *ngIf="scanSupporte() && !scanEnCours()"
+          type="button"
+          class="bouton bouton--plein controle__scan-btn"
+          (click)="demarrerScan()"
+        >
+          📷 Scanner le QR du client
+        </button>
+
+        <div class="controle__camera" *ngIf="scanEnCours()">
+          <video #camera playsinline muted></video>
+          <canvas #canvas class="controle__canvas"></canvas>
+          <span class="controle__scan-hint">Pointe la caméra vers le QR du billet…</span>
+          <button type="button" class="bouton bouton--fantome" (click)="arreterScan()">Arrêter le scan</button>
+        </div>
+
+        <label class="champ">
+          <span class="champ__label">…ou colle le contenu du QR</span>
+          <textarea
+            [(ngModel)]="token"
+            name="token"
+            rows="4"
+            placeholder="eyJhbGciOiJSUzI1NiJ9..."
+          ></textarea>
+        </label>
+
+        <div class="controle__actions">
+          <button class="bouton bouton--plein" [disabled]="chargement()" (click)="validerEnLigne()">
+            {{ chargement() ? 'Validation…' : 'Valider (en ligne)' }}
+          </button>
+          <button class="bouton bouton--fantome" (click)="verifierHorsLigne()">
+            Vérifier (hors-ligne)
+          </button>
+        </div>
+
+        <p class="controle__hint" [class.controle__hint--ok]="horsLignePret()">
+          {{ horsLignePret() ? '✓ Vérification hors-ligne prête (clé en cache)' : 'Clé hors-ligne non chargée' }}
+        </p>
+        <p class="controle__erreur" *ngIf="erreur()">{{ erreur() }}</p>
+      </div>
+
+      <!-- Résultats -->
+      <div class="controle__carte controle__resultats">
+        <p class="controle__vide" *ngIf="!resultatEnLigne() && !resultatHorsLigne()">
+          Le résultat du contrôle s'affichera ici.
+        </p>
+
+        <!-- Validation en ligne -->
+        <div
+          class="verdict"
+          *ngIf="resultatEnLigne() as r"
+          [class.verdict--ok]="r.valide"
+          [class.verdict--avertissement]="!r.valide && r.dejaUtilise"
+          [class.verdict--ko]="!r.valide && !r.dejaUtilise"
+        >
+          <span class="verdict__icone">{{ r.valide ? '✅' : r.dejaUtilise ? '⚠️' : '⛔' }}</span>
+          <div class="verdict__contenu">
+            <strong class="verdict__message">{{ r.message }}</strong>
+            <span class="verdict__ligne" *ngIf="r.passager">Passager : {{ r.passager }}</span>
+            <span class="verdict__ligne" *ngIf="r.trajet">{{ r.trajet }}</span>
+            <span class="verdict__ligne" *ngIf="r.date">{{ r.date }} · {{ r.heure }} · {{ r.compagnie }}</span>
+            <span class="verdict__ligne" *ngIf="r.dejaUtilise && r.valideLe">Déjà validé le {{ r.valideLe }}</span>
+            <span class="verdict__source">Contrôle en ligne (signature + base)</span>
+          </div>
+        </div>
+
+        <!-- Vérification hors-ligne -->
+        <div
+          class="verdict"
+          *ngIf="resultatHorsLigne() as h"
+          [class.verdict--ok]="h.authentique && !h.expire"
+          [class.verdict--avertissement]="h.authentique && h.expire"
+          [class.verdict--ko]="!h.authentique"
+        >
+          <span class="verdict__icone">{{ !h.authentique ? '⛔' : h.expire ? '⚠️' : '🔒' }}</span>
+          <div class="verdict__contenu">
+            <strong class="verdict__message">
+              {{
+                !h.authentique
+                  ? 'Signature invalide — billet falsifié'
+                  : h.expire
+                    ? 'Billet authentique mais EXPIRÉ'
+                    : 'Billet authentique (signature valide)'
+              }}
+            </strong>
+            <span class="verdict__ligne" *ngIf="h.authentique && h.donnees">
+              {{ h.donnees['pax'] }} · {{ h.donnees['dep'] }} → {{ h.donnees['arr'] }} ·
+              {{ h.donnees['date'] }} {{ h.donnees['heure'] }}
+            </span>
+            <span class="verdict__note" *ngIf="h.authentique">
+              Vérifié sans réseau. Le double-usage sera réconcilié à la reconnexion.
+            </span>
+            <span class="verdict__source">Vérification hors-ligne (clé publique)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</app-layout>

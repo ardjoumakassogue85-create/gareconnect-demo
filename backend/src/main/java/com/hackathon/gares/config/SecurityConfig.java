@@ -77,6 +77,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/assistant/**").permitAll()
                 .requestMatchers("/api/compagnies/**").hasRole("COMPAGNIE")
                 .requestMatchers("/api/reservations/**").hasRole("CLIENT")
+                .requestMatchers("/api/billets/token/**").hasRole("CLIENT")
+                .requestMatchers("/api/billets/**").hasRole("COMPAGNIE")
                 .requestMatchers("/api/file-virtuelle/**").hasRole("CLIENT")
                 .requestMatchers("/api/notifications/**").hasRole("CLIENT")
                 .requestMatchers("/api/reclamations/**", "/api/gares/**").hasRole("CLIENT")

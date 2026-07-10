@@ -50,8 +50,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+        // Le detail est journalise cote serveur, mais JAMAIS renvoye au client
+        // (evite la divulgation d'informations internes).
         log.error("Erreur interne non geree", ex);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne : " + ex.getMessage());
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Une erreur interne est survenue. Réessaie plus tard.");
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {

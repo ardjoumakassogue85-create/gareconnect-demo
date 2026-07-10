@@ -17,7 +17,7 @@ spring:
             enable: ${SMTP_STARTTLS_ENABLE:true}
   h2:
     console:
-      enabled: true
+      enabled: ${H2_CONSOLE_ENABLED:false}
       path: /h2-console
   jpa:
     hibernate:
@@ -34,6 +34,10 @@ app:
     remember-me-expiration-ms: ${JWT_REMEMBER_ME_EXPIRATION_MS:2592000000}
   frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:4200}
   seed-demo: ${SEED_DEMO:false}
+  billet:
+    # Cle privee RSA (PKCS8 base64) pour signer les billets. Vide => cle ephemere
+    # regeneree a chaque demarrage (dev). A definir en production pour la stabilite.
+    private-key: ${BILLET_PRIVATE_KEY:}
   email:
     from: ${MAIL_FROM:}
 
@@ -45,4 +49,6 @@ gemini:
   model: ${GEMINI_MODEL:gemini-flash-latest}
   base-url: https://generativelanguage.googleapis.com/v1beta
 make:
-  reclamation-webhook-url: https://hook.us2.make.com/3b963u96vlljqvaqaktbr5wb04y9u7ig
+  # URL du webhook a definir dans backend/.env (MAKE_RECLAMATION_WEBHOOK_URL).
+  # Sans valeur, la reclamation IA escalade simplement vers un agent (pas de fuite de secret).
+  reclamation-webhook-url: ${MAKE_RECLAMATION_WEBHOOK_URL:}

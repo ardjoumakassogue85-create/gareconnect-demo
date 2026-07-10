@@ -54,9 +54,19 @@ public class CompagnieService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Compagnie introuvable"));
     }
 
+    private static final int TAILLE_IMAGE_MAX = 3_500_000; // ~2,5 Mo de binaire en base64
+
     @Transactional
     public VitrineDto enregistrerVitrine(Authentication authentication, VitrineRequest request) {
         CompagnieProfile profile = getCompagnieConnectee(authentication);
+
+        // Garde-fou anti-DoS : on refuse les images demesurees.
+        verifierTailleImage(request.logoUrl(), "logo");
+        verifierTailleImage(request.imageCouvertureUrl(), "image de couverture");
+        if (request.galerieImages() != null) {
+            request.galerieImages().forEach(image -> verifierTailleImage(image, "image de galerie"));
+        }
+
         if (request.compagnie() != null && !request.compagnie().isBlank()) {
             profile.setNom(request.compagnie().trim());
             profile.setSlug(slugUnique(profile.getNom(), profile.getId()));
@@ -215,5 +225,12 @@ public class CompagnieService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
         return valeur.trim();
+    }
+
+    private static void verifierTailleImage(String image, String nom) {
+        if (image != null && image.length() > TAILLE_IMAGE_MAX) {
+            throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
+                    "L'" + nom + " est trop volumineuse (max ~2,5 Mo).");
+        }
     }
 }

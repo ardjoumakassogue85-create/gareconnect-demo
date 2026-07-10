@@ -1,0 +1,345 @@
+@use 'tokens' as t;
+
+.apropos {
+  padding-bottom: t.$espace-24;
+}
+
+// --- HERO ---
+.apropos__hero {
+  background: linear-gradient(135deg, t.$nuit, t.$nuit-clair);
+  color: white;
+  padding: t.$espace-24 0 t.$espace-16;
+  text-align: center;
+
+  @include t.mobile {
+    padding: t.$espace-16 0 t.$espace-12;
+  }
+}
+
+.apropos__eyebrow {
+  display: inline-block;
+  color: t.$or-phare;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: t.$espace-4;
+}
+
+.apropos__titre {
+  color: white;
+  font-size: t.$taille-4xl;
+  line-height: 1.05;
+  max-width: 15ch;
+  margin: 0 auto t.$espace-6;
+
+  @include t.mobile {
+    font-size: t.$taille-3xl;
+  }
+}
+
+.apropos__accroche {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: t.$taille-lg;
+  line-height: 1.5;
+  max-width: 62ch;
+  margin: 0 auto t.$espace-8;
+}
+
+.apropos__hero-actions {
+  display: flex;
+  gap: t.$espace-3;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .bouton--fantome {
+    background: transparent;
+    color: white;
+    border-color: rgba(255, 255, 255, 0.4);
+
+    &:hover {
+      border-color: white;
+    }
+  }
+}
+
+// --- CORPS ---
+.apropos__corps {
+  display: grid;
+  gap: t.$espace-24;
+  padding-top: t.$espace-24;
+
+  @include t.mobile {
+    gap: t.$espace-16;
+    padding-top: t.$espace-16;
+  }
+}
+
+.bloc__kicker {
+  display: inline-block;
+  color: t.$bitume-attenue;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: t.$espace-3;
+
+  &--probleme {
+    color: t.$rouge-alerte;
+  }
+
+  &--solution {
+    color: t.$vert-signal;
+  }
+}
+
+.bloc__titre {
+  font-size: t.$taille-3xl;
+  margin-bottom: t.$espace-4;
+
+  @include t.mobile {
+    font-size: t.$taille-2xl;
+  }
+}
+
+.bloc__intro {
+  color: t.$bitume-attenue;
+  font-size: t.$taille-lg;
+  line-height: 1.6;
+  max-width: 68ch;
+  margin-bottom: t.$espace-8;
+
+  strong {
+    color: t.$nuit;
+  }
+}
+
+// --- PROBLÈME ---
+.douleurs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: t.$espace-3;
+}
+
+.douleur {
+  display: flex;
+  gap: t.$espace-3;
+  align-items: flex-start;
+  background: white;
+  border: 1px solid t.$papier-fonce;
+  border-left: 3px solid t.$rouge-alerte;
+  border-radius: t.$rayon-md;
+  padding: t.$espace-4;
+  font-size: t.$taille-base;
+  line-height: 1.5;
+}
+
+.douleur__marque {
+  color: t.$rouge-alerte;
+  font-weight: 800;
+  flex: 0 0 auto;
+  line-height: 1.4;
+}
+
+// --- SOLUTION : piliers ---
+.piliers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: t.$espace-4;
+
+  @include t.tablette {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include t.mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pilier {
+  background: white;
+  border: 1px solid t.$papier-fonce;
+  border-top: 3px solid t.$or-phare;
+  border-radius: t.$rayon-md;
+  box-shadow: t.$ombre-carte;
+  padding: t.$espace-6;
+}
+
+.pilier__titre {
+  font-size: t.$taille-xl;
+  margin-bottom: t.$espace-2;
+}
+
+.pilier__texte {
+  color: t.$bitume-attenue;
+  font-size: t.$taille-sm;
+  line-height: 1.55;
+}
+
+// --- FONCTIONNALITÉS ---
+.fonctions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: t.$espace-4;
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fonction {
+  background: white;
+  border: 1px solid t.$papier-fonce;
+  border-radius: t.$rayon-lg;
+  box-shadow: t.$ombre-carte;
+  padding: t.$espace-6;
+  display: flex;
+  flex-direction: column;
+  gap: t.$espace-4;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: t.$ombre-carte-hover;
+  }
+}
+
+.fonction__entete {
+  display: flex;
+  gap: t.$espace-3;
+  align-items: flex-start;
+}
+
+.fonction__icone {
+  font-size: 1.75rem;
+  line-height: 1;
+  flex: 0 0 auto;
+  background: t.$papier;
+  border-radius: t.$rayon-md;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fonction__titre {
+  font-size: t.$taille-lg;
+  margin-bottom: t.$espace-1;
+}
+
+.fonction__desc {
+  color: t.$bitume-attenue;
+  font-size: t.$taille-sm;
+  line-height: 1.5;
+}
+
+.fonction__points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: t.$espace-2;
+  border-top: 1px solid t.$papier-fonce;
+  padding-top: t.$espace-4;
+
+  li {
+    position: relative;
+    padding-left: t.$espace-6;
+    font-size: t.$taille-sm;
+    line-height: 1.45;
+
+    &::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: t.$vert-signal;
+      font-weight: 800;
+    }
+  }
+}
+
+// --- TECH ---
+.techs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: t.$espace-3;
+}
+
+.tech {
+  background: t.$nuit;
+  color: white;
+  border-radius: t.$rayon-md;
+  padding: t.$espace-4;
+  display: grid;
+  gap: t.$espace-1;
+}
+
+.tech__nom {
+  font-family: t.$police-titre;
+  font-size: t.$taille-lg;
+  color: white;
+}
+
+.tech__role {
+  color: t.$or-phare;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+  letter-spacing: 0.04em;
+}
+
+// --- CTA ---
+.apropos__cta {
+  background: linear-gradient(135deg, t.$or-phare, t.$or-phare-fonce);
+  border-radius: t.$rayon-lg;
+  padding: t.$espace-16 t.$espace-8;
+  text-align: center;
+  color: t.$nuit;
+}
+
+.apropos__cta-titre {
+  color: t.$nuit;
+  font-size: t.$taille-3xl;
+  margin-bottom: t.$espace-3;
+
+  @include t.mobile {
+    font-size: t.$taille-2xl;
+  }
+}
+
+.apropos__cta-texte {
+  color: rgba(14, 34, 56, 0.85);
+  font-size: t.$taille-lg;
+  max-width: 52ch;
+  margin: 0 auto t.$espace-8;
+}
+
+.apropos__cta-actions {
+  display: flex;
+  gap: t.$espace-3;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .bouton--plein {
+    background: t.$nuit;
+    color: white;
+
+    &:hover {
+      box-shadow: 0 6px 16px rgba(14, 34, 56, 0.35);
+    }
+  }
+
+  .bouton--fantome {
+    border-color: rgba(14, 34, 56, 0.4);
+    color: t.$nuit;
+
+    &:hover {
+      border-color: t.$nuit;
+    }
+  }
+}

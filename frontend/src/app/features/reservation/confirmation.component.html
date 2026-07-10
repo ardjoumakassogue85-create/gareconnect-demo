@@ -51,7 +51,7 @@
         </div>
 
         <div class="ticket__qr">
-          <app-qr-code [valeur]="r.codeBillet" [taille]="120"></app-qr-code>
+          <app-qr-code [valeur]="valeurQr()" [taille]="200"></app-qr-code>
           <span class="ticket__prix">{{ r.prix | number }} F</span>
         </div>
       </div>

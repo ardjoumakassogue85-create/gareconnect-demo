@@ -6,6 +6,7 @@
 
     <nav class="entete__nav">
       <a routerLink="/recherche" routerLinkActive="est-actif">Rechercher</a>
+      <a routerLink="/a-propos" routerLinkActive="est-actif">À propos</a>
       <a
         *ngIf="authService.isAuthenticated() && authService.role() === 'CLIENT'"
         routerLink="/reclamations"
@@ -59,6 +60,14 @@
           </div>
         </div>
 
+        <a
+          *ngIf="authService.role() === 'COMPAGNIE'"
+          routerLink="/controle"
+          routerLinkActive="est-actif"
+          class="bouton bouton--fantome"
+        >
+          Contrôle billets
+        </a>
         <a routerLink="/mon-compte" routerLinkActive="est-actif" class="bouton bouton--fantome">Mon compte</a>
         <button class="bouton bouton--fantome" (click)="authService.logout()">Déconnexion</button>
       </ng-template>
@@ -75,6 +84,7 @@
     <div>
       <img class="pied__logo" src="/gareConnect.png" alt="GareConnect" />
       <p class="pied__baseline">Le réseau qui connecte les gares interurbaines de Côte d'Ivoire.</p>
+      <a routerLink="/a-propos" class="pied__lien-apropos">À propos de GareConnect →</a>
     </div>
     <div>
       <h4 class="pied__titre">Voyageurs</h4>

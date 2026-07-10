@@ -57,4 +57,8 @@ public class Reservation {
 
     @Column(length = 1200)
     private String commentaire;
+
+    /** Controle a l'embarquement : renseigne quand le billet a ete valide (anti-reutilisation). */
+    private Instant valideLe;
+    private String valideePar;
 }

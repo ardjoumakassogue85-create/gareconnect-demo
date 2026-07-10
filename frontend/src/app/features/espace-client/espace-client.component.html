@@ -124,7 +124,7 @@
       <h3 class="modale__trajet">{{ r.villeDepart }} → {{ r.villeArrivee }}</h3>
 
       <div class="modale__qr" *ngIf="r.statut !== 'ANNULEE'">
-        <app-qr-code [valeur]="r.codeBillet" [taille]="120"></app-qr-code>
+        <app-qr-code [valeur]="valeurQrBillet(r)" [taille]="200"></app-qr-code>
         <span class="modale__qr-legende">Présente ce code à l'embarquement</span>
       </div>
 

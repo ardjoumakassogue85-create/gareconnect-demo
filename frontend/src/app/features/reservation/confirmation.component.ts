@@ -5,6 +5,7 @@ import { LayoutComponent } from '../../shared/components/layout/layout.component
 import { CompteARceboursComponent } from '../../shared/components/compte-a-rebours/compte-a-rebours.component';
 import { QrCodeComponent } from '../../shared/components/qr-code/qr-code.component';
 import { ReservationService } from '../../core/services/reservation.service';
+import { BilletService } from '../../core/services/billet.service';
 import { Reservation } from '../../core/models/metier.model';
 
 @Component({
@@ -20,11 +21,18 @@ export class ConfirmationComponent implements OnInit {
   introuvable = signal(false);
   enAnnulation = signal(false);
   erreurAnnulation = signal<string | null>(null);
+  billetToken = signal<string | null>(null);
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly reservationService: ReservationService,
+    private readonly billetService: BilletService,
   ) {}
+
+  /** Contenu du QR : le jeton signe si disponible, sinon le code lisible (repli). */
+  valeurQr(): string {
+    return this.billetToken() ?? this.reservation()?.codeBillet ?? '';
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -45,6 +53,12 @@ export class ConfirmationComponent implements OnInit {
         return;
       }
       this.reservation.set(reservation);
+
+      // Recupere le jeton signe a encoder dans le QR (repli sur le code si echec).
+      this.billetService.token(reservation.id).subscribe({
+        next: (billet) => this.billetToken.set(billet.token),
+        error: () => this.billetToken.set(null),
+      });
     });
   }
 

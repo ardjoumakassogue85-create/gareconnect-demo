@@ -8,6 +8,11 @@ export const routes: Routes = [
       import('./features/landing/landing.component').then((m) => m.LandingComponent),
   },
   {
+    path: 'a-propos',
+    loadComponent: () =>
+      import('./features/a-propos/a-propos.component').then((m) => m.AProposComponent),
+  },
+  {
     path: 'recherche',
     canActivate: [roleGuard('CLIENT')],
     loadComponent: () =>
@@ -80,6 +85,12 @@ export const routes: Routes = [
       import('./features/espace-compagnie/espace-compagnie.component').then(
         (m) => m.EspaceCompagnieComponent,
       ),
+  },
+  {
+    path: 'controle',
+    canActivate: [roleGuard('COMPAGNIE')],
+    loadComponent: () =>
+      import('./features/controle/controle.component').then((m) => m.ControleComponent),
   },
   {
     path: '**',

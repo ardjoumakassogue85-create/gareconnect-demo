@@ -7,6 +7,7 @@ import { QrCodeComponent } from '../../shared/components/qr-code/qr-code.compone
 import { AuthService } from '../../core/services/auth.service';
 import { ReservationService } from '../../core/services/reservation.service';
 import { GareService } from '../../core/services/gare.service';
+import { BilletService } from '../../core/services/billet.service';
 import { DemandeAvis, DemandeAvisGare, Reservation } from '../../core/models/metier.model';
 
 type StatutAffiche = 'CONFIRMEE' | 'TERMINEE' | 'ANNULEE';
@@ -55,12 +56,20 @@ export class EspaceClientComponent implements OnInit {
     return toutes.filter((r) => this.statutAffiche(r) === filtre);
   });
 
+  billetToken = signal<string | null>(null);
+
   constructor(
     readonly authService: AuthService,
     private readonly reservationService: ReservationService,
     private readonly gareService: GareService,
     private readonly route: ActivatedRoute,
+    private readonly billetService: BilletService,
   ) {}
+
+  /** Contenu du QR du billet : jeton signe si disponible, sinon code lisible. */
+  valeurQrBillet(reservation: Reservation): string {
+    return this.billetToken() ?? reservation.codeBillet;
+  }
 
   ngOnInit(): void {
     // Ouverture directe de la notation via une notification (?noter=<id>).
@@ -84,6 +93,11 @@ export class EspaceClientComponent implements OnInit {
 
   ouvrirDetail(r: Reservation): void {
     this.reservationSelectionnee.set(r);
+    this.billetToken.set(null);
+    this.billetService.token(r.id).subscribe({
+      next: (billet) => this.billetToken.set(billet.token),
+      error: () => this.billetToken.set(null),
+    });
     this.noteBrouillon.set(r.note ?? 0);
     this.commentaireBrouillon.set(r.commentaire ?? '');
     this.erreurAvis.set(null);

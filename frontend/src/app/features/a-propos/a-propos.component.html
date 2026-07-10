@@ -1,0 +1,105 @@
+<app-layout>
+  <section class="apropos">
+    <!-- HERO -->
+    <header class="apropos__hero">
+      <div class="conteneur">
+        <span class="apropos__eyebrow">À propos de GareConnect</span>
+        <h1 class="apropos__titre">Le guichet unique des gares interurbaines de Côte d'Ivoire</h1>
+        <p class="apropos__accroche">
+          GareConnect réunit les compagnies de transport, leurs départs et leurs services sur une
+          seule plateforme — pour en finir avec la dispersion, les files d'attente et les billets
+          papier.
+        </p>
+        <div class="apropos__hero-actions">
+          <a routerLink="/recherche" class="bouton bouton--plein">Rechercher un trajet</a>
+          <a routerLink="/inscription" [queryParams]="{ role: 'COMPAGNIE' }" class="bouton bouton--fantome">
+            Je suis une compagnie
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <div class="conteneur apropos__corps">
+      <!-- LE PROBLÈME -->
+      <section class="bloc">
+        <span class="bloc__kicker bloc__kicker--probleme">Le problème</span>
+        <h2 class="bloc__titre">Des services de transport éclatés</h2>
+        <p class="bloc__intro">
+          En Côte d'Ivoire, chaque compagnie interurbaine fonctionne dans son coin : sa gare, ses
+          horaires, ses tarifs, son guichet. Cette <strong>fragmentation</strong> retombe entièrement
+          sur le voyageur.
+        </p>
+        <ul class="douleurs">
+          <li class="douleur" *ngFor="let d of douleurs">
+            <span class="douleur__marque" aria-hidden="true">✕</span>
+            <span>{{ d }}</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- LA SOLUTION -->
+      <section class="bloc">
+        <span class="bloc__kicker bloc__kicker--solution">La solution</span>
+        <h2 class="bloc__titre">Un guichet unique numérique</h2>
+        <p class="bloc__intro">
+          GareConnect <strong>centralise les compagnies et leurs services</strong> en un seul endroit.
+          En rassemblant l'offre, la plateforme peut résoudre les sous-problèmes qui gâchent le
+          voyage — à commencer par les files d'attente.
+        </p>
+        <div class="piliers">
+          <article class="pilier" *ngFor="let p of piliers">
+            <h3 class="pilier__titre">{{ p.titre }}</h3>
+            <p class="pilier__texte">{{ p.texte }}</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- TOUTES LES FONCTIONNALITÉS -->
+      <section class="bloc">
+        <span class="bloc__kicker">Tout ce que fait l'app</span>
+        <h2 class="bloc__titre">Les fonctionnalités, en détail</h2>
+        <p class="bloc__intro">
+          Du premier clic à l'embarquement, voici l'ensemble des capacités de GareConnect.
+        </p>
+        <div class="fonctions">
+          <article class="fonction" *ngFor="let f of fonctionnalites">
+            <div class="fonction__entete">
+              <span class="fonction__icone" aria-hidden="true">{{ f.icone }}</span>
+              <div>
+                <h3 class="fonction__titre">{{ f.titre }}</h3>
+                <p class="fonction__desc">{{ f.description }}</p>
+              </div>
+            </div>
+            <ul class="fonction__points">
+              <li *ngFor="let point of f.points">{{ point }}</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- TECH -->
+      <section class="bloc">
+        <span class="bloc__kicker">Sous le capot</span>
+        <h2 class="bloc__titre">La technologie</h2>
+        <div class="techs">
+          <div class="tech" *ngFor="let t of technologies">
+            <strong class="tech__nom">{{ t.nom }}</strong>
+            <span class="tech__role">{{ t.role }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA FINAL -->
+      <section class="apropos__cta">
+        <h2 class="apropos__cta-titre">Prêt à voyager autrement ?</h2>
+        <p class="apropos__cta-texte">
+          Rejoins les voyageurs et les compagnies qui centralisent leurs trajets sur GareConnect.
+        </p>
+        <div class="apropos__cta-actions">
+          <a routerLink="/recherche" class="bouton bouton--plein">Trouver mon trajet</a>
+          <a routerLink="/inscription" class="bouton bouton--fantome">Créer un compte</a>
+        </div>
+      </section>
+    </div>
+  </section>
+</app-layout>
