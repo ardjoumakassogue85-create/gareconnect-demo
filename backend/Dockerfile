@@ -2,13 +2,12 @@
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Cache des dépendances : on copie d'abord le pom
+# Le pom puis le code source, et on package (sans les tests pour un déploiement rapide).
+# Maven télécharge les dépendances pendant le package : pas besoin de go-offline
+# (étape connue pour échouer sur certaines configs).
 COPY pom.xml .
-RUN mvn -q dependency:go-offline
-
-# Puis le code source, et on package (sans les tests pour un déploiement rapide)
 COPY src ./src
-RUN mvn -q clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # --- Étape 2 : image d'exécution légère (JRE seulement) ---
 FROM eclipse-temurin:17-jre
