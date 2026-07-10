@@ -76,8 +76,7 @@ git push -u deploy deploy:main
    | `SMTP_PORT` | `587` | `backend/.env` |
    | `SMTP_USERNAME` | (ton e-mail d'envoi) | `backend/.env` |
    | `SMTP_PASSWORD` | (mot de passe d'application Gmail) | `backend/.env` |
-   | `MAIL_FROM` | (e-mail expéditeur vérifié dans Brevo) | `backend/.env` |
-   | `BREVO_API_KEY` | (clé API Brevo) | **obligatoire en ligne** — voir note e-mail |
+   | `MAIL_FROM` | (ton e-mail d'envoi) | `backend/.env` |
    | `SEED_DEMO` | `true` | pour peupler la démo (données variées) |
    | `ALLOWED_ORIGINS` | *(à remplir à l'étape 3)* | URL Vercel |
    | `FRONTEND_BASE_URL` | *(à remplir à l'étape 3)* | URL Vercel |
@@ -144,21 +143,45 @@ Le backend refuse par défaut les origines inconnues. Il faut l'autoriser à par
 5. Railway : renseigner `ALLOWED_ORIGINS` + `FRONTEND_BASE_URL` avec l'URL front.
 6. Tester sur l'URL Vercel (desktop **et** téléphone).
 
-## Note e-mail (Brevo) — indispensable en ligne
+## Backend sur Fly.io (au lieu de Railway) — pour garder le SMTP Gmail
 
-Railway (comme la plupart des hébergeurs) **bloque le SMTP sortant** : l'envoi Gmail
-qui marche en local **ne fonctionne pas** en ligne. On envoie donc via l'**API HTTPS
-de Brevo** (gratuit, 300 mails/jour). Le flux ne change pas : l'utilisateur reçoit
-toujours un **code par e-mail** à saisir.
+⚠️ **Railway bloque le SMTP sortant** : la vérification e-mail à l'inscription ne
+fonctionne pas depuis Railway. **Fly.io autorise le SMTP (port 587)** → ton Gmail
+marche tel quel, sans service tiers. On déploie donc le **backend sur Fly.io** ; le
+frontend reste sur Vercel et la base sur Supabase.
 
-1. Crée un compte sur **brevo.com** (gratuit).
-2. **Senders & IP → Senders** : ajoute et **vérifie** ton e-mail expéditeur
-   (celui de `MAIL_FROM`).
-3. **SMTP & API → API Keys** : crée une clé API.
-4. Sur **Railway → Variables**, ajoute `BREVO_API_KEY=<ta clé>`.
+Le `backend/Dockerfile` et `backend/fly.toml` sont déjà prêts. Depuis le dossier
+`backend/` :
 
-Si `BREVO_API_KEY` est absente, le backend retombe sur le SMTP classique (utile en
-local avec Gmail). En ligne, elle est **obligatoire** pour que les e-mails partent.
+```bash
+# 1. Installer flyctl (PowerShell Windows)
+pwsh -Command "iwr https://fly.io/install.ps1 -useb | iex"
+
+# 2. Se connecter (ouvre le navigateur ; carte bancaire requise par Fly)
+fly auth login
+
+# 3. Créer l'app à partir du fly.toml existant, sans déployer tout de suite
+fly launch --no-deploy --copy-config
+#   -> si le nom "gareconnect-demo" est pris, Fly en proposera un autre : accepte.
+
+# 4. Définir TOUS les secrets (copie les valeurs depuis backend/.env)
+fly secrets set \
+  SUPABASE_DB_URL="..." SUPABASE_DB_USER="..." SUPABASE_DB_PASSWORD="..." \
+  JWT_SECRET="..." JWT_EXPIRATION_MS="86400000" GEMINI_API_KEY="..." \
+  SMTP_HOST="smtp.gmail.com" SMTP_PORT="587" SMTP_USERNAME="..." SMTP_PASSWORD="..." \
+  MAIL_FROM="..." SEED_DEMO="true" \
+  ALLOWED_ORIGINS="https://<ton-front>.vercel.app" \
+  FRONTEND_BASE_URL="https://<ton-front>.vercel.app"
+
+# 5. Déployer
+fly deploy
+```
+
+- L'app écoute sur **8081** (déjà réglé dans `fly.toml` : `internal_port = 8081`).
+- URL publique : `https://<nom-app>.fly.dev`. Teste :
+  `https://<nom-app>.fly.dev/api/affluence/gare?ville=Abidjan` → JSON attendu.
+- Mets cette URL `.fly.dev/api` dans `frontend/src/environments/environment.prod.ts`,
+  commit + push, et Vercel se redéploie.
 
 ## Notes
 
