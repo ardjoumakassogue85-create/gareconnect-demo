@@ -1,22 +1,22 @@
-# Configuration Fly.io — backend Spring Boot (GareConnect).
-# Deploiement : depuis le dossier backend/, lancer `fly deploy`.
-# NB : le nom d'app doit etre unique sur Fly ; `fly launch` peut le changer.
+# fly.toml app configuration file generated for gareconnect-demo-cool-headland-7865 on 2026-07-10T19:15:38Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-app = "gareconnect-demo"
-primary_region = "cdg"  # Paris — faible latence vers la Cote d'Ivoire
+app = 'gareconnect-demo-cool-headland-7865'
+primary_region = 'cdg'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
 
 [http_service]
-  # L'app ecoute sur 8081 par defaut (server.port: ${PORT:8081}).
   internal_port = 8081
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
 
 [[vm]]
-  cpu_kind = "shared"
+  memory = '512mb'
   cpus = 1
-  memory = "512mb"
+  memory_mb = 512
