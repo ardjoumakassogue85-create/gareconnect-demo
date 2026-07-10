@@ -21,6 +21,8 @@ COPY --from=build /app/target/*.jar app.jar
 # (metaspace, threads, off-heap) rentre dans les 30% restants. Evite les OOM.
 ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=70 -XX:+UseSerialGC"
 
-# Railway/Render injectent la variable PORT ; Spring l'utilise via application.yml
-EXPOSE 8081
+# Railway/Render injectent la variable PORT ; Spring l'utilise via application.yml.
+# On expose 8080 (valeur par defaut de PORT chez Railway) pour que la detection
+# automatique du port du domaine tombe juste.
+EXPOSE 8080
 ENTRYPOINT ["sh", "-c", "java -jar app.jar"]
