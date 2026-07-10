@@ -1,0 +1,130 @@
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a routerLink="/" class="entete__marque" (click)="fermerMenu()">
+      <img class="entete__logo" src="/gareConnect.png" alt="GareConnect" />
+    </a>
+
+    <button
+      type="button"
+      class="entete__menu-bouton"
+      (click)="basculerMenu()"
+      [attr.aria-expanded]="menuOuvert()"
+      aria-controls="menu-mobile"
+      aria-label="Ouvrir le menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="entete__nav" id="menu-mobile" [class.entete__nav--ouvert]="menuOuvert()">
+      <a routerLink="/recherche" routerLinkActive="est-actif" (click)="fermerMenu()">Rechercher</a>
+      <a routerLink="/a-propos" routerLinkActive="est-actif" (click)="fermerMenu()">&Agrave; propos</a>
+      <a
+        *ngIf="authService.isAuthenticated() && authService.role() === 'CLIENT'"
+        routerLink="/reclamations"
+        routerLinkActive="est-actif"
+        (click)="fermerMenu()"
+      >
+        Aide
+      </a>
+      <a routerLink="/inscription" [queryParams]="{ role: 'COMPAGNIE' }" (click)="fermerMenu()">
+        Pour les compagnies
+      </a>
+    </nav>
+
+    <button
+      type="button"
+      class="entete__installer"
+      *ngIf="pwaInstallService.peutInstaller()"
+      (click)="pwaInstallService.installer()"
+    >
+      <span class="entete__installer-icone" aria-hidden="true"></span>
+      Ouvrir dans l'appli
+    </button>
+
+    <div class="entete__actions" [class.entete__actions--ouvert]="menuOuvert()">
+      <ng-container *ngIf="!authService.isAuthenticated(); else connecte">
+        <a routerLink="/connexion" class="bouton bouton--fantome" (click)="fermerMenu()">Connexion</a>
+        <a routerLink="/inscription" class="bouton bouton--plein" (click)="fermerMenu()">Cr&eacute;er un compte</a>
+      </ng-container>
+      <ng-template #connecte>
+        <a
+          [routerLink]="authService.role() === 'COMPAGNIE' ? '/espace-compagnie' : '/espace-client'"
+          class="entete__utilisateur"
+          (click)="fermerMenu()"
+        >
+          {{ authService.currentUser()?.nom }}
+        </a>
+
+        <div class="notif" *ngIf="estClient()">
+          <button
+            type="button"
+            class="notif__cloche"
+            (click)="basculerPanneau()"
+            [class.notif__cloche--actif]="panneauOuvert()"
+            aria-label="Notifications"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-5.5-1.6-1.6V10a5.4 5.4 0 0 0-4-5.22V4a1.4 1.4 0 0 0-2.8 0v.78A5.4 5.4 0 0 0 6.6 10v4.9L5 16.5a.75.75 0 0 0 .53 1.28h12.94A.75.75 0 0 0 19 16.5z" />
+            </svg>
+            <span class="notif__badge" *ngIf="nonLues() > 0">{{ nonLues() }}</span>
+          </button>
+
+          <div class="notif__panneau" *ngIf="panneauOuvert()">
+            <div class="notif__entete">Notifications</div>
+            <p class="notif__vide" *ngIf="!notifications().length">Aucune notification pour l'instant.</p>
+            <button
+              type="button"
+              class="notif__item"
+              *ngFor="let n of notifications()"
+              [class.notif__item--nonlu]="!n.lu"
+              (click)="ouvrirNotification(n)"
+            >
+              <span class="notif__item-titre">{{ n.titre }}</span>
+              <span class="notif__item-message">{{ n.message }}</span>
+            </button>
+          </div>
+        </div>
+
+        <a
+          *ngIf="authService.role() === 'COMPAGNIE'"
+          routerLink="/controle"
+          routerLinkActive="est-actif"
+          class="bouton bouton--fantome"
+          (click)="fermerMenu()"
+        >
+          Contr&ocirc;le billets
+        </a>
+        <a routerLink="/mon-compte" routerLinkActive="est-actif" class="bouton bouton--fantome" (click)="fermerMenu()">
+          Mon compte
+        </a>
+        <button class="bouton bouton--fantome" (click)="fermerMenu(); authService.logout()">D&eacute;connexion</button>
+      </ng-template>
+    </div>
+  </div>
+</header>
+
+<main>
+  <ng-content></ng-content>
+</main>
+
+<footer class="pied">
+  <div class="conteneur pied__grille">
+    <div>
+      <img class="pied__logo" src="/gareConnect.png" alt="GareConnect" />
+      <p class="pied__baseline">Le r&eacute;seau qui connecte les gares interurbaines de C&ocirc;te d'Ivoire.</p>
+      <a routerLink="/a-propos" class="pied__lien-apropos">&Agrave; propos de GareConnect &rarr;</a>
+    </div>
+    <div>
+      <h4 class="pied__titre">Voyageurs</h4>
+      <a routerLink="/recherche">Rechercher un trajet</a>
+      <a routerLink="/inscription">Cr&eacute;er un compte</a>
+    </div>
+    <div>
+      <h4 class="pied__titre">Compagnies</h4>
+      <a routerLink="/inscription" [queryParams]="{ role: 'COMPAGNIE' }">Rejoindre le r&eacute;seau</a>
+      <a [routerLink]="authService.isAuthenticated() ? '/espace-compagnie' : '/connexion'">Espace compagnie</a>
+    </div>
+  </div>
+</footer>

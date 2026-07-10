@@ -1,0 +1,76 @@
+<app-layout>
+  <section class="confirmation conteneur" *ngIf="!chargement()">
+    <div class="confirmation__navigation">
+      <a routerLink="/espace-client" class="bouton-retour bouton-retour--confirmation">
+        <span aria-hidden="true">←</span>
+        <span>Retour au dashboard</span>
+      </a>
+    </div>
+
+    <div class="confirmation__introuvable" *ngIf="introuvable()">
+      <h1>Réservation introuvable</h1>
+      <a routerLink="/espace-client" class="bouton bouton--plein">Voir mes réservations</a>
+    </div>
+
+    <div class="confirmation__contenu" *ngIf="reservation() as r">
+      <div class="confirmation__entete">
+        <span class="confirmation__icone" [class.confirmation__icone--annulee]="r.statut === 'ANNULEE'">
+          {{ r.statut === 'ANNULEE' ? '×' : '✓' }}
+        </span>
+        <h1>{{ r.statut === 'ANNULEE' ? 'Réservation annulée' : 'Réservation confirmée' }}</h1>
+        <p *ngIf="r.statut === 'CONFIRMEE'">Ton billet est prêt. Bon voyage !</p>
+        <p *ngIf="r.statut === 'ANNULEE'">Le remboursement a été effectué (simulation).</p>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket__poincon" aria-hidden="true"></div>
+
+        <div class="ticket__corps">
+          <div class="ticket__ligne1">
+            <span class="jeton-code">{{ r.codeGareDepart }}</span>
+            <span class="ticket__fleche">→</span>
+            <span class="jeton-code">{{ r.codeGareArrivee }}</span>
+          </div>
+
+          <span class="ticket__trajet">{{ r.villeDepart }} → {{ r.villeArrivee }}</span>
+
+          <div class="ticket__meta">
+            <span>{{ r.date | date: 'd MMMM yyyy' }}</span>
+            <span>·</span>
+            <span>{{ r.heure }}</span>
+            <span>·</span>
+            <span>{{ r.compagnie }}</span>
+          </div>
+
+          <span class="ticket__reference">{{ r.codeBillet }}</span>
+
+          <app-compte-a-rebours
+            *ngIf="r.statut === 'CONFIRMEE' && !enAnnulation()"
+            [dateLimite]="r.annulableJusquA"
+          ></app-compte-a-rebours>
+        </div>
+
+        <div class="ticket__qr">
+          <app-qr-code [valeur]="valeurQr()" [taille]="200"></app-qr-code>
+          <span class="ticket__places">{{ r.nombreTickets || 1 }} place(s)</span>
+          <span class="ticket__prix">{{ r.prix | number }} F</span>
+        </div>
+      </div>
+
+      <div class="confirmation__erreur" *ngIf="erreurAnnulation()">{{ erreurAnnulation() }}</div>
+
+      <div class="confirmation__actions">
+        <button
+          *ngIf="r.statut === 'CONFIRMEE' && r.annulableJusquA"
+          class="bouton bouton--fantome"
+          [disabled]="enAnnulation()"
+          (click)="annuler()"
+        >
+          {{ enAnnulation() ? 'Annulation...' : 'Annuler ma réservation' }}
+        </button>
+
+        <a routerLink="/espace-client" class="bouton bouton--plein">Voir mes réservations</a>
+      </div>
+    </div>
+  </section>
+</app-layout>

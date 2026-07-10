@@ -1,0 +1,136 @@
+<app-layout>
+  <section class="reservation conteneur" *ngIf="!chargement()">
+    <a routerLink="/recherche" class="bouton-retour">← Retour à la recherche</a>
+
+    <div class="reservation__introuvable" *ngIf="introuvable()">
+      <h1>Trajet introuvable</h1>
+      <p>Ce trajet n'existe plus ou n'est plus disponible.</p>
+      <a routerLink="/recherche" class="bouton bouton--plein">Retour à la recherche</a>
+    </div>
+
+    <div class="reservation__grille" *ngIf="trajet() as t">
+      <div class="recap">
+        <span class="recap__eyebrow">Récapitulatif</span>
+        <h1 class="recap__titre">{{ t.villeDepart }} → {{ t.villeArrivee }}</h1>
+
+        <div class="recap__ligne">
+          <span>Compagnie</span>
+          <strong>{{ t.compagnie }}</strong>
+        </div>
+        <div class="recap__ligne">
+          <span>Départ</span>
+          <strong>{{ t.heureDepart }} ({{ t.duree }})</strong>
+        </div>
+        <div class="recap__ligne">
+          <span>Passager</span>
+          <strong>{{ authService.currentUser()?.nom }}</strong>
+        </div>
+        <label class="recap__ligne recap__ligne--tickets">
+          <span>Nombre de tickets</span>
+          <input
+            type="number"
+            min="1"
+            [max]="t.placesDisponibles"
+            [(ngModel)]="nombreTickets"
+            name="nombreTickets"
+          />
+        </label>
+        <div class="recap__ligne recap__ligne--total">
+          <span>Total à payer</span>
+          <strong>{{ totalAPayer(t) | number }} F</strong>
+        </div>
+
+        <p class="recap__note">
+          Une fois la réservation confirmée, tu disposes de <strong>30 minutes</strong> pour
+          l'annuler gratuitement si besoin.
+        </p>
+      </div>
+
+      <div class="paiement">
+        <h2 class="paiement__titre">Méthode de paiement</h2>
+
+        <div class="paiement__onglets">
+          <button
+            type="button"
+            class="paiement__onglet"
+            [class.est-actif]="methode === 'MOBILE_MONEY'"
+            (click)="choisirMethode('MOBILE_MONEY')"
+          >
+            Mobile Money
+          </button>
+          <button
+            type="button"
+            class="paiement__onglet"
+            [class.est-actif]="methode === 'CARTE'"
+            (click)="choisirMethode('CARTE')"
+          >
+            Carte bancaire
+          </button>
+        </div>
+
+        <div class="paiement__erreur" *ngIf="erreur()">{{ erreur() }}</div>
+
+        <form *ngIf="methode === 'MOBILE_MONEY'" (ngSubmit)="confirmerEtPayer()">
+          <div class="paiement__operateurs" role="radiogroup" aria-label="Opérateur Mobile Money">
+            <button
+              type="button"
+              class="paiement__operateur"
+              *ngFor="let operateur of operateursMobileMoney"
+              [class.est-actif]="operateurMobileMoney === operateur.valeur"
+              (click)="choisirOperateur(operateur.valeur)"
+            >
+              {{ operateur.libelle }}
+            </button>
+          </div>
+
+          <label class="champ">
+            <span class="champ__label">Numéro Mobile Money</span>
+            <input
+              type="tel"
+              placeholder="07 00 00 00 00"
+              [(ngModel)]="numeroMobileMoney"
+              name="numeroMobileMoney"
+              required
+            />
+          </label>
+
+          <button type="submit" class="bouton bouton--plein paiement__submit" [disabled]="enTraitement()">
+            {{ enTraitement() ? 'Paiement en cours...' : 'Confirmer et payer' }}
+          </button>
+        </form>
+
+        <form *ngIf="methode === 'CARTE'" (ngSubmit)="confirmerEtPayer()">
+          <label class="champ">
+            <span class="champ__label">Numéro de carte</span>
+            <input
+              type="text"
+              placeholder="4242 4242 4242 4242"
+              [(ngModel)]="numeroCarte"
+              name="numeroCarte"
+              required
+            />
+          </label>
+
+          <label class="champ">
+            <span class="champ__label">Expiration</span>
+            <input
+              type="text"
+              placeholder="MM/AA"
+              [(ngModel)]="expirationCarte"
+              name="expirationCarte"
+              required
+            />
+          </label>
+
+          <button type="submit" class="bouton bouton--plein paiement__submit" [disabled]="enTraitement()">
+            {{ enTraitement() ? 'Paiement en cours...' : 'Confirmer et payer' }}
+          </button>
+        </form>
+
+        <p class="paiement__mention">
+          Paiement simulé à des fins de démonstration — aucune transaction réelle n'est effectuée.
+        </p>
+      </div>
+    </div>
+  </section>
+</app-layout>

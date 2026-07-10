@@ -1,0 +1,75 @@
+<app-layout>
+  <section class="auth">
+    <div class="auth__carte">
+      <a routerLink="/" class="auth__retour">← Retour à l'accueil</a>
+      <h1 class="auth__titre">Connexion</h1>
+
+      <div class="auth__info" *ngIf="message()">{{ message() }}</div>
+      <div class="auth__erreur" *ngIf="erreur()">{{ erreur() }}</div>
+
+      <form (ngSubmit)="soumettre()">
+        <label class="champ">
+          <span class="champ__label">Email</span>
+          <input type="email" [(ngModel)]="email" name="email" required autocomplete="email" />
+        </label>
+
+        <label class="champ">
+          <span class="champ__label">Mot de passe</span>
+          <span class="champ__mot-de-passe">
+            <input
+              [type]="motDePasseVisible() ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              required
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="champ__visibilite"
+              (click)="basculerVisibiliteMotDePasse()"
+              [attr.aria-label]="motDePasseVisible() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+            >
+              <svg *ngIf="!motDePasseVisible(); else oeilFerme" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <ng-template #oeilFerme>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 3l18 18" />
+                  <path d="M10.6 10.6A2.9 2.9 0 0 0 12 15a3 3 0 0 0 2.4-4.8" />
+                  <path d="M7.1 7.8C4.2 9.6 2.5 12 2.5 12s3.5 6 9.5 6c1.7 0 3.2-.5 4.5-1.2" />
+                  <path d="M14.1 6.3A9.7 9.7 0 0 0 12 6c-6 0-9.5 6-9.5 6s.8 1.4 2.3 2.8" />
+                  <path d="M17.7 8.4c2.4 1.7 3.8 3.6 3.8 3.6s-1 1.8-2.9 3.4" />
+                </svg>
+              </ng-template>
+            </button>
+          </span>
+        </label>
+
+        <div class="auth__options">
+          <label class="auth__souvenir">
+            <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe" />
+            <span>Se souvenir de moi</span>
+          </label>
+
+          <button
+            type="button"
+            class="auth__lien"
+            [disabled]="envoiMotDePasse()"
+            (click)="motDePasseOublie()"
+          >
+            {{ envoiMotDePasse() ? 'Envoi...' : 'Mot de passe oublié ?' }}
+          </button>
+        </div>
+
+        <button type="submit" class="bouton bouton--plein auth__submit" [disabled]="chargement()">
+          {{ chargement() ? 'Connexion...' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <p class="auth__bascule">
+        Pas encore de compte ? <a routerLink="/inscription">Créer un compte</a>
+      </p>
+    </div>
+  </section>
+</app-layout>

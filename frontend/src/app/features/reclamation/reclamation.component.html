@@ -1,0 +1,83 @@
+<app-layout>
+  <section class="reclamations conteneur">
+    <a routerLink="/espace-client" class="bouton-retour">← Retour au dashboard</a>
+
+    <div class="reclamations__entete">
+      <div>
+        <span class="reclamations__eyebrow">Assistance</span>
+        <h1 class="reclamations__titre">Réclamations et questions</h1>
+        <p class="reclamations__texte">
+          Décris ton problème, l'agent répond immédiatement quand il connaît la réponse.
+          Sinon, il transmet directement à un administrateur.
+        </p>
+      </div>
+      <button class="bouton bouton--fantome" (click)="nouvelleReclamation()">
+        Nouvelle réclamation
+      </button>
+    </div>
+
+    <p class="reclamations__chargement" *ngIf="chargement()">Chargement…</p>
+
+    <div class="reclamations__grille" *ngIf="!chargement()">
+      <aside class="liste-fils">
+        <p class="liste-fils__vide" *ngIf="!reclamations().length">
+          Aucune réclamation pour l'instant. Écris ton premier message ci-contre.
+        </p>
+
+        <button
+          type="button"
+          class="fil"
+          *ngFor="let r of reclamations()"
+          [class.fil--actif]="reclamationActive()?.id === r.id"
+          (click)="ouvrir(r)"
+        >
+          <span class="fil__sujet">{{ r.sujet }}</span>
+          <span class="statut-reclamation" [class]="'statut-reclamation--' + classeStatut(r.statut)">
+            {{ libelleStatut(r.statut) }}
+          </span>
+        </button>
+      </aside>
+
+      <div class="fenetre-chat">
+        <div class="fenetre-chat__messages" *ngIf="reclamationActive() as r; else nouveauFil">
+          <div
+            class="bulle"
+            *ngFor="let m of r.messages"
+            [class.bulle--client]="m.auteur === 'CLIENT'"
+            [class.bulle--assistant]="m.auteur === 'ASSISTANT'"
+            [class.bulle--admin]="m.auteur === 'ADMIN'"
+          >
+            <span class="bulle__auteur">
+              {{ m.auteur === 'CLIENT' ? 'Toi' : m.auteur === 'ASSISTANT' ? 'Agent' : 'Administrateur' }}
+            </span>
+            <p class="bulle__texte">{{ m.texte }}</p>
+          </div>
+        </div>
+
+        <ng-template #nouveauFil>
+          <div class="fenetre-chat__accueil">
+            <p>Décris ta question ou ton problème, l'agent te répond tout de suite.</p>
+          </div>
+        </ng-template>
+
+        <div class="fenetre-chat__saisie">
+          <textarea
+            rows="2"
+            placeholder="Ex : je veux annuler ma réservation, comment faire ?"
+            [(ngModel)]="messageEnCours"
+            name="messageEnCours"
+            (keydown.enter)="$event.preventDefault(); envoyer()"
+          ></textarea>
+          <button
+            type="button"
+            class="bouton bouton--plein"
+            [disabled]="envoiEnCours() || !messageEnCours.trim()"
+            (click)="envoyer()"
+          >
+            {{ envoiEnCours() ? 'Envoi...' : 'Envoyer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</app-layout>

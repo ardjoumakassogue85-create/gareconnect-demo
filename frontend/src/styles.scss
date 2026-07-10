@@ -1,0 +1,454 @@
+@use './styles/tokens' as t;
+
+@import url('https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: t.$police-texte;
+  color: t.$bitume;
+  background: t.$papier;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: t.$police-titre;
+  margin: 0;
+  color: t.$nuit;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid t.$or-phare;
+  outline-offset: 2px;
+}
+
+.conteneur {
+  max-width: t.$largeur-max-contenu;
+  margin: 0 auto;
+  padding: 0 t.$espace-6;
+
+  @include t.mobile {
+    padding: 0 t.$espace-4;
+  }
+}
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$espace-2;
+  min-width: 0;
+  padding: t.$espace-2 t.$espace-4;
+  border-radius: t.$rayon-md;
+  font-size: t.$taille-sm;
+  font-weight: 600;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  font-family: t.$police-texte;
+
+  &--plein {
+    background: t.$or-phare;
+    color: t.$nuit;
+
+    &:hover {
+      box-shadow: 0 6px 16px rgba(231, 169, 60, 0.35);
+      transform: translateY(-1px);
+    }
+  }
+
+  &--fantome {
+    background: transparent;
+    color: t.$nuit;
+    border: 1px solid t.$papier-fonce;
+
+    &:hover {
+      border-color: t.$nuit;
+    }
+  }
+}
+
+.bouton-retour {
+  display: inline-flex;
+  align-items: center;
+  gap: t.$espace-2;
+  width: fit-content;
+  margin-bottom: t.$espace-4;
+  color: t.$bitume-attenue;
+  font-size: t.$taille-sm;
+  font-weight: 600;
+  border: 1px solid t.$papier-fonce;
+  border-radius: t.$rayon-md;
+  background: white;
+  padding: t.$espace-2 t.$espace-3;
+
+  &:hover {
+    color: t.$nuit;
+    border-color: t.$or-phare;
+  }
+}
+
+.vitrine-template {
+  border: 1px solid t.$papier-fonce;
+  border-radius: t.$rayon-md;
+  box-shadow: t.$ombre-carte;
+  display: grid;
+  gap: t.$espace-3;
+  margin-top: t.$espace-4;
+  overflow: hidden;
+}
+
+.vitrine-template__hero {
+  align-items: center;
+  background: linear-gradient(90deg, t.$nuit, t.$nuit-clair);
+  background-position: center;
+  background-size: cover;
+  color: white;
+  display: grid;
+  gap: t.$espace-3;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 132px;
+  padding: t.$espace-4;
+}
+
+.vitrine-template__hero span,
+.vitrine-template__contenu span {
+  color: t.$bitume-attenue;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+}
+
+.vitrine-template__hero > div > span {
+  color: t.$or-phare;
+  display: block;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.vitrine-template__hero strong {
+  color: white;
+  display: block;
+  font-family: t.$police-titre;
+  font-size: t.$taille-xl;
+}
+
+.vitrine-template__hero p {
+  color: rgba(255, 255, 255, 0.78);
+  display: -webkit-box;
+  font-size: t.$taille-sm;
+  line-height: 1.35;
+  margin-top: t.$espace-1;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.vitrine-template__logo {
+  align-items: center;
+  background: t.$or-phare;
+  border-radius: t.$rayon-md;
+  color: t.$nuit;
+  display: flex;
+  font-family: t.$police-titre;
+  font-size: t.$taille-xl;
+  font-weight: 800;
+  height: 56px;
+  justify-content: center;
+  overflow: hidden;
+  width: 56px;
+}
+
+.vitrine-template__logo img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.vitrine-template__contenu {
+  display: grid;
+  gap: t.$espace-2;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0 t.$espace-3;
+}
+
+.vitrine-template__contenu div {
+  background: t.$papier;
+  border-radius: t.$rayon-sm;
+  display: grid;
+  padding: t.$espace-2;
+}
+
+.vitrine-template__contenu strong {
+  color: t.$nuit;
+  font-family: t.$police-titre;
+}
+
+.vitrine-template__trajets,
+.vitrine-template__vide {
+  display: grid;
+  gap: t.$espace-2;
+  padding: 0 t.$espace-3 t.$espace-3;
+}
+
+.vitrine-template__trajets article {
+  align-items: center;
+  border-top: 1px solid t.$papier-fonce;
+  display: flex;
+  gap: t.$espace-2;
+  justify-content: space-between;
+  padding-top: t.$espace-2;
+}
+
+.vitrine-template__trajets span {
+  font-size: t.$taille-sm;
+  font-weight: 700;
+}
+
+.vitrine-template__trajets strong {
+  color: t.$or-phare-fonce;
+  flex: 0 0 auto;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+}
+
+.vitrine-template__vide {
+  color: t.$bitume-attenue;
+  font-size: t.$taille-sm;
+}
+
+.configuration-vitrine {
+  background: t.$papier;
+  border: 1px solid t.$papier-fonce;
+  border-radius: t.$rayon-md;
+  display: grid;
+  gap: t.$espace-4;
+  padding: t.$espace-4;
+}
+
+.configuration-vitrine__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: t.$espace-3;
+  justify-content: flex-end;
+}
+
+.trajets::-webkit-scrollbar,
+.reclamations::-webkit-scrollbar,
+.modale__liste::-webkit-scrollbar,
+.tableau--scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.trajets::-webkit-scrollbar-track,
+.reclamations::-webkit-scrollbar-track,
+.modale__liste::-webkit-scrollbar-track,
+.tableau--scroll::-webkit-scrollbar-track {
+  background: t.$papier;
+  border-radius: 999px;
+}
+
+.trajets::-webkit-scrollbar-thumb,
+.reclamations::-webkit-scrollbar-thumb,
+.modale__liste::-webkit-scrollbar-thumb,
+.tableau--scroll::-webkit-scrollbar-thumb {
+  background: t.$nuit-clair;
+  border: 2px solid t.$papier;
+  border-radius: 999px;
+}
+
+@include t.tablette {
+  .entete__barre {
+    flex-wrap: wrap;
+  }
+
+  .entete__actions {
+    margin-left: auto;
+  }
+
+  .billet__trajet,
+  .ticket__trajet {
+    font-size: t.$taille-lg;
+  }
+}
+
+@include t.mobile {
+  .espace,
+  .reservation,
+  .confirmation,
+  .recherche-page,
+  .reclamations {
+    padding-top: t.$espace-6;
+    padding-bottom: t.$espace-12;
+  }
+
+  .espace__titre,
+  .recherche-page__titre {
+    font-size: t.$taille-2xl;
+  }
+
+  .dashboard-action {
+    min-height: 92px;
+  }
+
+  .onglets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .onglet,
+  .bouton,
+  .bouton-retour {
+    min-height: 44px;
+  }
+
+  .bouton,
+  .bouton-retour {
+    white-space: normal;
+    text-align: center;
+  }
+
+  .vitrine-template__hero,
+  .vitrine-template__contenu {
+    grid-template-columns: 1fr;
+  }
+
+  .vitrine-template__trajets article {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .billet {
+    flex-direction: column;
+  }
+
+  .billet__poincon {
+    width: 100%;
+    height: 10px;
+    background-size: 14px 10px;
+    background-repeat: repeat-x;
+    border-right: none;
+    border-bottom: 1px dashed t.$papier-fonce;
+  }
+
+  .billet__corps {
+    padding: t.$espace-4;
+  }
+
+  .billet__ligne1 {
+    flex-wrap: wrap;
+  }
+
+  .billet__etat {
+    align-items: flex-end;
+    width: 100%;
+  }
+
+  .billet__annulation {
+    align-items: flex-end;
+  }
+
+  .billet__meta,
+  .ticket__meta {
+    flex-wrap: wrap;
+  }
+
+  .billet__prix {
+    justify-content: flex-end;
+    border-left: none;
+    border-top: 1px dashed t.$papier-fonce;
+    padding: t.$espace-3 t.$espace-4;
+  }
+
+  .espace__vide-bloc {
+    min-height: 112px;
+    padding: t.$espace-6;
+  }
+
+  .modale-fond {
+    align-items: flex-end;
+    padding: t.$espace-2;
+  }
+
+  .modale {
+    max-height: 92dvh;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modale__ligne {
+    flex-direction: column;
+    gap: t.$espace-1;
+
+    dd {
+      text-align: left;
+    }
+  }
+
+  .confirmation__navigation {
+    margin-bottom: t.$espace-6;
+  }
+
+  .ticket__corps,
+  .ticket__qr,
+  .recap,
+  .paiement {
+    padding: t.$espace-4;
+  }
+
+  .paiement__onglets,
+  .confirmation__actions {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

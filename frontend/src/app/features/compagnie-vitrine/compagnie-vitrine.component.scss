@@ -1,0 +1,222 @@
+@use 'tokens' as t;
+
+.vitrine-compagnie {
+  padding-top: t.$espace-12;
+  padding-bottom: t.$espace-24;
+
+  @include t.mobile {
+    padding-top: t.$espace-6;
+    padding-bottom: t.$espace-12;
+  }
+}
+
+.vitrine-compagnie__barre {
+  align-items: center;
+  display: flex;
+  gap: t.$espace-4;
+  justify-content: space-between;
+  margin-bottom: t.$espace-4;
+
+  span {
+    color: t.$bitume-attenue;
+    font-family: t.$police-donnee;
+    font-size: t.$taille-xs;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+}
+
+.vitrine-compagnie__hero {
+  align-items: end;
+  background: t.$nuit;
+  background-position: center;
+  background-size: cover;
+  color: white;
+  border-radius: t.$rayon-lg;
+  box-shadow: t.$ombre-carte;
+  display: grid;
+  gap: t.$espace-8;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  padding: t.$espace-8;
+
+  h1 {
+    color: white;
+    font-size: t.$taille-3xl;
+    margin-bottom: t.$espace-3;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.72);
+    max-width: 56ch;
+  }
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+  }
+
+  @include t.mobile {
+    border-radius: t.$rayon-md;
+    padding: t.$espace-4;
+  }
+}
+
+.vitrine-compagnie__hero--image {
+  min-height: 360px;
+}
+
+.vitrine-compagnie__hero-contenu {
+  display: grid;
+  gap: t.$espace-4;
+}
+
+.vitrine-compagnie__identite {
+  display: flex;
+  gap: t.$espace-6;
+  align-items: center;
+
+  img,
+  .vitrine-compagnie__logo {
+    width: 76px;
+    height: 76px;
+    border-radius: t.$rayon-md;
+    flex: 0 0 auto;
+  }
+
+  img {
+    object-fit: cover;
+  }
+
+  .vitrine-compagnie__logo {
+    display: grid;
+    place-items: center;
+    background: t.$or-phare;
+    color: t.$nuit;
+    font-family: t.$police-titre;
+    font-size: t.$taille-3xl;
+    font-weight: 800;
+  }
+
+  @include t.mobile {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.vitrine-compagnie__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: t.$espace-3;
+
+  span {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: t.$rayon-md;
+    color: rgba(255, 255, 255, 0.82);
+    font-family: t.$police-donnee;
+    padding: t.$espace-2 t.$espace-3;
+  }
+}
+
+.vitrine-compagnie__eyebrow {
+  display: inline-block;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: t.$or-phare;
+  margin-bottom: t.$espace-2;
+}
+
+.vitrine-compagnie__reservation {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: t.$rayon-md;
+  box-shadow: 0 18px 48px rgba(14, 34, 56, 0.24);
+  color: t.$nuit;
+  display: grid;
+  gap: t.$espace-2;
+  padding: t.$espace-6;
+
+  span {
+    color: t.$bitume-attenue;
+    font-family: t.$police-donnee;
+    font-size: t.$taille-xs;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: t.$nuit;
+    font-family: t.$police-titre;
+    font-size: t.$taille-xl;
+  }
+
+  p {
+    color: t.$bitume-attenue;
+  }
+
+  @include t.mobile {
+    padding: t.$espace-4;
+  }
+}
+
+.vitrine-compagnie__grille {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: t.$espace-6;
+  margin-top: t.$espace-8;
+
+  section {
+    border: 1px solid t.$papier-fonce;
+    border-radius: t.$rayon-md;
+    padding: t.$espace-6;
+    background: white;
+
+    @include t.mobile {
+      padding: t.$espace-4;
+    }
+  }
+
+  h2 {
+    font-size: t.$taille-lg;
+    margin-bottom: t.$espace-3;
+  }
+
+  p,
+  ul {
+    display: grid;
+    gap: t.$espace-2;
+    color: t.$bitume-attenue;
+  }
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vitrine-compagnie__galerie {
+  margin-top: t.$espace-8;
+
+  h2 {
+    font-size: t.$taille-xl;
+    margin-bottom: t.$espace-4;
+  }
+
+  div {
+    display: grid;
+    gap: t.$espace-4;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    @include t.mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  img {
+    aspect-ratio: 16 / 10;
+    border-radius: t.$rayon-md;
+    box-shadow: t.$ombre-carte;
+    object-fit: cover;
+    width: 100%;
+  }
+}

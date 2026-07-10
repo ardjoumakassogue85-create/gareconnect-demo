@@ -1,0 +1,8 @@
+*.env
+backend/.env
+backend/*.log
+backend/target
+.npm-cache
+frontend/.angular/cache
+frontend/dist
+frontend/node_modules

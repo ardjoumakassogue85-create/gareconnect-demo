@@ -1,0 +1,65 @@
+server:
+  port: ${PORT:8081}
+
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  mail:
+    host: ${SMTP_HOST:}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${SMTP_AUTH:true}
+          starttls:
+            enable: ${SMTP_STARTTLS_ENABLE:true}
+          # Timeouts courts : si le SMTP est bloque (ex. hebergeur), l'envoi
+          # echoue vite au lieu de bloquer la requete (evite les 502).
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  h2:
+    console:
+      enabled: ${H2_CONSOLE_ENABLED:false}
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-local-secret-key-at-least-32-characters-long}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+    remember-me-expiration-ms: ${JWT_REMEMBER_ME_EXPIRATION_MS:2592000000}
+  frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:4200}
+  seed-demo: ${SEED_DEMO:false}
+  billet:
+    # Cle privee RSA (PKCS8 base64) pour signer les billets. Vide => cle ephemere
+    # regeneree a chaque demarrage (dev). A definir en production pour la stabilite.
+    private-key: ${BILLET_PRIVATE_KEY:}
+  email:
+    from: ${MAIL_FROM:}
+
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:4200}
+
+brevo:
+  # Cle API Brevo (https://app.brevo.com). Si definie, les emails partent via
+  # l'API HTTPS de Brevo (port 443) au lieu du SMTP (souvent bloque en cloud).
+  # Vide => on retombe sur le SMTP classique (dev local avec Gmail).
+  api-key: ${BREVO_API_KEY:}
+
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-flash-latest}
+  base-url: https://generativelanguage.googleapis.com/v1beta
+make:
+  # URL du webhook a definir dans backend/.env (MAKE_RECLAMATION_WEBHOOK_URL).
+  # Sans valeur, la reclamation IA escalade simplement vers un agent (pas de fuite de secret).
+  reclamation-webhook-url: ${MAKE_RECLAMATION_WEBHOOK_URL:}

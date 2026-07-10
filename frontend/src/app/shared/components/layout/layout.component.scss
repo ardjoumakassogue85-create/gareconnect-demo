@@ -1,0 +1,437 @@
+@use 'tokens' as t;
+
+.entete {
+  background: white;
+  border-bottom: 1px solid t.$papier-fonce;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.entete__barre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: t.$espace-4;
+  padding-bottom: t.$espace-4;
+  gap: t.$espace-4;
+
+  @include t.tablette {
+    flex-wrap: wrap;
+  }
+
+  @include t.mobile {
+    align-items: flex-start;
+    gap: t.$espace-3;
+    padding-top: t.$espace-3;
+    padding-bottom: t.$espace-3;
+  }
+}
+
+.entete__menu-bouton {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  border: 1px solid t.$papier-fonce;
+  border-radius: t.$rayon-md;
+  background: white;
+  color: t.$nuit;
+
+  span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+  }
+
+  &[aria-expanded='true'] {
+    span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    span:nth-child(2) {
+      opacity: 0;
+    }
+
+    span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+  }
+
+  @include t.tablette {
+    display: inline-flex;
+    margin-left: auto;
+  }
+}
+
+.entete__marque {
+  display: flex;
+  align-items: center;
+  gap: t.$espace-2;
+  min-width: 0;
+}
+
+.entete__logo {
+  display: block;
+  width: 156px;
+  height: 48px;
+  object-fit: contain;
+  object-position: left center;
+
+  @include t.mobile {
+    width: 132px;
+    height: 40px;
+  }
+}
+
+.entete__pastille {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: t.$rayon-md;
+  background: t.$nuit;
+  color: white;
+  font-family: t.$police-donnee;
+  font-weight: 600;
+  font-size: t.$taille-sm;
+  letter-spacing: 0.04em;
+}
+
+.entete__nom {
+  font-family: t.$police-titre;
+  font-size: t.$taille-lg;
+  color: t.$nuit;
+
+  strong {
+    color: t.$or-phare-fonce;
+  }
+}
+
+.entete__nav {
+  display: flex;
+  gap: t.$espace-6;
+  font-size: t.$taille-sm;
+  font-weight: 500;
+  color: t.$bitume-attenue;
+
+  @include t.tablette {
+    display: none;
+    order: 3;
+    width: 100%;
+    padding-top: t.$espace-3;
+    border-top: 1px solid t.$papier-fonce;
+    gap: t.$espace-2;
+    flex-direction: column;
+
+    &--ouvert {
+      display: flex;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: t.$espace-2 t.$espace-3;
+      border-radius: t.$rayon-sm;
+      background: t.$papier;
+      color: t.$nuit;
+    }
+  }
+
+  a.est-actif {
+    color: t.$nuit;
+  }
+}
+
+.entete__installer {
+  display: none;
+  align-items: center;
+  gap: t.$espace-2;
+  border: none;
+  border-radius: 999px;
+  background: t.$nuit;
+  color: white;
+  cursor: pointer;
+  font-family: t.$police-texte;
+  font-size: t.$taille-sm;
+  font-weight: 800;
+  min-height: 38px;
+  padding: t.$espace-2 t.$espace-3;
+  white-space: nowrap;
+
+  @include t.tablette {
+    display: inline-flex;
+    order: 2;
+    margin-left: auto;
+  }
+
+  @include t.mobile {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.entete__installer-icone {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 35% 35%, #e7a93c 0 18%, transparent 19%),
+    linear-gradient(135deg, #1f9d6d, #0e2238);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+.entete__actions {
+  display: flex;
+  align-items: center;
+  gap: t.$espace-3;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+
+  @include t.tablette {
+    display: none;
+    order: 4;
+    width: 100%;
+    margin-left: auto;
+    padding-top: t.$espace-2;
+
+    &--ouvert {
+      display: flex;
+    }
+
+    .bouton {
+      flex: 1 1 calc(50% - #{t.$espace-2});
+      min-height: 48px;
+    }
+  }
+
+  @include t.mobile {
+    justify-content: stretch;
+    gap: t.$espace-2;
+
+    .bouton {
+      flex: 1 1 calc(50% - #{t.$espace-2});
+      padding-left: t.$espace-2;
+      padding-right: t.$espace-2;
+    }
+  }
+}
+
+.entete__utilisateur {
+  font-size: t.$taille-sm;
+  font-weight: 500;
+  color: t.$nuit;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @include t.mobile {
+    flex: 1 1 100%;
+  }
+}
+
+.pied {
+  background: white;
+  color: t.$bitume-attenue;
+  margin-top: t.$espace-24;
+  border-top: 1px solid t.$papier-fonce;
+}
+
+.pied__grille {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: t.$espace-8;
+  padding: t.$espace-16 0 t.$espace-12;
+
+  > div:not(:first-child) {
+    padding-top: 78px;
+  }
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+    gap: t.$espace-6;
+    justify-items: center;
+    text-align: center;
+
+    > div {
+      display: grid;
+      justify-items: center;
+      padding-top: 0;
+    }
+  }
+
+  a {
+    display: block;
+    font-size: t.$taille-sm;
+    padding: t.$espace-1 0;
+    color: t.$bitume-attenue;
+
+    &:hover {
+      color: t.$nuit;
+    }
+  }
+}
+
+.pied__baseline {
+  margin-top: t.$espace-3;
+  font-size: t.$taille-sm;
+  max-width: 32ch;
+  color: t.$bitume-attenue;
+
+  @include t.tablette {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.pied__logo {
+  display: block;
+  width: 190px;
+  height: auto;
+}
+
+.pied__titre {
+  font-size: t.$taille-sm;
+  font-weight: 700;
+  color: t.$nuit;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: t.$espace-2;
+}
+
+/* --- Cloche de notifications --- */
+.notif {
+  position: relative;
+
+  @include t.mobile {
+    order: -1;
+  }
+}
+
+.notif__cloche {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(14, 34, 56, 0.15);
+  background: transparent;
+  color: t.$nuit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+.notif__cloche:hover,
+.notif__cloche--actif {
+  background: rgba(231, 169, 60, 0.16);
+  color: t.$or-phare-fonce;
+}
+
+.notif__badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: t.$rouge-alerte;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notif__panneau {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 340px;
+  max-width: 90vw;
+  max-height: calc((4.75rem * 3) + (#{t.$espace-2} * 2) + 2.25rem);
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid rgba(14, 34, 56, 0.12);
+  border-radius: t.$rayon-md;
+  box-shadow: 0 18px 40px rgba(14, 34, 56, 0.16);
+  z-index: 50;
+  padding: t.$espace-2;
+
+  @include t.mobile {
+    position: fixed;
+    top: 72px;
+    left: t.$espace-4;
+    right: t.$espace-4;
+    width: auto;
+    max-width: none;
+    max-height: min(70dvh, calc((4.75rem * 3) + (#{t.$espace-2} * 2) + 2.25rem));
+  }
+}
+
+.notif__entete {
+  font-size: t.$taille-xs;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(14, 34, 56, 0.6);
+  padding: t.$espace-2 t.$espace-3;
+}
+
+.notif__vide {
+  padding: t.$espace-4 t.$espace-3;
+  color: rgba(14, 34, 56, 0.6);
+  font-size: t.$taille-sm;
+  text-align: center;
+}
+
+.notif__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 4.75rem;
+  width: 100%;
+  text-align: left;
+  padding: t.$espace-3;
+  border: none;
+  border-radius: t.$rayon-sm;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.notif__item:hover {
+  background: rgba(231, 169, 60, 0.1);
+}
+.notif__item--nonlu {
+  background: rgba(231, 169, 60, 0.08);
+}
+
+.notif__item-titre {
+  font-weight: 700;
+  color: t.$nuit;
+  font-size: t.$taille-sm;
+}
+
+.notif__item-message {
+  color: rgba(14, 34, 56, 0.72);
+  font-size: t.$taille-xs;
+  line-height: 1.4;
+}

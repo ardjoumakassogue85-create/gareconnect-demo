@@ -1,0 +1,505 @@
+<app-layout>
+  <section class="espace conteneur">
+    <div class="espace__entete">
+      <div>
+        <span class="espace__eyebrow">Dashboard compagnie</span>
+        <h1 class="espace__titre">{{ nomCompagnie() }}</h1>
+        <p class="espace__texte">Pilote tes trajets, tes ventes, ta vitrine et les demandes clients importantes.</p>
+      </div>
+
+      <a class="bouton bouton--fantome" [routerLink]="['/vitrine', nomCompagnie()]">Voir ma vitrine</a>
+    </div>
+
+    <div class="stats">
+      <article class="stat">
+        <span class="stat__label">Trajets actifs</span>
+        <strong>{{ stats().trajetsActifs }}</strong>
+      </article>
+      <article class="stat">
+        <span class="stat__label">Reservations recues</span>
+        <strong>{{ stats().reservationsRecues }}</strong>
+      </article>
+      <article class="stat">
+        <span class="stat__label">Places vendues</span>
+        <strong>{{ stats().placesVendues }}</strong>
+      </article>
+      <article class="stat">
+        <span class="stat__label">Chiffre d'affaires</span>
+        <strong>{{ stats().chiffreAffaires | number }} F</strong>
+      </article>
+      <article class="stat stat--alerte">
+        <span class="stat__label">Reclamations a traiter</span>
+        <strong>{{ stats().reclamationsEnAttente }}</strong>
+      </article>
+    </div>
+
+    <div class="affluence-compagnie" *ngIf="affluenceCompagnie() as aff">
+      <div class="affluence-compagnie__tete">
+        <div>
+          <span class="espace__eyebrow">🚦 Intelligence d'affluence</span>
+          <h2 class="affluence-compagnie__titre">Demande prévue sur tes gares</h2>
+          <p class="espace__texte" *ngIf="aff.gares.length">Gares analysées : {{ aff.gares.join(', ') }}</p>
+        </div>
+        <div class="affluence-compagnie__legende">
+          <span><i class="pastille pastille--faible"></i> Faible</span>
+          <span><i class="pastille pastille--moyenne"></i> Moyenne</span>
+          <span><i class="pastille pastille--forte"></i> Forte</span>
+        </div>
+      </div>
+
+      <div class="heatmap-scroll">
+        <div class="heatmap">
+          <div class="heatmap__ligne heatmap__ligne--entete">
+            <span class="heatmap__jour"></span>
+            <span class="heatmap__creneau" *ngFor="let c of aff.creneaux">{{ c }}</span>
+          </div>
+          <div class="heatmap__ligne" *ngFor="let ligne of aff.heatmap">
+            <span class="heatmap__jour">{{ ligne.jour }}</span>
+            <span
+              class="heatmap__cellule"
+              *ngFor="let c of ligne.creneaux"
+              [class]="'heatmap__cellule--' + classeAffluence(c.niveau)"
+              [title]="ligne.jour + ' ' + c.heure + ' · affluence ' + c.score + '%'"
+            >
+              {{ c.score }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="affluence-compagnie__suggestions" *ngIf="aff.suggestions.length">
+        <span class="affluence-compagnie__suggestions-titre">💡 Recommandations</span>
+        <p class="suggestion" *ngFor="let s of aff.suggestions">{{ s }}</p>
+      </div>
+    </div>
+
+    <div class="dashboard">
+      <div class="dashboard__principal">
+        <div class="carte">
+          <div class="carte__entete-flex">
+            <div>
+              <h2 class="carte__titre">Mes trajets</h2>
+              <p class="carte__soustitre">Ajoute, modifie ou suspends les trajets visibles par les voyageurs.</p>
+            </div>
+            <div class="carte__actions">
+              <button class="bouton bouton--fantome" (click)="ouvrirTousLesTrajets()">Voir</button>
+              <button class="bouton bouton--plein" (click)="ouvrirAjout()">+ Ajouter</button>
+            </div>
+          </div>
+
+          <label class="recherche">
+            <span>Recherche</span>
+            <input
+              type="search"
+              placeholder="Ville, date, heure, statut..."
+              [ngModel]="rechercheTrajet()"
+              (ngModelChange)="rechercheTrajet.set($event)"
+              name="rechercheTrajet"
+            />
+          </label>
+
+          <div class="formulaire-trajet" *ngIf="formulaireOuvert()">
+            <div class="formulaire-trajet__grille">
+              <label class="champ">
+                <span class="champ__label">Ville de depart</span>
+                <select [(ngModel)]="brouillon.villeDepart" name="villeDepart">
+                  <option *ngFor="let ville of villes" [value]="ville">{{ ville }}</option>
+                </select>
+              </label>
+              <label class="champ">
+                <span class="champ__label">Ville d'arrivee</span>
+                <select [(ngModel)]="brouillon.villeArrivee" name="villeArrivee">
+                  <option *ngFor="let ville of villes" [value]="ville">{{ ville }}</option>
+                </select>
+              </label>
+              <label class="champ">
+                <span class="champ__label">Date</span>
+                <input type="date" [(ngModel)]="brouillon.date" name="date" />
+              </label>
+              <label class="champ">
+                <span class="champ__label">Heure de depart</span>
+                <input type="time" [(ngModel)]="brouillon.heureDepart" name="heureDepart" />
+              </label>
+              <label class="champ">
+                <span class="champ__label">Prix (F CFA)</span>
+                <input type="number" min="0" [(ngModel)]="brouillon.prix" name="prix" />
+              </label>
+              <label class="champ">
+                <span class="champ__label">Places disponibles</span>
+                <input type="number" min="0" [(ngModel)]="brouillon.placesDisponibles" name="places" />
+              </label>
+            </div>
+
+            <div class="formulaire-trajet__actions">
+              <button class="bouton bouton--fantome" (click)="annuler()">Annuler</button>
+              <button class="bouton bouton--plein" (click)="enregistrer()">Enregistrer</button>
+            </div>
+          </div>
+
+          <div class="trajets" *ngIf="trajetsFiltres().length; else videTrajets">
+            <article class="trajet" *ngFor="let t of trajetsFiltres()">
+              <div class="trajet__infos">
+                <span class="trajet__villes">
+                  {{ t.villeDepart }} -> {{ t.villeArrivee }}
+                  <span class="badge badge--imminent" *ngIf="estDepartImminent(t)">Départ imminent</span>
+                </span>
+                <span class="trajet__meta">
+                  {{ t.date || 'Date flexible' }} · {{ t.heureDepart }} ·
+                  {{ t.prix | number }} F · {{ t.placesDisponibles }} place(s)
+                </span>
+              </div>
+
+              <div class="trajet__droite">
+                <button
+                  class="statut statut--bouton"
+                  [class]="'statut--' + (t.statut === 'ACTIF' ? 'confirmee' : 'annulee')"
+                  (click)="basculerStatut(t.id)"
+                >
+                  {{ t.statut === 'ACTIF' ? 'Actif' : 'Suspendu' }}
+                </button>
+                <button class="lien-action" (click)="ouvrirEdition(t)">Modifier</button>
+                <button class="lien-action lien-action--danger" (click)="supprimer(t.id)">Supprimer</button>
+              </div>
+            </article>
+          </div>
+
+          <ng-template #videTrajets>
+            <p class="espace__vide">
+              {{ trajets().length ? 'Aucun trajet ne correspond a cette recherche.' : 'Aucun trajet pour le moment. Ajoute ton premier trajet.' }}
+            </p>
+          </ng-template>
+        </div>
+
+        <div class="carte">
+          <h2 class="carte__titre">Reservations recues</h2>
+
+          <label class="recherche">
+            <span>Recherche</span>
+            <input
+              type="search"
+              placeholder="Client, trajet, date, statut..."
+              [ngModel]="rechercheReservation()"
+              (ngModelChange)="rechercheReservation.set($event)"
+              name="rechercheReservation"
+            />
+          </label>
+
+          <div class="tableau tableau--scroll" *ngIf="reservationsFiltrees().length; else videReservations">
+            <div class="tableau__ligne tableau__ligne--entete">
+              <span>Client</span>
+              <span>Trajet</span>
+              <span>Tickets</span>
+              <span>Total</span>
+              <span>Statut</span>
+            </div>
+            <div class="tableau__ligne" *ngFor="let reservation of reservationsFiltrees()">
+              <span>{{ reservation.client }}</span>
+              <span>{{ reservation.trajet }} · {{ reservation.date }}</span>
+              <span>{{ reservation.tickets }}</span>
+              <span>{{ reservation.total | number }} F</span>
+              <span class="badge" [class.badge--danger]="reservation.statut === 'ANNULEE'">
+                {{ reservation.statut === 'CONFIRMEE' ? 'Confirmee' : 'Annulee' }}
+              </span>
+            </div>
+          </div>
+
+          <ng-template #videReservations>
+            <p class="espace__vide">
+              {{ reservations().length ? 'Aucune reservation ne correspond a cette recherche.' : 'Aucune reservation recue pour le moment.' }}
+            </p>
+          </ng-template>
+        </div>
+
+      </div>
+
+      <aside class="dashboard__aside">
+        <div class="carte" id="configurer-vitrine">
+          <h2 class="carte__titre">Ma vitrine</h2>
+
+          <div class="vitrine">
+            <div class="vitrine__couverture" [class.vitrine__couverture--vide]="!imageCouverture()">
+              <img *ngIf="imageCouverture()" [src]="imageCouverture()" alt="Image de couverture de la compagnie" />
+              <span *ngIf="!imageCouverture()">Image de couverture</span>
+              <label class="bouton bouton--fantome vitrine__bouton-cover">
+                Changer
+                <input type="file" accept="image/*" (change)="surChangementCouverture($event)" hidden />
+              </label>
+            </div>
+
+            <div class="vitrine__logo">
+              <img *ngIf="logoApercu(); else pastille" [src]="logoApercu()" alt="Logo de la compagnie" />
+              <ng-template #pastille>
+                <span class="vitrine__pastille">{{ nomCompagnie().charAt(0) }}</span>
+              </ng-template>
+              <label class="bouton bouton--fantome vitrine__bouton-upload">
+                Changer le logo
+                <input type="file" accept="image/*" (change)="surChangementLogo($event)" hidden />
+              </label>
+            </div>
+
+            <label class="champ vitrine__description">
+              <span class="champ__label">Description publique</span>
+              <textarea rows="4" [(ngModel)]="description" (blur)="enregistrerVitrine()"></textarea>
+            </label>
+
+            <div class="vitrine__galerie">
+              <div class="vitrine__galerie-entete">
+                <span class="champ__label">Images du profil</span>
+                <label class="lien-action">
+                  Ajouter
+                  <input type="file" accept="image/*" multiple (change)="surAjoutImages($event)" hidden />
+                </label>
+              </div>
+
+              <div class="vitrine__photos" *ngIf="galerieImages().length; else aucuneImage">
+                <button
+                  class="vitrine__photo"
+                  type="button"
+                  *ngFor="let image of galerieImages(); let i = index"
+                  (click)="supprimerImage(i)"
+                  title="Supprimer l'image"
+                >
+                  <img [src]="image" alt="Image de la vitrine" />
+                </button>
+              </div>
+
+              <ng-template #aucuneImage>
+                <p class="espace__vide">Ajoute des photos de ta gare, tes cars ou ton agence.</p>
+              </ng-template>
+            </div>
+
+            <button class="bouton bouton--plein vitrine__configurer" type="button" (click)="ouvrirConfigurationVitrine()">
+              Configurer site vitrine
+            </button>
+
+            <div class="configuration-vitrine" *ngIf="formulaireVitrineOuvert()">
+              <label class="champ">
+                <span class="champ__label">Localisation</span>
+                <input
+                  type="text"
+                  placeholder="Ex: Gare d'Adjame, Abidjan"
+                  [(ngModel)]="localisation"
+                  name="localisationVitrine"
+                />
+              </label>
+
+              <label class="champ">
+                <span class="champ__label">Gares desservies</span>
+                <textarea
+                  rows="4"
+                  placeholder="Une gare par ligne"
+                  [(ngModel)]="garesDesserviesTexte"
+                  name="garesDesserviesVitrine"
+                ></textarea>
+              </label>
+
+              <label class="champ">
+                <span class="champ__label">Services</span>
+                <textarea
+                  rows="4"
+                  placeholder="Un service par ligne"
+                  [(ngModel)]="servicesTexte"
+                  name="servicesVitrine"
+                ></textarea>
+              </label>
+
+              <div class="configuration-vitrine__actions">
+                <button class="bouton bouton--fantome" type="button" (click)="ouvrirConfigurationVitrine()">Annuler</button>
+                <button class="bouton bouton--plein" type="button" (click)="enregistrerConfigurationVitrine()">Enregistrer</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="vitrine__resume">
+            <span>{{ vitrine()?.noteMoyenne || 0 }}/5 · {{ vitrine()?.nombreAvis || 0 }} avis</span>
+            <span>{{ vitrine()?.garesDesservies?.length || 0 }} gare(s) desservie(s)</span>
+          </div>
+
+          <div class="vitrine-template">
+            <div
+              class="vitrine-template__hero"
+              [class.vitrine-template__hero--image]="imageCouverture()"
+              [style.background-image]="imageCouverture() ? 'linear-gradient(90deg, rgba(14, 34, 56, 0.9), rgba(14, 34, 56, 0.5)), url(' + imageCouverture() + ')' : null"
+            >
+              <div class="vitrine-template__logo">
+                <img *ngIf="logoApercu(); else logoTemplateVide" [src]="logoApercu()" alt="Logo de la compagnie" />
+                <ng-template #logoTemplateVide>{{ nomCompagnie().charAt(0) }}</ng-template>
+              </div>
+              <div>
+                <span>Site vitrine gare</span>
+                <strong>{{ nomCompagnie() }}</strong>
+                <p>{{ description }}</p>
+              </div>
+            </div>
+
+            <div class="vitrine-template__contenu">
+              <div>
+                <span>Departs</span>
+                <strong>{{ stats().trajetsActifs }}</strong>
+              </div>
+              <div>
+                <span>Avis</span>
+                <strong>{{ vitrine()?.noteMoyenne || 0 }}/5</strong>
+              </div>
+              <div>
+                <span>Gares</span>
+                <strong>{{ vitrine()?.garesDesservies?.length || 0 }}</strong>
+              </div>
+            </div>
+
+            <div class="vitrine-template__trajets" *ngIf="trajets().length; else vitrineTemplateVide">
+              <article *ngFor="let trajet of trajets().slice(0, 2)">
+                <span>{{ trajet.villeDepart }} -> {{ trajet.villeArrivee }}</span>
+                <strong>{{ trajet.prix | number }} F</strong>
+              </article>
+            </div>
+
+            <ng-template #vitrineTemplateVide>
+              <p class="vitrine-template__vide">Ajoute des trajets pour alimenter cette esquisse.</p>
+            </ng-template>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="carte carte--pleine">
+      <div class="carte__entete-flex">
+        <div>
+          <h2 class="carte__titre">Reclamations escaladees</h2>
+          <p class="carte__soustitre">Cas que l'assistant IA ne peut pas clore automatiquement.</p>
+        </div>
+      </div>
+
+      <div class="reclamations" *ngIf="reclamationsActives().length; else aucuneReclamationActive">
+        <article class="reclamation" *ngFor="let reclamation of reclamationsActives()">
+          <div class="reclamation__entete">
+            <div>
+              <span class="reclamation__sujet">{{ reclamation.sujet }}</span>
+              <span class="reclamation__meta">{{ reclamation.client }}</span>
+            </div>
+          </div>
+
+          <p>{{ dernierMessage(reclamation) }}</p>
+
+          <label class="champ">
+            <span class="champ__label">Reponse compagnie</span>
+            <textarea
+              rows="2"
+              [ngModel]="brouillonReponse(reclamation.id)"
+              (ngModelChange)="definirBrouillon(reclamation.id, $event)"
+              [name]="'reponse-' + reclamation.id"
+            ></textarea>
+          </label>
+
+          <div class="reclamation__actions">
+            <span class="badge" [class.badge--ok]="reclamation.statut === 'RESOLUE_ADMIN'">
+              {{ reclamation.statut === 'EN_ATTENTE_ADMIN' ? 'En attente' : reclamation.statut === 'RESOLUE_ADMIN' ? 'Resolue' : 'Repondue IA' }}
+            </span>
+            <button class="bouton bouton--fantome" type="button" (click)="ouvrirDetailReclamation(reclamation)">Voir</button>
+            <button class="bouton bouton--fantome" (click)="repondreReclamation(reclamation.id)">Marquer repondue</button>
+            <button class="bouton bouton--plein" (click)="resoudreReclamation(reclamation.id)">Resoudre</button>
+          </div>
+        </article>
+      </div>
+
+      <ng-template #aucuneReclamationActive>
+        <p class="espace__vide">Toutes les reclamations escaladees ont ete traitees.</p>
+      </ng-template>
+    </div>
+
+    <div
+      class="modale"
+      *ngIf="reclamationSelectionnee() as reclamation"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Detail de la reclamation"
+    >
+      <div class="modale__fond" (click)="fermerDetailReclamation()"></div>
+      <section class="modale__contenu modale__contenu--detail">
+        <div class="modale__entete">
+          <div>
+            <h2>{{ reclamation.sujet }}</h2>
+            <p>{{ reclamation.client }}</p>
+          </div>
+          <button class="modale__fermer" type="button" (click)="fermerDetailReclamation()" aria-label="Fermer">x</button>
+        </div>
+
+        <div class="detail-reclamation">
+          <div class="detail-reclamation__ligne">
+            <span>Client</span>
+            <strong>{{ reclamation.client }}</strong>
+          </div>
+          <div class="detail-reclamation__badges">
+            <span class="badge" [class.badge--ok]="reclamation.statut === 'RESOLUE_ADMIN'">
+              Statut : {{ reclamation.statut === 'EN_ATTENTE_ADMIN' ? 'En attente' : reclamation.statut === 'RESOLUE_ADMIN' ? 'Resolue' : 'Repondue IA' }}
+            </span>
+          </div>
+
+          <section class="detail-reclamation__bloc">
+            <h3>Conversation</h3>
+            <div class="detail-reclamation__ligne" *ngFor="let message of reclamation.messages">
+              <span>{{ message.auteur === 'CLIENT' ? 'Client' : message.auteur === 'ASSISTANT' ? 'Assistant IA' : 'Compagnie' }}</span>
+              <strong>{{ message.texte }}</strong>
+            </div>
+          </section>
+        </div>
+
+        <div class="modale__actions">
+          <button class="bouton bouton--fantome" type="button" (click)="fermerDetailReclamation()">Fermer</button>
+          <button class="bouton bouton--plein" type="button" (click)="resoudreReclamation(reclamation.id)">Resoudre</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="modale" *ngIf="tousLesTrajetsOuverts()" role="dialog" aria-modal="true" aria-label="Tous les trajets">
+      <div class="modale__fond" (click)="fermerTousLesTrajets()"></div>
+      <section class="modale__contenu">
+        <div class="modale__entete">
+          <div>
+            <h2>Mes trajets</h2>
+            <p>Ajoute, modifie ou suspends les trajets visibles par les voyageurs.</p>
+          </div>
+          <button class="modale__fermer" type="button" (click)="fermerTousLesTrajets()" aria-label="Fermer">×</button>
+        </div>
+
+        <label class="recherche">
+          <span>Recherche</span>
+          <input
+            type="search"
+            placeholder="Ville, date, heure, statut..."
+            [ngModel]="rechercheTrajet()"
+            (ngModelChange)="rechercheTrajet.set($event)"
+            name="rechercheTrajetModale"
+          />
+        </label>
+
+        <div class="modale__liste">
+          <article class="trajet" *ngFor="let t of trajetsFiltres()">
+            <div class="trajet__infos">
+              <span class="trajet__villes">
+                {{ t.villeDepart }} -> {{ t.villeArrivee }}
+                <span class="badge badge--imminent" *ngIf="estDepartImminent(t)">Départ imminent</span>
+              </span>
+              <span class="trajet__meta">
+                {{ t.date || 'Date flexible' }} · {{ t.heureDepart }} ·
+                {{ t.prix | number }} F · {{ t.placesDisponibles }} place(s)
+              </span>
+            </div>
+
+            <div class="trajet__droite">
+              <button
+                class="statut statut--bouton"
+                [class]="'statut--' + (t.statut === 'ACTIF' ? 'confirmee' : 'annulee')"
+                (click)="basculerStatut(t.id)"
+              >
+                {{ t.statut === 'ACTIF' ? 'Actif' : 'Suspendu' }}
+              </button>
+              <button class="lien-action" (click)="ouvrirEdition(t); fermerTousLesTrajets()">Modifier</button>
+              <button class="lien-action lien-action--danger" (click)="supprimer(t.id)">Supprimer</button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </section>
+</app-layout>

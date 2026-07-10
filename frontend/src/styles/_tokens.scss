@@ -1,0 +1,66 @@
+// ============================================================
+// SYSTÈME DE DESIGN — Réseau de gares interurbaines
+// Ancré dans le vocabulaire visuel des gares : tableaux de
+// départ, tickets, signalétique routière.
+// ============================================================
+
+// --- Couleurs ---
+$nuit: #0e2238; // bleu nuit profond — routes de nuit, confiance, en-têtes
+$nuit-clair: #1a3a5c;
+$papier: #eef0ec; // papier de ticket, gris-blanc froid
+$papier-fonce: #dfe3dc;
+$bitume: #1b1f26; // texte principal, quasi-noir asphalte
+$bitume-attenue: #545b66;
+$or-phare: #e7a93c; // accent principal — CTA, prix, phares
+$or-phare-fonce: #c78a24;
+$vert-signal: #1f9d6d; // confirmations, statuts positifs
+$rouge-alerte: #c94f3d; // erreurs, statuts négatifs
+
+// --- Typographie ---
+$police-titre: 'Overpass', sans-serif; // signalétique routière
+$police-texte: 'IBM Plex Sans', sans-serif;
+$police-donnee: 'IBM Plex Mono', monospace; // horaires, prix — style tableau à palettes
+
+// --- Échelle typographique ---
+$taille-xs: 0.75rem;
+$taille-sm: 0.875rem;
+$taille-base: 1rem;
+$taille-lg: 1.125rem;
+$taille-xl: 1.5rem;
+$taille-2xl: 2rem;
+$taille-3xl: 2.75rem;
+$taille-4xl: 3.75rem;
+
+// --- Espacements ---
+$espace-1: 0.25rem;
+$espace-2: 0.5rem;
+$espace-3: 0.75rem;
+$espace-4: 1rem;
+$espace-6: 1.5rem;
+$espace-8: 2rem;
+$espace-12: 3rem;
+$espace-16: 4rem;
+$espace-24: 6rem;
+
+// --- Rayons et ombres ---
+$rayon-sm: 4px;
+$rayon-md: 10px;
+$rayon-lg: 18px;
+$ombre-carte: 0 8px 24px rgba(14, 34, 56, 0.08);
+$ombre-carte-hover: 0 12px 32px rgba(14, 34, 56, 0.14);
+
+// --- Largeurs ---
+$largeur-max-contenu: 1180px;
+
+// --- Breakpoints ---
+@mixin mobile {
+  @media (max-width: 640px) {
+    @content;
+  }
+}
+
+@mixin tablette {
+  @media (max-width: 960px) {
+    @content;
+  }
+}

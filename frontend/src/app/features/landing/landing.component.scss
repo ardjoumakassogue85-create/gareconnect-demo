@@ -1,0 +1,494 @@
+@use 'tokens' as t;
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: t.$espace-16 0 t.$espace-24;
+
+  @include t.tablette {
+    min-height: auto;
+    padding: t.$espace-8 0 t.$espace-16;
+  }
+
+  @include t.mobile {
+    align-items: flex-start;
+    padding: t.$espace-6 0 t.$espace-12;
+  }
+}
+
+.hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 18, 32, 0.6);
+  z-index: 1;
+}
+
+.hero__grille {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: t.$espace-16;
+  align-items: start;
+  min-width: 0;
+}
+
+.hero__intro {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero__texte-haut {
+  max-width: 920px;
+  margin: 0 auto t.$espace-16;
+  text-align: center;
+
+  @include t.tablette {
+    margin-bottom: t.$espace-8;
+  }
+
+  @include t.mobile {
+    margin-bottom: t.$espace-6;
+  }
+}
+
+.hero__eyebrow {
+  display: inline-block;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #f5c84c;
+  margin-bottom: t.$espace-4;
+}
+
+.hero__titre {
+  font-size: t.$taille-4xl;
+  line-height: 1.08;
+  margin-bottom: t.$espace-4;
+  color: white;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.55);
+
+  @include t.tablette {
+    font-size: t.$taille-3xl;
+  }
+
+  @include t.mobile {
+    font-size: t.$taille-2xl;
+  }
+}
+
+.hero__texte {
+  font-size: t.$taille-lg;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: none;
+  margin: 0 auto;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+
+  @include t.tablette {
+    white-space: normal;
+  }
+
+  @include t.mobile {
+    font-size: t.$taille-base;
+  }
+}
+
+.hero__tableau-label {
+  display: block;
+  font-family: t.$police-donnee;
+  font-size: t.$taille-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: t.$espace-3;
+}
+
+.hero__tableau {
+  margin-top: t.$espace-8;
+  width: 100%;
+}
+
+// --- Carte de recherche ---
+
+.carte-recherche {
+  width: 100%;
+  background: white;
+  border-radius: t.$rayon-lg;
+  padding: t.$espace-6;
+  box-shadow: t.$ombre-carte;
+  border: 1px solid t.$papier-fonce;
+
+  @include t.mobile {
+    border-radius: t.$rayon-md;
+    padding: t.$espace-4;
+  }
+}
+
+.carte-recherche__onglets {
+  margin-bottom: t.$espace-4;
+}
+
+.carte-recherche__onglet {
+  font-size: t.$taille-sm;
+  font-weight: 600;
+  color: t.$nuit;
+  padding-bottom: t.$espace-2;
+  border-bottom: 2px solid t.$or-phare;
+  display: inline-block;
+}
+
+.carte-recherche__champs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: t.$espace-4;
+
+  @include t.mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: t.$espace-1;
+  min-width: 0;
+
+  select,
+  input {
+    width: 100%;
+    font-family: t.$police-texte;
+    font-size: t.$taille-base;
+    padding: t.$espace-3;
+    border-radius: t.$rayon-md;
+    border: 1px solid t.$papier-fonce;
+    background: t.$papier;
+    color: t.$bitume;
+
+    &:focus {
+      border-color: t.$or-phare;
+    }
+  }
+}
+
+.champ__label {
+  font-size: t.$taille-xs;
+  font-weight: 600;
+  color: t.$bitume-attenue;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.champ--submit {
+  justify-content: flex-end;
+}
+
+.carte-recherche__submit {
+  width: 100%;
+  padding: t.$espace-3 t.$espace-4;
+  font-size: t.$taille-base;
+
+  @include t.mobile {
+    grid-column: 1 / -1;
+  }
+}
+
+.carte-recherche__libre {
+  margin-top: t.$espace-6;
+  padding-top: t.$espace-6;
+  border-top: 1px dashed t.$papier-fonce;
+}
+
+.carte-recherche__ou {
+  display: block;
+  font-size: t.$taille-xs;
+  color: t.$bitume-attenue;
+  margin-bottom: t.$espace-2;
+}
+
+.carte-recherche__libre-champ {
+  display: flex;
+  gap: t.$espace-2;
+  min-width: 0;
+
+  @include t.mobile {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+
+    .bouton-micro,
+    .bouton {
+      width: 100%;
+    }
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    font-family: t.$police-texte;
+    padding: t.$espace-3;
+    border-radius: t.$rayon-md;
+    border: 1px solid t.$papier-fonce;
+
+    &:focus {
+      border-color: t.$or-phare;
+    }
+
+    @include t.mobile {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+// --- Section compagnies ---
+
+.section-compagnies {
+  background: white;
+  border-top: 1px solid t.$papier-fonce;
+  border-bottom: 1px solid t.$papier-fonce;
+  padding: t.$espace-16 0;
+
+  @include t.mobile {
+    padding: t.$espace-8 0;
+  }
+}
+
+.section-compagnies__grille {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: t.$espace-12;
+  align-items: center;
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+    gap: t.$espace-8;
+  }
+}
+
+.section-compagnies__texte {
+  max-width: 60ch;
+  text-align: left;
+
+  h2 {
+    font-size: t.$taille-2xl;
+    line-height: 1.2;
+    margin-bottom: t.$espace-4;
+  }
+
+  p {
+    color: t.$bitume-attenue;
+    font-size: t.$taille-base;
+    line-height: 1.65;
+    margin-bottom: t.$espace-4;
+  }
+
+  @include t.mobile {
+    max-width: none;
+    width: 100%;
+    padding: 0 t.$espace-1;
+    text-align: left;
+
+    h2 {
+      max-width: 16ch;
+      font-size: 1.35rem;
+      line-height: 1.35;
+      margin-bottom: t.$espace-3;
+    }
+
+    p {
+      font-size: t.$taille-sm;
+      line-height: 1.6;
+      margin-bottom: t.$espace-4;
+      text-align: left;
+    }
+  }
+}
+
+.lien-souligne {
+  display: inline-block;
+  font-weight: 600;
+  color: t.$nuit;
+  border-bottom: 2px solid t.$or-phare;
+  padding-bottom: 2px;
+  line-height: 1.4;
+
+  @include t.mobile {
+    max-width: 100%;
+    font-size: t.$taille-sm;
+    overflow-wrap: anywhere;
+  }
+}
+
+.vitrine-slider {
+  display: grid;
+  align-items: center;
+
+  @include t.mobile {
+    display: none;
+  }
+}
+
+.maquette-vitrine {
+  grid-area: 1 / 1;
+  background: t.$papier;
+  border: 1px solid t.$papier-fonce;
+  border-radius: t.$rayon-lg;
+  padding: t.$espace-4;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(14px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+
+  &.est-active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+}
+
+.maquette-vitrine__entete {
+  display: flex;
+  align-items: center;
+  gap: t.$espace-3;
+  margin-bottom: t.$espace-4;
+}
+
+.maquette-vitrine__logo {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: t.$rayon-md;
+  background: t.$nuit;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: t.$police-titre;
+  font-weight: 800;
+}
+
+.maquette-vitrine__entete div {
+  display: flex;
+  flex-direction: column;
+}
+
+.maquette-vitrine__nom {
+  font-weight: 700;
+  color: t.$nuit;
+  font-size: t.$taille-sm;
+}
+
+.maquette-vitrine__sous {
+  font-size: t.$taille-xs;
+  color: t.$bitume-attenue;
+}
+
+.maquette-vitrine__ligne {
+  display: flex;
+  justify-content: space-between;
+  gap: t.$espace-4;
+  font-size: t.$taille-sm;
+  padding: t.$espace-2 0;
+  border-top: 1px dashed t.$papier-fonce;
+  color: t.$bitume-attenue;
+
+  span:last-child {
+    font-family: t.$police-donnee;
+    color: t.$nuit;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  @include t.mobile {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: t.$espace-1;
+  }
+}
+
+.vitrine-slider__points {
+  display: flex;
+  justify-content: center;
+  gap: t.$espace-2;
+  margin-top: t.$espace-4;
+}
+
+.vitrine-slider__point {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: t.$papier-fonce;
+  transition: width 0.2s ease, background 0.2s ease;
+
+  &.est-actif {
+    width: 24px;
+    background: t.$or-phare;
+  }
+}
+
+/* --- Bouton micro (dictee vocale) --- */
+.bouton-micro {
+  display: inline-flex;
+  align-items: center;
+  gap: t.$espace-2;
+  padding: t.$espace-2 t.$espace-3;
+  border-radius: t.$rayon-md;
+  border: 1px solid rgba(231, 169, 60, 0.55);
+  background: rgba(231, 169, 60, 0.14);
+  color: t.$or-phare-fonce;
+  font-weight: 700;
+  font-size: t.$taille-sm;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+.bouton-micro:hover {
+  background: rgba(231, 169, 60, 0.26);
+}
+
+.bouton-micro--actif {
+  border-color: t.$or-phare;
+  background: t.$or-phare;
+  color: #3a2a06;
+  animation: micro-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes micro-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(231, 169, 60, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(231, 169, 60, 0);
+  }
+}
+
+.bouton-micro__icone {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+@include t.mobile {
+  .bouton-micro__label {
+    display: none;
+  }
+}
+

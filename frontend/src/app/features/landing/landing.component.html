@@ -1,0 +1,145 @@
+<app-layout>
+  <section class="hero">
+    <video
+  id="heroVideo"
+  class="hero__video"
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="auto"  >
+      <source src="assets/videos/GareConnectDemo.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero__overlay"></div>
+    <div class="conteneur hero__grille">
+      <div class="hero__intro">
+        <div class="hero__texte-haut">
+          <span class="hero__eyebrow">R&eacute;seau interurbain - C&ocirc;te d'Ivoire</span>
+          <h1 class="hero__titre">Votre billet, sans attente ni stress.</h1>
+          <p class="hero__texte">
+            Compare les gares, les compagnies et les horaires en un coup d'oeil,
+            puis r&eacute;serve ta place avant m&ecirc;me d'arriver sur place.
+          </p>
+        </div>
+
+        <div class="carte-recherche">
+          <div class="carte-recherche__onglets">
+            <span class="carte-recherche__onglet est-actif">Recherche guid&eacute;e</span>
+          </div>
+
+          <div class="carte-recherche__champs">
+            <label class="champ">
+              <span class="champ__label">D&eacute;part</span>
+              <select [(ngModel)]="villeDepart" name="villeDepart">
+                <option *ngFor="let ville of villes" [value]="ville">{{ ville }}</option>
+              </select>
+            </label>
+
+            <label class="champ">
+              <span class="champ__label">Arriv&eacute;e</span>
+              <select [(ngModel)]="villeArrivee" name="villeArrivee">
+                <option *ngFor="let ville of villes" [value]="ville">{{ ville }}</option>
+              </select>
+            </label>
+
+            <label class="champ">
+              <span class="champ__label">Date</span>
+              <input type="date" [(ngModel)]="date" name="date" />
+            </label>
+
+            <label class="champ champ--submit">
+              <span class="champ__label">&nbsp;</span>
+              <button class="bouton bouton--plein carte-recherche__submit" (click)="rechercher()">
+                Rechercher
+              </button>
+            </label>
+          </div>
+
+          <div class="carte-recherche__libre">
+            <span class="carte-recherche__ou">ou d&eacute;cris ton besoin</span>
+            <div class="carte-recherche__libre-champ">
+              <input
+                type="text"
+                placeholder="Ex : je veux partir demain matin pas trop cher vers Bouak&eacute;"
+                [(ngModel)]="requeteLibre"
+                name="requeteLibre"
+              />
+              <button
+                type="button"
+                class="bouton-micro"
+                *ngIf="microDisponible"
+                [class.bouton-micro--actif]="estEnEcoute()"
+                (click)="dicterRecherche()"
+                title="Dis o&ugrave; tu veux aller"
+              >
+                <svg class="bouton-micro__icone" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" />
+                  <path d="M17 11a1 1 0 1 1 2 0 7 7 0 0 1-6 6.93V20h2a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h2v-2.07A7 7 0 0 1 5 11a1 1 0 1 1 2 0 5 5 0 0 0 10 0z" />
+                </svg>
+                <span class="bouton-micro__label">{{ estEnEcoute() ? 'À l’écoute…' : 'Parler' }}</span>
+              </button>
+              <button class="bouton bouton--fantome" (click)="rechercherEnLangageLibre()">
+                Assistant IA
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-compagnies">
+    <div class="conteneur section-compagnies__grille">
+      <div class="section-compagnies__texte">
+        <h2>Une vitrine professionnelle pour chaque gare</h2>
+        <p>
+          Les compagnies encore peu connues gagnent une pr&eacute;sence en ligne cr&eacute;dible :
+          logo, horaires, tarifs et informations pratiques, visibles par tous les voyageurs
+          du r&eacute;seau d&egrave;s leur inscription.
+        </p>
+        <a routerLink="/inscription" [queryParams]="{ role: 'COMPAGNIE' }" class="lien-souligne">
+          Rejoindre le r&eacute;seau en tant que compagnie
+        </a>
+      </div>
+
+      <div class="vitrine-slider" aria-label="Compagnies et gares partenaires">
+        <div
+          class="maquette-vitrine"
+          *ngFor="let vitrine of vitrinesGares; let index = index"
+          [class.est-active]="index === vitrineActive"
+          [attr.aria-hidden]="index !== vitrineActive"
+        >
+          <div class="maquette-vitrine__entete">
+            <span class="maquette-vitrine__logo">{{ vitrine.code }}</span>
+            <div>
+              <span class="maquette-vitrine__nom">{{ vitrine.compagnie }}</span>
+              <span class="maquette-vitrine__sous">{{ vitrine.gare }}</span>
+            </div>
+          </div>
+
+          <div class="maquette-vitrine__ligne" *ngFor="let trajet of vitrine.trajets">
+            <span>{{ trajet.ligne }}</span>
+            <span>{{ trajet.prix }}</span>
+          </div>
+
+          <div class="maquette-vitrine__ligne">
+            <span>Places aujourd'hui</span>
+            <span>{{ vitrine.places }}</span>
+          </div>
+        </div>
+
+        <div class="vitrine-slider__points">
+          <button
+            type="button"
+            class="vitrine-slider__point"
+            *ngFor="let vitrine of vitrinesGares; let index = index"
+            [class.est-actif]="index === vitrineActive"
+            [attr.aria-label]="'Afficher ' + vitrine.compagnie"
+            (click)="choisirVitrine(index)"
+          ></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</app-layout>
