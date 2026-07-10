@@ -17,6 +17,11 @@ WORKDIR /app
 # Le jar construit à l'étape précédente
 COPY --from=build /app/target/*.jar app.jar
 
+# Bride la JVM pour tenir dans une petite instance (ex. Railway 0,5 Go / Render free).
+# MaxRAMPercentage=70 => le heap prend ~70% de la RAM du conteneur, le reste
+# (metaspace, threads, off-heap) rentre dans les 30% restants. Evite les OOM.
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=70 -XX:+UseSerialGC"
+
 # Railway/Render injectent la variable PORT ; Spring l'utilise via application.yml
 EXPOSE 8081
 ENTRYPOINT ["sh", "-c", "java -jar app.jar"]
