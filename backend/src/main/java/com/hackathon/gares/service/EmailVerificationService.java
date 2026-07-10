@@ -16,7 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class EmailVerificationService {
 
     private final JavaMailSender mailSender;
-    private final BrevoEmailClient brevoEmailClient;
 
     @Value("${spring.mail.host:}")
     private String mailHost;
@@ -61,20 +60,12 @@ public class EmailVerificationService {
         log.info("Email de reinitialisation envoye a {}", user.getEmail());
     }
 
-    /**
-     * Envoi unifie : priorite a l'API Brevo (HTTPS, marche en cloud) si une cle
-     * est configuree, sinon repli sur le SMTP classique (dev local avec Gmail).
-     */
+    /** Envoi via le SMTP configure (Gmail). */
     private void envoyer(String destinataire, String sujet, String texte) {
-        if (brevoEmailClient.estActif()) {
-            brevoEmailClient.envoyer(adresseExpediteur(), "GareConnect", destinataire, sujet, texte);
-            return;
-        }
-
         if (mailHost == null || mailHost.isBlank()) {
             throw new ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE,
-                    "Envoi email non configure. Ajoute BREVO_API_KEY ou les parametres SMTP."
+                    "Envoi email non configure. Ajoute les parametres SMTP dans le .env."
             );
         }
 
