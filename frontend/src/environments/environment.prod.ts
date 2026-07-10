@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://CHANGE-MOI.up.railway.app/api',
+  apiUrl: 'https://gareconnect-demo-production.up.railway.app/api',
 };
