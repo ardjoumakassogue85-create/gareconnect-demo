@@ -70,6 +70,15 @@ export class RegisterComponent {
       .subscribe({
         next: (reponse) => {
           this.chargement.set(false);
+
+          // Mode sans verification email : compte deja actif, on va direct au login.
+          if (!reponse.verificationRequise) {
+            this.router.navigate(['/connexion'], {
+              queryParams: { inscrit: '1', email: reponse.email },
+            });
+            return;
+          }
+
           this.emailEnVerification = reponse.email;
           this.verificationDemandee.set(true);
           this.message.set(reponse.message);

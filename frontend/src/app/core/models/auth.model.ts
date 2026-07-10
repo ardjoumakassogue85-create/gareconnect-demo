@@ -48,6 +48,7 @@ export interface UpdateAccountRequest {
 export interface RegisterResponse {
   message: string;
   email: string;
+  verificationRequise: boolean;
 }
 
 export interface VerifyEmailRequest {

@@ -15,6 +15,11 @@ spring:
           auth: ${SMTP_AUTH:true}
           starttls:
             enable: ${SMTP_STARTTLS_ENABLE:true}
+          # Timeouts courts : si le SMTP est bloque (ex. hebergeur), l'envoi
+          # echoue vite au lieu de bloquer la requete (evite les 502).
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
   h2:
     console:
       enabled: ${H2_CONSOLE_ENABLED:false}
@@ -40,6 +45,9 @@ app:
     private-key: ${BILLET_PRIVATE_KEY:}
   email:
     from: ${MAIL_FROM:}
+    # false => inscription sans verification email (compte actif direct).
+    # Utile en demo/en ligne quand le SMTP sortant est bloque par l'hebergeur.
+    verification-required: ${EMAIL_VERIFICATION_REQUIRED:true}
 
 cors:
   allowed-origins: ${ALLOWED_ORIGINS:http://localhost:4200}
