@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class EmailVerificationService {
 
     private final JavaMailSender mailSender;
+    private final BrevoEmailClient brevoEmailClient;
 
     @Value("${spring.mail.host:}")
     private String mailHost;
@@ -27,18 +28,7 @@ public class EmailVerificationService {
     private String mailFrom;
 
     public void envoyerVerification(User user) {
-        if (mailHost == null || mailHost.isBlank()) {
-            throw new ResponseStatusException(
-                    HttpStatus.SERVICE_UNAVAILABLE,
-                    "Envoi email non configure. Ajoute les parametres SMTP dans le fichier .env."
-            );
-        }
-
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(adresseExpediteur());
-        message.setTo(user.getEmail());
-        message.setSubject("Code de verification ResaGares");
-        message.setText("""
+        String texte = """
                 Bonjour %s,
 
                 Voici ton code de verification ResaGares :
@@ -47,25 +37,14 @@ public class EmailVerificationService {
 
                 Ce code expire dans 15 minutes.
                 Si tu n'es pas a l'origine de cette inscription, ignore ce message.
-                """.formatted(user.getNom(), user.getEmailVerificationCode()));
+                """.formatted(user.getNom(), user.getEmailVerificationCode());
 
-        mailSender.send(message);
+        envoyer(user.getEmail(), "Code de verification ResaGares", texte);
         log.info("Email de verification envoye a {}", user.getEmail());
     }
 
     public void envoyerReinitialisation(User user, String lienReinitialisation) {
-        if (mailHost == null || mailHost.isBlank()) {
-            throw new ResponseStatusException(
-                    HttpStatus.SERVICE_UNAVAILABLE,
-                    "Envoi email non configure. Ajoute les parametres SMTP dans le fichier .env."
-            );
-        }
-
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(adresseExpediteur());
-        message.setTo(user.getEmail());
-        message.setSubject("Reinitialisation de ton mot de passe ResaGares");
-        message.setText("""
+        String texte = """
                 Bonjour %s,
 
                 Tu as demande a reinitialiser ton mot de passe ResaGares.
@@ -76,10 +55,35 @@ public class EmailVerificationService {
                 Ce lien expire dans 30 minutes.
                 Si tu n'es pas a l'origine de cette demande, ignore ce message :
                 ton mot de passe actuel reste inchange.
-                """.formatted(user.getNom(), lienReinitialisation));
+                """.formatted(user.getNom(), lienReinitialisation);
 
-        mailSender.send(message);
+        envoyer(user.getEmail(), "Reinitialisation de ton mot de passe ResaGares", texte);
         log.info("Email de reinitialisation envoye a {}", user.getEmail());
+    }
+
+    /**
+     * Envoi unifie : priorite a l'API Brevo (HTTPS, marche en cloud) si une cle
+     * est configuree, sinon repli sur le SMTP classique (dev local avec Gmail).
+     */
+    private void envoyer(String destinataire, String sujet, String texte) {
+        if (brevoEmailClient.estActif()) {
+            brevoEmailClient.envoyer(adresseExpediteur(), "GareConnect", destinataire, sujet, texte);
+            return;
+        }
+
+        if (mailHost == null || mailHost.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "Envoi email non configure. Ajoute BREVO_API_KEY ou les parametres SMTP."
+            );
+        }
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(adresseExpediteur());
+        message.setTo(destinataire);
+        message.setSubject(sujet);
+        message.setText(texte);
+        mailSender.send(message);
     }
 
     private String adresseExpediteur() {

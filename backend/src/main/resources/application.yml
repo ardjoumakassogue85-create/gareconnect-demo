@@ -45,12 +45,15 @@ app:
     private-key: ${BILLET_PRIVATE_KEY:}
   email:
     from: ${MAIL_FROM:}
-    # false => inscription sans verification email (compte actif direct).
-    # Utile en demo/en ligne quand le SMTP sortant est bloque par l'hebergeur.
-    verification-required: ${EMAIL_VERIFICATION_REQUIRED:true}
 
 cors:
   allowed-origins: ${ALLOWED_ORIGINS:http://localhost:4200}
+
+brevo:
+  # Cle API Brevo (https://app.brevo.com). Si definie, les emails partent via
+  # l'API HTTPS de Brevo (port 443) au lieu du SMTP (souvent bloque en cloud).
+  # Vide => on retombe sur le SMTP classique (dev local avec Gmail).
+  api-key: ${BREVO_API_KEY:}
 
 gemini:
   api-key: ${GEMINI_API_KEY:}

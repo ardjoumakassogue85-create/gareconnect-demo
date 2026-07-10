@@ -50,36 +50,11 @@ public class AuthService {
     @Value("${app.frontend-base-url}")
     private String frontendBaseUrl;
 
-    // Quand false (ex. demo en ligne ou SMTP indisponible), le compte est cree
-    // deja verifie, sans envoi d'email. Par defaut true (comportement securise).
-    @Value("${app.email.verification-required:true}")
-    private boolean verificationEmailRequise;
-
     private static final long RESET_TOKEN_VALIDITE_SECONDES = 30 * 60;
 
     public RegisterResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new EmailDejaUtiliseException(request.email());
-        }
-
-        // Mode sans verification email (demo / SMTP indisponible) : compte
-        // directement actif, aucun envoi d'email, connexion possible immediatement.
-        if (!verificationEmailRequise) {
-            User user = User.builder()
-                    .email(request.email())
-                    .passwordHash(passwordEncoder.encode(request.password()))
-                    .nom(request.nom())
-                    .role(request.role())
-                    .emailVerified(true)
-                    .build();
-            userRepository.save(user);
-            creerProfilCompagnieSiNecessaire(user);
-
-            return new RegisterResponse(
-                    "Compte cree. Tu peux te connecter.",
-                    user.getEmail(),
-                    false
-            );
         }
 
         User user = User.builder()
@@ -97,8 +72,7 @@ public class AuthService {
 
         return new RegisterResponse(
                 "Compte cree. Un email de verification a ete envoye.",
-                user.getEmail(),
-                true
+                user.getEmail()
         );
     }
 
@@ -132,7 +106,7 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Aucun compte a verifier avec cet email"));
 
         if (Boolean.TRUE.equals(user.getEmailVerified())) {
-            return new RegisterResponse("Cet email est deja verifie. Tu peux te connecter.", user.getEmail(), false);
+            return new RegisterResponse("Cet email est deja verifie. Tu peux te connecter.", user.getEmail());
         }
 
         user.setEmailVerificationCode(generateVerificationCode());
@@ -142,8 +116,7 @@ public class AuthService {
 
         return new RegisterResponse(
                 "Un nouveau code de verification a ete envoye.",
-                user.getEmail(),
-                true
+                user.getEmail()
         );
     }
 

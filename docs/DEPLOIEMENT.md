@@ -76,7 +76,8 @@ git push -u deploy deploy:main
    | `SMTP_PORT` | `587` | `backend/.env` |
    | `SMTP_USERNAME` | (ton e-mail d'envoi) | `backend/.env` |
    | `SMTP_PASSWORD` | (mot de passe d'application Gmail) | `backend/.env` |
-   | `MAIL_FROM` | (ton e-mail d'envoi) | `backend/.env` |
+   | `MAIL_FROM` | (e-mail expéditeur vérifié dans Brevo) | `backend/.env` |
+   | `BREVO_API_KEY` | (clé API Brevo) | **obligatoire en ligne** — voir note e-mail |
    | `SEED_DEMO` | `true` | pour peupler la démo (données variées) |
    | `ALLOWED_ORIGINS` | *(à remplir à l'étape 3)* | URL Vercel |
    | `FRONTEND_BASE_URL` | *(à remplir à l'étape 3)* | URL Vercel |
@@ -142,6 +143,22 @@ Le backend refuse par défaut les origines inconnues. Il faut l'autoriser à par
 4. Vercel : root `frontend`, déployer, récupérer l'URL front.
 5. Railway : renseigner `ALLOWED_ORIGINS` + `FRONTEND_BASE_URL` avec l'URL front.
 6. Tester sur l'URL Vercel (desktop **et** téléphone).
+
+## Note e-mail (Brevo) — indispensable en ligne
+
+Railway (comme la plupart des hébergeurs) **bloque le SMTP sortant** : l'envoi Gmail
+qui marche en local **ne fonctionne pas** en ligne. On envoie donc via l'**API HTTPS
+de Brevo** (gratuit, 300 mails/jour). Le flux ne change pas : l'utilisateur reçoit
+toujours un **code par e-mail** à saisir.
+
+1. Crée un compte sur **brevo.com** (gratuit).
+2. **Senders & IP → Senders** : ajoute et **vérifie** ton e-mail expéditeur
+   (celui de `MAIL_FROM`).
+3. **SMTP & API → API Keys** : crée une clé API.
+4. Sur **Railway → Variables**, ajoute `BREVO_API_KEY=<ta clé>`.
+
+Si `BREVO_API_KEY` est absente, le backend retombe sur le SMTP classique (utile en
+local avec Gmail). En ligne, elle est **obligatoire** pour que les e-mails partent.
 
 ## Notes
 
