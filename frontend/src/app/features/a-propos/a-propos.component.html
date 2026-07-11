@@ -3,32 +3,38 @@
     <!-- HERO -->
     <header class="apropos__hero">
       <div class="conteneur">
-        <span class="apropos__eyebrow">À propos de GareConnect</span>
-        <h1 class="apropos__titre">Le guichet unique des gares interurbaines de Côte d'Ivoire</h1>
+        <span class="apropos__eyebrow">GareConnect — le guichet unique des gares</span>
+        <h1 class="apropos__titre">Réserver, embarquer et voyager sans file d'attente en Côte d'Ivoire</h1>
         <p class="apropos__accroche">
-          GareConnect réunit les compagnies de transport, leurs départs et leurs services sur une
-          seule plateforme — pour en finir avec la dispersion, les files d'attente et les billets
-          papier.
+          GareConnect réunit les compagnies de transport interurbain, leurs départs et leurs services
+          sur une seule plateforme intelligente — pour en finir avec la dispersion, les files
+          d'attente et les billets papier.
         </p>
         <div class="apropos__hero-actions">
-          <a routerLink="/recherche" class="bouton bouton--plein">Rechercher un trajet</a>
-          <a routerLink="/inscription" [queryParams]="{ role: 'COMPAGNIE' }" class="bouton bouton--fantome">
-            Je suis une compagnie
-          </a>
+          <a routerLink="/recherche" class="bouton bouton--plein">Essayer la démo</a>
+          <a href="#demo" class="bouton bouton--fantome">Identifiants de test ↓</a>
         </div>
       </div>
     </header>
 
     <div class="conteneur apropos__corps">
-      <!-- LE PROBLÈME -->
+      <!-- LE PROBLÈME (chiffré) -->
       <section class="bloc">
         <span class="bloc__kicker bloc__kicker--probleme">Le problème</span>
-        <h2 class="bloc__titre">Des services de transport éclatés</h2>
+        <h2 class="bloc__titre">Un secteur vital, mais éclaté</h2>
         <p class="bloc__intro">
-          En Côte d'Ivoire, chaque compagnie interurbaine fonctionne dans son coin : sa gare, ses
-          horaires, ses tarifs, son guichet. Cette <strong>fragmentation</strong> retombe entièrement
-          sur le voyageur.
+          Le transport interurbain est un pilier de l'économie ivoirienne. Pourtant, chaque compagnie
+          fonctionne dans son coin : sa gare, ses horaires, ses tarifs, son guichet. Cette
+          <strong>fragmentation</strong> retombe entièrement sur le voyageur.
         </p>
+
+        <div class="chiffres">
+          <div class="chiffre" *ngFor="let c of chiffresProbleme">
+            <span class="chiffre__valeur">{{ c.valeur }}</span>
+            <span class="chiffre__libelle">{{ c.libelle }}</span>
+          </div>
+        </div>
+
         <ul class="douleurs">
           <li class="douleur" *ngFor="let d of douleurs">
             <span class="douleur__marque" aria-hidden="true">✕</span>
@@ -40,11 +46,11 @@
       <!-- LA SOLUTION -->
       <section class="bloc">
         <span class="bloc__kicker bloc__kicker--solution">La solution</span>
-        <h2 class="bloc__titre">Un guichet unique numérique</h2>
+        <h2 class="bloc__titre">Un guichet unique numérique et intelligent</h2>
         <p class="bloc__intro">
           GareConnect <strong>centralise les compagnies et leurs services</strong> en un seul endroit.
-          En rassemblant l'offre, la plateforme peut résoudre les sous-problèmes qui gâchent le
-          voyage — à commencer par les files d'attente.
+          En rassemblant l'offre, la plateforme résout les sous-problèmes qui gâchent le voyage — à
+          commencer par les files d'attente.
         </p>
         <div class="piliers">
           <article class="pilier" *ngFor="let p of piliers">
@@ -54,15 +60,16 @@
         </div>
       </section>
 
-      <!-- TOUTES LES FONCTIONNALITÉS -->
+      <!-- INNOVATION -->
       <section class="bloc">
-        <span class="bloc__kicker">Tout ce que fait l'app</span>
-        <h2 class="bloc__titre">Les fonctionnalités, en détail</h2>
+        <span class="bloc__kicker">Innovation</span>
+        <h2 class="bloc__titre">Ce que GareConnect fait de neuf</h2>
         <p class="bloc__intro">
-          Du premier clic à l'embarquement, voici l'ensemble des capacités de GareConnect.
+          Au-delà de la réservation, GareConnect apporte une couche d'intelligence inédite dans le
+          transport interurbain ivoirien.
         </p>
         <div class="fonctions">
-          <article class="fonction" *ngFor="let f of fonctionnalites">
+          <article class="fonction" *ngFor="let f of innovations">
             <div class="fonction__entete">
               <span class="fonction__icone" aria-hidden="true">{{ f.icone }}</span>
               <div>
@@ -77,15 +84,91 @@
         </div>
       </section>
 
-      <!-- TECH -->
+      <!-- DÉMO (Execution Quality) -->
+      <section class="bloc demo" id="demo">
+        <span class="bloc__kicker">Prototype fonctionnel</span>
+        <h2 class="bloc__titre">Teste la démo en 3 étapes</h2>
+        <p class="bloc__intro">
+          GareConnect est <strong>déployé en production</strong> (Vercel · Fly.io · Supabase) et
+          entièrement utilisable dès maintenant avec les comptes de démonstration ci-dessous.
+        </p>
+
+        <div class="demo__comptes">
+          <div class="demo__compte">
+            <span class="demo__role">👤 Compte voyageur</span>
+            <code class="demo__id">{{ demoClient.email }}</code>
+            <code class="demo__id">{{ demoClient.mdp }}</code>
+          </div>
+          <div class="demo__compte">
+            <span class="demo__role">🏢 Compte compagnie</span>
+            <code class="demo__id">{{ demoCompagnie.email }}</code>
+            <code class="demo__id">{{ demoCompagnie.mdp }}</code>
+          </div>
+        </div>
+
+        <div class="demo__etapes">
+          <article class="demo__etape" *ngFor="let e of etapesDemo">
+            <span class="demo__numero">{{ e.numero }}</span>
+            <div>
+              <h3 class="demo__etape-titre">{{ e.titre }}</h3>
+              <p class="demo__etape-detail">{{ e.detail }}</p>
+            </div>
+          </article>
+        </div>
+
+        <a routerLink="/recherche" class="bouton bouton--plein demo__cta">Lancer la démo maintenant</a>
+      </section>
+
+      <!-- IMPACT -->
       <section class="bloc">
-        <span class="bloc__kicker">Sous le capot</span>
-        <h2 class="bloc__titre">La technologie</h2>
+        <span class="bloc__kicker">Impact & modèle</span>
+        <h2 class="bloc__titre">Un produit viable, pensé pour durer</h2>
+        <div class="impacts">
+          <article class="impact" *ngFor="let i of impacts">
+            <h3 class="impact__titre">{{ i.titre }}</h3>
+            <p class="impact__texte">{{ i.texte }}</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- TECHNIQUE -->
+      <section class="bloc">
+        <span class="bloc__kicker">Excellence technique</span>
+        <h2 class="bloc__titre">Architecture & sécurité</h2>
+        <p class="bloc__intro">
+          Une base robuste : un cœur métier déterministe, une surcouche IA qui ne casse jamais
+          l'application, et une sécurité de bout en bout.
+        </p>
+
         <div class="techs">
           <div class="tech" *ngFor="let t of technologies">
             <strong class="tech__nom">{{ t.nom }}</strong>
             <span class="tech__role">{{ t.role }}</span>
           </div>
+        </div>
+
+        <ul class="securite">
+          <li *ngFor="let s of securite">{{ s }}</li>
+        </ul>
+      </section>
+
+      <!-- CATALOGUE COMPLET -->
+      <section class="bloc">
+        <span class="bloc__kicker">Le reste des fonctionnalités</span>
+        <h2 class="bloc__titre">Une plateforme complète</h2>
+        <div class="fonctions">
+          <article class="fonction" *ngFor="let f of fonctionnalites">
+            <div class="fonction__entete">
+              <span class="fonction__icone" aria-hidden="true">{{ f.icone }}</span>
+              <div>
+                <h3 class="fonction__titre">{{ f.titre }}</h3>
+                <p class="fonction__desc">{{ f.description }}</p>
+              </div>
+            </div>
+            <ul class="fonction__points">
+              <li *ngFor="let point of f.points">{{ point }}</li>
+            </ul>
+          </article>
         </div>
       </section>
 

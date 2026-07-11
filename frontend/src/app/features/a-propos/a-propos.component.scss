@@ -22,7 +22,7 @@
   font-family: t.$police-donnee;
   font-size: t.$taille-xs;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: t.$espace-4;
 }
@@ -31,7 +31,7 @@
   color: white;
   font-size: t.$taille-4xl;
   line-height: 1.05;
-  max-width: 15ch;
+  max-width: 18ch;
   margin: 0 auto t.$espace-6;
 
   @include t.mobile {
@@ -43,7 +43,7 @@
   color: rgba(255, 255, 255, 0.82);
   font-size: t.$taille-lg;
   line-height: 1.5;
-  max-width: 62ch;
+  max-width: 64ch;
   margin: 0 auto t.$espace-8;
 }
 
@@ -108,7 +108,7 @@
   color: t.$bitume-attenue;
   font-size: t.$taille-lg;
   line-height: 1.6;
-  max-width: 68ch;
+  max-width: 70ch;
   margin-bottom: t.$espace-8;
 
   strong {
@@ -116,7 +116,48 @@
   }
 }
 
-// --- PROBLÈME ---
+// --- CHIFFRES (problème) ---
+.chiffres {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: t.$espace-4;
+  margin-bottom: t.$espace-8;
+
+  @include t.tablette {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include t.mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chiffre {
+  background: white;
+  border: 1px solid t.$papier-fonce;
+  border-top: 3px solid t.$or-phare;
+  border-radius: t.$rayon-md;
+  box-shadow: t.$ombre-carte;
+  padding: t.$espace-6;
+  display: grid;
+  gap: t.$espace-2;
+}
+
+.chiffre__valeur {
+  font-family: t.$police-titre;
+  font-size: t.$taille-3xl;
+  font-weight: 800;
+  color: t.$nuit;
+  line-height: 1;
+}
+
+.chiffre__libelle {
+  color: t.$bitume-attenue;
+  font-size: t.$taille-sm;
+  line-height: 1.4;
+}
+
+// --- DOULEURS ---
 .douleurs {
   list-style: none;
   padding: 0;
@@ -145,7 +186,7 @@
   line-height: 1.4;
 }
 
-// --- SOLUTION : piliers ---
+// --- PILIERS ---
 .piliers {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -180,7 +221,7 @@
   line-height: 1.55;
 }
 
-// --- FONCTIONNALITÉS ---
+// --- FONCTIONS (innovation + catalogue) ---
 .fonctions {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -264,11 +305,139 @@
   }
 }
 
-// --- TECH ---
+// --- DÉMO ---
+.demo {
+  background: t.$papier-fonce;
+  border-radius: t.$rayon-lg;
+  padding: t.$espace-12 t.$espace-8;
+  scroll-margin-top: t.$espace-8;
+
+  @include t.mobile {
+    padding: t.$espace-8 t.$espace-4;
+  }
+}
+
+.demo__comptes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: t.$espace-4;
+  margin-bottom: t.$espace-8;
+
+  @include t.mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.demo__compte {
+  background: t.$nuit;
+  border-radius: t.$rayon-md;
+  padding: t.$espace-4;
+  display: grid;
+  gap: t.$espace-2;
+}
+
+.demo__role {
+  color: t.$or-phare;
+  font-weight: 700;
+  font-size: t.$taille-sm;
+}
+
+.demo__id {
+  font-family: t.$police-donnee;
+  font-size: t.$taille-sm;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  padding: t.$espace-2 t.$espace-3;
+  border-radius: t.$rayon-sm;
+  word-break: break-all;
+}
+
+.demo__etapes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: t.$espace-4;
+  margin-bottom: t.$espace-8;
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+  }
+}
+
+.demo__etape {
+  display: flex;
+  gap: t.$espace-3;
+  align-items: flex-start;
+  background: white;
+  border-radius: t.$rayon-md;
+  padding: t.$espace-4;
+}
+
+.demo__numero {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: t.$or-phare;
+  color: t.$nuit;
+  font-family: t.$police-titre;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo__etape-titre {
+  font-size: t.$taille-base;
+  margin-bottom: t.$espace-1;
+}
+
+.demo__etape-detail {
+  color: t.$bitume-attenue;
+  font-size: t.$taille-sm;
+  line-height: 1.45;
+}
+
+.demo__cta {
+  width: fit-content;
+}
+
+// --- IMPACT ---
+.impacts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: t.$espace-4;
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+  }
+}
+
+.impact {
+  background: white;
+  border: 1px solid t.$papier-fonce;
+  border-left: 3px solid t.$vert-signal;
+  border-radius: t.$rayon-md;
+  box-shadow: t.$ombre-carte;
+  padding: t.$espace-6;
+}
+
+.impact__titre {
+  font-size: t.$taille-lg;
+  margin-bottom: t.$espace-2;
+}
+
+.impact__texte {
+  color: t.$bitume-attenue;
+  font-size: t.$taille-sm;
+  line-height: 1.55;
+}
+
+// --- TECH & SÉCURITÉ ---
 .techs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: t.$espace-3;
+  margin-bottom: t.$espace-8;
 }
 
 .tech {
@@ -293,7 +462,35 @@
   letter-spacing: 0.04em;
 }
 
-// --- CTA ---
+.securite {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: t.$espace-3;
+
+  @include t.mobile {
+    grid-template-columns: 1fr;
+  }
+
+  li {
+    position: relative;
+    padding-left: t.$espace-6;
+    font-size: t.$taille-sm;
+    line-height: 1.45;
+
+    &::before {
+      content: '🔒';
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: t.$taille-sm;
+    }
+  }
+}
+
+// --- CTA FINAL ---
 .apropos__cta {
   background: linear-gradient(135deg, t.$or-phare, t.$or-phare-fonce);
   border-radius: t.$rayon-lg;
