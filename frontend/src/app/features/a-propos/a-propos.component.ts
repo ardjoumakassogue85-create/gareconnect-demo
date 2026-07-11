@@ -21,6 +21,11 @@ interface EtapeDemo {
   detail: string;
 }
 
+interface EtapeParcours {
+  titre: string;
+  detail: string;
+}
+
 @Component({
   selector: 'app-a-propos',
   standalone: true,
@@ -196,6 +201,66 @@ export class AProposComponent {
     },
   ];
 
+  // ============================================================
+  // PARCOURS D'UTILISATION (pipelines)
+  // ============================================================
+  readonly parcoursClient: EtapeParcours[] = [
+    {
+      titre: 'Je recherche',
+      detail:
+        'Je saisis départ, arrivée et date — au clavier, en langage libre ou à la voix (« dis où tu veux aller »).',
+    },
+    {
+      titre: 'Je compare',
+      detail:
+        'Je vois toutes les compagnies, leurs tarifs et places dispo, avec l’affluence en temps réel et le conseil d’heure d’arrivée.',
+    },
+    {
+      titre: 'Je réserve & je paie',
+      detail: 'Je choisis mon trajet et je règle (Mobile Money / carte). Ma place est confirmée.',
+    },
+    {
+      titre: 'Je reçois mon billet QR',
+      detail: 'Un billet électronique signé apparaît dans mon espace — infalsifiable, toujours avec moi.',
+    },
+    {
+      titre: 'J’embarque',
+      detail:
+        'À la gare, l’agent scanne mon QR : validé en une seconde. Fini la file d’attente et le billet papier.',
+    },
+    {
+      titre: 'Je note mon voyage',
+      detail: '24 h après, je reçois une invitation à noter la compagnie et la gare. La confiance se construit.',
+    },
+  ];
+
+  readonly parcoursCompagnie: EtapeParcours[] = [
+    {
+      titre: 'Je crée mon compte compagnie',
+      detail: 'Inscription avec vérification e-mail, puis accès à mon espace de gestion dédié.',
+    },
+    {
+      titre: 'Je configure mon offre',
+      detail: 'Je publie mes trajets, horaires, tarifs et capacités. Tout est visible immédiatement par les voyageurs.',
+    },
+    {
+      titre: 'Je personnalise ma vitrine',
+      detail: 'Logo, image de couverture, galerie : ma page publique attire et rassure les clients.',
+    },
+    {
+      titre: 'Je reçois les réservations',
+      detail: 'Je suis mon remplissage en temps réel et je consulte le tableau d’affluence de mes départs.',
+    },
+    {
+      titre: 'Je contrôle à l’embarquement',
+      detail: 'Mes agents scannent les QR des billets (en ligne ou hors-ligne) : anti-fraude, anti-double-usage.',
+    },
+    {
+      titre: 'Je gagne en réputation',
+      detail: 'Les notes de mes clients font monter mon badge de confiance et ma visibilité sur la plateforme.',
+    },
+  ];
+
   /** Le catalogue complet, groupé par domaine (référence exhaustive). */
   readonly fonctionnalites: Fonctionnalite[] = [
     {
@@ -206,20 +271,49 @@ export class AProposComponent {
       points: [
         'Recherche par ville de départ, ville d’arrivée et date',
         'Comparaison des tarifs et des places disponibles en temps réel',
-        'Réservation et paiement (Mobile Money / carte) simulés de bout en bout',
-        'Annulation avec compte à rebours et remboursement',
+        'Réservation et paiement (Mobile Money / carte) de bout en bout',
+      ],
+    },
+    {
+      icone: '⏱️',
+      titre: 'Annulation & remboursement',
+      description: 'Le voyageur garde la main sur sa réservation, sans stress.',
+      points: [
+        'Annulation possible avec compte à rebours (fenêtre de ~30 min)',
+        'Remboursement automatique à l’annulation',
         'Statut « Départ imminent » et masquage des départs déjà passés',
       ],
     },
     {
-      icone: '🏢',
-      titre: 'Espace & vitrine compagnie',
+      icone: '🎫',
+      titre: 'Billet électronique & contrôle',
       description:
-        'Chaque compagnie gère son offre et sa présence en ligne depuis un tableau de bord dédié.',
+        'Le billet papier disparaît : un QR signé, vérifiable à la gare, connexion ou pas.',
+      points: [
+        'Billet QR signé (RSA) dans l’espace client',
+        'Écran de contrôle compagnie : scan caméra du QR',
+        'Vérification hors-ligne par clé publique + anti-double-usage',
+      ],
+    },
+    {
+      icone: '🏢',
+      titre: 'Espace compagnie & gestion intelligente',
+      description:
+        'Chaque compagnie pilote son activité depuis un tableau de bord dédié.',
       points: [
         'Gestion des trajets, horaires, tarifs et capacités',
-        'Vitrine publique personnalisable (logo, image de couverture, galerie)',
-        'Suivi des réservations et écran de contrôle des billets à l’embarquement',
+        'Suivi des réservations et du taux de remplissage',
+        'Tableau d’affluence pour anticiper les pics',
+      ],
+    },
+    {
+      icone: '🖼️',
+      titre: 'Vitrine compagnie',
+      description: 'Une page publique personnalisable pour attirer et rassurer les voyageurs.',
+      points: [
+        'Logo, image de couverture et galerie photos',
+        'Présentation des trajets et de la note moyenne',
+        'Une URL dédiée par compagnie',
       ],
     },
     {
@@ -235,11 +329,22 @@ export class AProposComponent {
     },
     {
       icone: '🛟',
-      titre: 'Support & réclamations assistés par IA',
+      titre: 'Réclamations traitées par IA',
       description: 'Un canal de réclamation guidé par IA, avec suivi côté administration.',
       points: [
         'Assistant IA qui reformule et catégorise la réclamation',
-        'Suivi du statut de traitement et transmission à l’équipe support',
+        'Suivi du statut de traitement',
+        'Escalade et transmission automatique à l’équipe support',
+      ],
+    },
+    {
+      icone: '🔐',
+      titre: 'Compte & sécurité',
+      description: 'Une base solide pour protéger voyageurs et compagnies.',
+      points: [
+        'Inscription avec vérification d’e-mail (code)',
+        'Réinitialisation sécurisée du mot de passe + édition du compte',
+        'Sessions JWT et limitation des tentatives de connexion',
       ],
     },
   ];

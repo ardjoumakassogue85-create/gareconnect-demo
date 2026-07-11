@@ -305,6 +305,107 @@
   }
 }
 
+// --- PARCOURS / PIPELINE ---
+.parcours {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: t.$espace-8;
+
+  @include t.tablette {
+    grid-template-columns: 1fr;
+    gap: t.$espace-12;
+  }
+}
+
+.parcours__entete {
+  display: flex;
+  align-items: center;
+  gap: t.$espace-3;
+  padding: t.$espace-3 t.$espace-4;
+  border-radius: t.$rayon-md;
+  margin-bottom: t.$espace-6;
+  color: white;
+
+  &--client {
+    background: linear-gradient(90deg, t.$nuit, t.$nuit-clair);
+  }
+
+  &--compagnie {
+    background: linear-gradient(90deg, t.$or-phare-fonce, t.$or-phare);
+    color: t.$nuit;
+  }
+}
+
+.parcours__icone {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.parcours__titre {
+  color: inherit;
+  font-size: t.$taille-xl;
+}
+
+.pipeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+.pipeline__etape {
+  position: relative;
+  display: flex;
+  gap: t.$espace-4;
+  padding-bottom: t.$espace-6;
+
+  // ligne verticale reliant les etapes
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 34px;
+    bottom: 0;
+    width: 2px;
+    background: t.$papier-fonce;
+  }
+}
+
+.pipeline__numero {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid t.$or-phare;
+  color: t.$nuit;
+  font-family: t.$police-titre;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pipeline__contenu {
+  display: grid;
+  gap: t.$espace-1;
+  padding-top: t.$espace-1;
+}
+
+.pipeline__titre {
+  color: t.$nuit;
+  font-size: t.$taille-base;
+}
+
+.pipeline__detail {
+  color: t.$bitume-attenue;
+  font-size: t.$taille-sm;
+  line-height: 1.5;
+}
+
 // --- DÉMO ---
 .demo {
   background: t.$papier-fonce;

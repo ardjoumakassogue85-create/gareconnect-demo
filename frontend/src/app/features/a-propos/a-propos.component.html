@@ -84,6 +84,49 @@
         </div>
       </section>
 
+      <!-- PARCOURS D'UTILISATION (pipelines) -->
+      <section class="bloc">
+        <span class="bloc__kicker">Parcours d'utilisation</span>
+        <h2 class="bloc__titre">Comment ça marche, de bout en bout</h2>
+        <p class="bloc__intro">
+          Deux parcours simples et guidés : un pour le voyageur, un pour la compagnie.
+        </p>
+
+        <div class="parcours">
+          <div class="parcours__colonne">
+            <div class="parcours__entete parcours__entete--client">
+              <span class="parcours__icone" aria-hidden="true">👤</span>
+              <h3 class="parcours__titre">Côté voyageur</h3>
+            </div>
+            <ol class="pipeline">
+              <li class="pipeline__etape" *ngFor="let e of parcoursClient; let i = index">
+                <span class="pipeline__numero">{{ i + 1 }}</span>
+                <div class="pipeline__contenu">
+                  <strong class="pipeline__titre">{{ e.titre }}</strong>
+                  <span class="pipeline__detail">{{ e.detail }}</span>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="parcours__colonne">
+            <div class="parcours__entete parcours__entete--compagnie">
+              <span class="parcours__icone" aria-hidden="true">🏢</span>
+              <h3 class="parcours__titre">Côté compagnie</h3>
+            </div>
+            <ol class="pipeline">
+              <li class="pipeline__etape" *ngFor="let e of parcoursCompagnie; let i = index">
+                <span class="pipeline__numero">{{ i + 1 }}</span>
+                <div class="pipeline__contenu">
+                  <strong class="pipeline__titre">{{ e.titre }}</strong>
+                  <span class="pipeline__detail">{{ e.detail }}</span>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
       <!-- DÉMO (Execution Quality) -->
       <section class="bloc demo" id="demo">
         <span class="bloc__kicker">Prototype fonctionnel</span>
@@ -154,8 +197,11 @@
 
       <!-- CATALOGUE COMPLET -->
       <section class="bloc">
-        <span class="bloc__kicker">Le reste des fonctionnalités</span>
-        <h2 class="bloc__titre">Une plateforme complète</h2>
+        <span class="bloc__kicker">Toutes les fonctionnalités</span>
+        <h2 class="bloc__titre">La plateforme en détail</h2>
+        <p class="bloc__intro">
+          Au-delà des briques innovantes, voici l'ensemble des capacités de GareConnect.
+        </p>
         <div class="fonctions">
           <article class="fonction" *ngFor="let f of fonctionnalites">
             <div class="fonction__entete">
