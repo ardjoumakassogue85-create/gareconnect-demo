@@ -49,6 +49,13 @@ app:
 cors:
   allowed-origins: ${ALLOWED_ORIGINS:http://localhost:4200}
 
+mailjet:
+  # Cles API Mailjet (https://app.mailjet.com/account/apikeys). Si definies, les
+  # emails partent via l'API HTTPS de Mailjet (marche sur Railway ou le SMTP est
+  # bloque). Vides => repli sur le SMTP classique (dev local avec Gmail).
+  api-key: ${MAILJET_API_KEY:}
+  secret-key: ${MAILJET_SECRET_KEY:}
+
 gemini:
   api-key: ${GEMINI_API_KEY:}
   model: ${GEMINI_MODEL:gemini-flash-latest}

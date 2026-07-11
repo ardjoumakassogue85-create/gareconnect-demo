@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class EmailVerificationService {
 
     private final JavaMailSender mailSender;
+    private final MailjetEmailClient mailjetEmailClient;
 
     @Value("${spring.mail.host:}")
     private String mailHost;
@@ -60,12 +61,20 @@ public class EmailVerificationService {
         log.info("Email de reinitialisation envoye a {}", user.getEmail());
     }
 
-    /** Envoi via le SMTP configure (Gmail). */
+    /**
+     * Envoi unifie : priorite a l'API Mailjet (HTTPS, marche sur Railway/Render ou
+     * le SMTP est bloque). Sinon repli sur le SMTP classique (dev local avec Gmail).
+     */
     private void envoyer(String destinataire, String sujet, String texte) {
+        if (mailjetEmailClient.estActif()) {
+            mailjetEmailClient.envoyer(adresseExpediteur(), "GareConnect", destinataire, sujet, texte);
+            return;
+        }
+
         if (mailHost == null || mailHost.isBlank()) {
             throw new ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE,
-                    "Envoi email non configure. Ajoute les parametres SMTP dans le .env."
+                    "Envoi email non configure. Ajoute MAILJET_API_KEY/SECRET ou le SMTP."
             );
         }
 
