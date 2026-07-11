@@ -21,7 +21,7 @@
           📷 Scanner le QR du client
         </button>
 
-        <div class="controle__camera" *ngIf="scanEnCours()">
+        <div class="controle__camera" [hidden]="!scanEnCours()">
           <video #camera playsinline muted></video>
           <canvas #canvas class="controle__canvas"></canvas>
           <span class="controle__scan-hint">Pointe la caméra vers le QR du billet…</span>

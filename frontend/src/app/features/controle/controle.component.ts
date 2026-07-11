@@ -94,17 +94,23 @@ export class ControleComponent implements OnInit, OnDestroy {
     this.reinitialiser();
     try {
       this.flux = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      // Le <video> est toujours dans le DOM (via [hidden]), donc cameraRef existe.
       const video = this.cameraRef?.nativeElement;
       if (!video) {
+        this.arreterScan();
+        this.erreur.set('Impossible d’initialiser la caméra sur cet appareil.');
         return;
       }
       video.srcObject = this.flux;
+      video.muted = true;
       video.setAttribute('playsinline', 'true');
-      await video.play();
+      // On affiche AVANT de lancer la lecture (certains mobiles ne décodent pas
+      // une vidéo masquée).
       this.scanEnCours.set(true);
+      await video.play();
       this.animation = requestAnimationFrame(() => this.boucleScan());
     } catch {
-      this.scanEnCours.set(false);
+      this.arreterScan();
       this.erreur.set(
         'Caméra indisponible ou permission refusée. (La caméra exige HTTPS ou localhost.)',
       );
