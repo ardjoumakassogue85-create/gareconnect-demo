@@ -14,9 +14,11 @@ primary_region = 'cdg'
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 0
+  # Garde 1 machine toujours allumee => pas de cold-start (demo/jury reactive).
+  min_machines_running = 1
 
 [[vm]]
-  memory = '512mb'
+  cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 512
+  # 1 Go : la JVM Spring Boot demarre normalement (512 Mo => crash-loop OOM).
+  memory = '1gb'
